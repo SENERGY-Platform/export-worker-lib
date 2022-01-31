@@ -76,6 +76,7 @@ class FilterHandler(threading.Thread):
         self.__msg_identifiers_export_map = dict()
         self.__sources_export_map = dict()
         self.__updated = None
+        self.__stop = False
 
     def __add_filter(self, lvl_one_value, lvl_two_value, m_hash, export_id):
         try:
@@ -267,6 +268,9 @@ class FilterHandler(threading.Thread):
             #     data_sets.append((builder(mapper(self.__mappings[mapping_id], msg)), tuple(filters[mapping_id])))
             return data_sets
 
+    def stop(self):
+        self.__stop = True
+
     @property
     def sources(self):
         with self.__lock:
@@ -278,7 +282,7 @@ class FilterHandler(threading.Thread):
             return self.__updated
 
     def run(self) -> None:
-        while True:
+        while not self.__stop:
             try:
                 start = time.time_ns()
                 msg = self.__filter_consumer.get_filter()
