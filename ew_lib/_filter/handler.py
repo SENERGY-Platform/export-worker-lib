@@ -293,7 +293,6 @@ class FilterHandler(threading.Thread):
                             raise exceptions.MethodError(method)
                     except Exception as ex:
                         logger.exception(ex)
-                    self.__filter_consumer.commit()
                 else:
                     duration = self.__fallback_delay * 1000000000 - (time.time_ns() - start)
                     if duration > 0:
