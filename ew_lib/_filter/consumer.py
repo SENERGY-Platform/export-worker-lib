@@ -31,14 +31,15 @@ class FilterConsumer(abc.ABC):
 
 class KafkaFilterConsumer(FilterConsumer):
     def __init__(self, brokers: typing.List, consumer_group: str, filter_topic: str, poll_timeout: float = 1.0):
-        self.__kafka_consr_config = {
-            "metadata.broker.list": ",".join(brokers),
-            "group.id": consumer_group,
-            "auto.offset.reset": "earliest"
-        }
-        self.__filter_topic = [filter_topic]
+        self.__consumer = confluent_kafka.Consumer(
+            {
+                "metadata.broker.list": ",".join(brokers),
+                "group.id": consumer_group,
+                "auto.offset.reset": "earliest"
+            }
+        )
+        self.__consumer.subscribe([filter_topic], on_assign=self.__on_assign)
         self.__poll_timeout = poll_timeout
-        self.__kafka_consumer: typing.Optional[confluent_kafka.Consumer] = None
         self.__reset = True
 
     def __on_assign(self, consumer: confluent_kafka.Consumer, partitions: typing.List[confluent_kafka.TopicPartition]):
@@ -48,12 +49,8 @@ class KafkaFilterConsumer(FilterConsumer):
             consumer.assign(partitions)
             self.__reset = False
 
-    def start(self):
-        self.__kafka_consumer = confluent_kafka.Consumer(self.__kafka_consr_config)
-        self.__kafka_consumer.subscribe(self.__filter_topic, on_assign=self.__on_assign)
-
     def get_filter(self) -> typing.Dict:
-        msg = self.__kafka_consumer.poll(timeout=self.__poll_timeout)
+        msg = self.__consumer.poll(timeout=self.__poll_timeout)
         if msg:
             if not msg.error():
                 return json.loads(msg.value())
@@ -61,4 +58,4 @@ class KafkaFilterConsumer(FilterConsumer):
                 logger.error(f"filter consumer message error: {msg.error()}")
 
     def close(self):
-        self.__kafka_consumer.close()
+        self.__consumer.close()
