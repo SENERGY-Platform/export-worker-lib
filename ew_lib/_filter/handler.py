@@ -255,17 +255,14 @@ class FilterHandler(threading.Thread):
     def filter_message(self, msg: typing.Dict, builder: typing.Callable[[typing.Generator], typing.Any] = builders.dict_builder):
         with self.__lock:
             filters = self.__get_filters(*self.__identify_msg(self.__msg_identifier_keys, msg))
-            data_sets = dict()
-            for mapping_id in filters:
-                data = builder(mapper(self.__mappings[mapping_id], msg))
-                for export_id in filters[mapping_id]:
-                    if export_id not in data_sets:
-                        data_sets[export_id] = [data]
-                    else:
-                        data_sets[export_id].append(data)
-            # data_sets = list()
+            # data_sets = dict()
             # for mapping_id in filters:
-            #     data_sets.append((builder(mapper(self.__mappings[mapping_id], msg)), tuple(filters[mapping_id])))
+            #     data = builder(mapper(self.__mappings[mapping_id], msg))
+            #     for export_id in filters[mapping_id]:
+            #         data_sets[export_id] = data
+            data_sets = list()
+            for mapping_id in filters:
+                data_sets.append((builder(mapper(self.__mappings[mapping_id], msg)), tuple(filters[mapping_id])))
             return data_sets
 
     def stop(self):
