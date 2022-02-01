@@ -23,7 +23,7 @@ __license__ = 'Apache License 2.0'
 __copyright__ = 'Copyright 2022 InfAI (CC SES)'
 
 
-from ._export_client import *
+from ._worker import *
 from ._filter import *
 import ew_lib.exceptions
 import ew_lib.builders
