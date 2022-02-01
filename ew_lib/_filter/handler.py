@@ -252,7 +252,7 @@ class FilterHandler(threading.Thread):
         except Exception as ex:
             raise exceptions.MessageIdentificationError(ex)
 
-    def get_data_sets(self, msg: typing.Dict, builder: typing.Callable[[typing.Generator], typing.Any] = builders.dict_builder):
+    def filter_message(self, msg: typing.Dict, builder: typing.Callable[[typing.Generator], typing.Any] = builders.dict_builder):
         with self.__lock:
             filters = self.__get_filters(*self.__identify_msg(self.__msg_identifier_keys, msg))
             data_sets = dict()
