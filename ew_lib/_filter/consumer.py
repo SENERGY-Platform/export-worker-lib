@@ -36,7 +36,8 @@ class KafkaFilterConsumer(FilterConsumer):
                 "metadata.broker.list": ",".join(brokers),
                 "group.id": consumer_group,
                 "auto.offset.reset": "earliest"
-            }
+            },
+            logger=logger
         )
         self.__consumer.subscribe([filter_topic], on_assign=self.__on_assign)
         self.__poll_timeout = poll_timeout
