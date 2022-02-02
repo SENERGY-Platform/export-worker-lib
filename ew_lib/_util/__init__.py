@@ -14,6 +14,7 @@
    limitations under the License.
 """
 
+from .. import exceptions
 import logging
 import typing
 import hashlib
@@ -36,11 +37,11 @@ def get_value(path: typing.List, obj: typing.Dict, size: int, pos: typing.Option
     return obj[path[pos]]
 
 
-def handle_kafka_error(msg_obj, exception_class, text: str, raise_error: bool = True):
+def handle_kafka_error(msg_obj, text: str, raise_error: bool = True):
     if msg_obj.error().retriable():
-        logger.warning(text.format(msg_obj.error().str()))
+        logger.warning(exceptions.KafkaMessageError.gen_text(arg=msg_obj.error().str(), prefix=text))
     elif msg_obj.error().fatal():
         if raise_error:
-            raise exception_class(msg_obj.error())
+            raise exceptions.KafkaMessageError(arg=msg_obj.error().str(), prefix=text)
         else:
-            logger.error(text.format(msg_obj.error().str()))
+            logger.error(exceptions.KafkaMessageError.gen_text(arg=msg_obj.error().str(), prefix=text))

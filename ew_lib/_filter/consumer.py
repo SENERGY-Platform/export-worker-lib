@@ -59,8 +59,7 @@ class KafkaFilterConsumer(FilterConsumer):
             else:
                 handle_kafka_error(
                     msg_obj=msg_obj,
-                    exception_class=exceptions.KafkaMessageError,
-                    text=exceptions.KafkaMessageError.text
+                    text="kafka filter consumer error"
                 )
 
     def close(self):
