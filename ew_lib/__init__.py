@@ -16,7 +16,7 @@
 
 __version__ = '0.0.0'
 __title__ = 'export-worker-lib'
-__description__ = 'Library for implementing export-workers to transfer data from the SENERGY streaming platform to databases.'
+__description__ = 'Library for implementing export-workers to transfer data from the SENERGY streaming platform to data sinks.'
 __url__ = 'https://github.com/SENERGY-Platform/export-worker-lib'
 __author__ = 'Yann Dumont'
 __license__ = 'Apache License 2.0'
