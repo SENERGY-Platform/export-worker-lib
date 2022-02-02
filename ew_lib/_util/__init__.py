@@ -19,7 +19,7 @@ import logging
 import typing
 import hashlib
 
-logger = logging.getLogger('ew-lib')
+logger = logging.getLogger("ew-lib")
 logger.propagate = False
 logger.setLevel(logging.WARNING)
 
