@@ -298,11 +298,11 @@ class FilterHandler:
                         else:
                             raise exceptions.MethodError(method)
                     except Exception as ex:
-                        logger.exception(ex)
+                        logger.error(f"filter handler error: handling filter failed - {ex}")
                 else:
                     duration = self.__fallback_delay * 1000000000 - (time.time_ns() - start)
                     if duration > 0:
                         time.sleep(duration / 1000000000)
             except Exception as ex:
-                logger.exception(ex)
+                logger.error(f"filter handler error: consuming filter failed - {ex}")
                 time.sleep(self.__fallback_delay)
