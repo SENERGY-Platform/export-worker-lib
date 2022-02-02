@@ -16,8 +16,8 @@
 
 __version__ = '0.0.0'
 __title__ = 'export-worker-lib'
-__description__ = ''
-__url__ = ''
+__description__ = 'Library for implementing export-workers to transfer data from the SENERGY streaming platform to databases.'
+__url__ = 'https://github.com/SENERGY-Platform/export-worker-lib'
 __author__ = 'Yann Dumont'
 __license__ = 'Apache License 2.0'
 __copyright__ = 'Copyright 2022 InfAI (CC SES)'
