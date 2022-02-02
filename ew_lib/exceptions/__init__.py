@@ -102,3 +102,10 @@ class AddExportError(FilterHandlerError):
 class DeleteExportError(FilterHandlerError):
     def __init__(self, arg):
         super().__init__(f"deleting export failed: {arg}")
+
+
+class KafkaMessageError(Exception):
+    text = "kafka message error: {}"
+
+    def __init__(self, arg):
+        super().__init__(self.text.format(arg))

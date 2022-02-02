@@ -16,7 +16,8 @@
 
 __all__ = ("FilterConsumer", "KafkaFilterConsumer")
 
-from .._util import logger
+from .. import exceptions
+from .._util import logger, handle_kafka_error
 import typing
 import abc
 import confluent_kafka
@@ -51,12 +52,16 @@ class KafkaFilterConsumer(FilterConsumer):
             self.__reset = False
 
     def get_filter(self) -> typing.Dict:
-        msg = self.__consumer.poll(timeout=self.__poll_timeout)
-        if msg:
-            if not msg.error():
-                return json.loads(msg.value())
+        msg_obj = self.__consumer.poll(timeout=self.__poll_timeout)
+        if msg_obj:
+            if not msg_obj.error():
+                return json.loads(msg_obj.value())
             else:
-                logger.error(f"kafka filter consumer message error: {msg.error()}")
+                handle_kafka_error(
+                    msg_obj=msg_obj,
+                    exception_class=exceptions.KafkaMessageError,
+                    text=exceptions.KafkaMessageError.text
+                )
 
     def close(self):
         self.__consumer.close()

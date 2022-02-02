@@ -34,3 +34,13 @@ def get_value(path: typing.List, obj: typing.Dict, size: int, pos: typing.Option
     if pos < size:
         return get_value(path, obj[path[pos]], size, pos + 1)
     return obj[path[pos]]
+
+
+def handle_kafka_error(msg_obj, exception_class, text: str, raise_error: bool = True):
+    if msg_obj.error().retriable():
+        logger.warning(text.format(msg_obj.error().str()))
+    elif msg_obj.error().fatal():
+        if raise_error:
+            raise exception_class(msg_obj.error())
+        else:
+            logger.error(text.format(msg_obj.error().str()))
