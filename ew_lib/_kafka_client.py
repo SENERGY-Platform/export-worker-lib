@@ -18,8 +18,8 @@ __all__ = ("KafkaClient", )
 
 from . import exceptions, builders
 from ._util import logger, handle_kafka_error
-from ._filter import FilterConsumer
-from ._filter.handler import FilterHandler
+from .filter import FilterConsumer
+from .filter._handler import FilterHandler
 import uuid
 import typing
 import confluent_kafka
