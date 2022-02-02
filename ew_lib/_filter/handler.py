@@ -62,6 +62,9 @@ def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
 
 
 class FilterHandler:
+    __log_msg_prefix = "filter handler"
+    __log_err_msg_prefix = f"{__log_msg_prefix} error"
+
     def __init__(self, filter_consumer: FilterConsumer, fallback_delay: int = 1):
         self.__filter_consumer = filter_consumer
         self.__fallback_delay = fallback_delay
@@ -216,7 +219,7 @@ class FilterHandler:
                 )
                 self.__sources_timestamp = time.time_ns()
             except exceptions.FilterHandlerError as ex:
-                logger.error(ex)
+                logger.error(f"{FilterHandler.__log_err_msg_prefix}: {ex}")
                 if not isinstance(ex, exceptions.HashMappingError):
                     self.__del(export_id=export_id)
 
@@ -235,7 +238,7 @@ class FilterHandler:
                     export_id=export_id
                 )
             except exceptions.FilterHandlerError as ex:
-                logger.error(ex)
+                logger.error(f"{FilterHandler.__log_err_msg_prefix}: {ex}")
 
     def __del_with_lock(self, export_id: str):
         with self.__lock:
@@ -304,11 +307,11 @@ class FilterHandler:
                         else:
                             raise exceptions.MethodError(method)
                     except Exception as ex:
-                        logger.error(f"filter handler error: handling filter failed - {ex}")
+                        logger.error(f"{FilterHandler.__log_err_msg_prefix}: handling filter failed: {ex}")
                 else:
                     duration = self.__fallback_delay * 1000000000 - (time.time_ns() - start)
                     if duration > 0:
                         time.sleep(duration / 1000000000)
             except Exception as ex:
-                logger.error(f"filter handler error: consuming filter failed - {ex}")
+                logger.error(f"{FilterHandler.__log_err_msg_prefix}: consuming filter failed: {ex}")
                 time.sleep(self.__fallback_delay)

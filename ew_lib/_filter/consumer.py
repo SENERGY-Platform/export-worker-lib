@@ -31,6 +31,8 @@ class FilterConsumer(abc.ABC):
 
 
 class KafkaFilterConsumer(FilterConsumer):
+    __log_msg_prefix = "kafka filter consumer"
+
     def __init__(self, brokers: typing.List, consumer_group: str, filter_topic: str, poll_timeout: float = 1.0):
         self.__consumer = confluent_kafka.Consumer(
             {
@@ -59,7 +61,7 @@ class KafkaFilterConsumer(FilterConsumer):
             else:
                 handle_kafka_error(
                     msg_obj=msg_obj,
-                    text="kafka filter consumer error"
+                    text=f"{KafkaFilterConsumer.__log_msg_prefix} error"
                 )
 
     def close(self):
