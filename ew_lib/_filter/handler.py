@@ -60,11 +60,11 @@ def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
         yield mapping[model.Mapping.dst_path], get_value(src_path, msg, len(src_path) - 1)
 
 
-class FilterHandler(threading.Thread):
+class FilterHandler:
     def __init__(self, filter_consumer: FilterConsumer, fallback_delay: int = 1):
-        super().__init__(name=self.__class__.__name__, daemon=True)
         self.__filter_consumer = filter_consumer
         self.__fallback_delay = fallback_delay
+        self.__thread = threading.Thread(name=f"{self.__class__.__name__}-{uuid.uuid4()}", target=self.__handle_filter, daemon=True)
         self.__lock = threading.Lock()
         self.__msg_identifier_keys = set()
         self.__msg_identifiers = dict()
@@ -265,8 +265,12 @@ class FilterHandler(threading.Thread):
                 data_sets.append((builder(mapper(self.__mappings[mapping_id], msg)), tuple(filters[mapping_id])))
             return data_sets
 
+    def start(self):
+        self.__thread.start()
+
     def stop(self):
         self.__stop = True
+        self.__thread.join()
 
     @property
     def sources(self):
