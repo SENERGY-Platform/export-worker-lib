@@ -65,7 +65,11 @@ class FilterHandler:
     def __init__(self, filter_consumer: FilterConsumer, fallback_delay: int = 1):
         self.__filter_consumer = filter_consumer
         self.__fallback_delay = fallback_delay
-        self.__thread = threading.Thread(name=f"{self.__class__.__name__}-{uuid.uuid4()}", target=self.__handle_filter, daemon=True)
+        self.__thread = threading.Thread(
+            name=f"{self.__class__.__name__}-{uuid.uuid4()}",
+            target=self.__handle_filter,
+            daemon=True
+        )
         self.__lock = threading.Lock()
         self.__msg_identifier_keys = set()
         self.__msg_identifiers = dict()
@@ -271,6 +275,8 @@ class FilterHandler:
 
     def stop(self):
         self.__stop = True
+
+    def join(self):
         self.__thread.join()
 
     @property
