@@ -23,6 +23,7 @@ from .consumer import FilterConsumer
 import typing
 import threading
 import time
+import uuid
 
 # Filter tree
 #             1st lvl         2nd lvl         3rd lvl           4th lvl
@@ -75,7 +76,7 @@ class FilterHandler:
         self.__mapping_export_map = dict()
         self.__msg_identifiers_export_map = dict()
         self.__sources_export_map = dict()
-        self.__updated = None
+        self.__sources_timestamp = None
         self.__stop = False
 
     def __add_filter(self, lvl_one_value, lvl_two_value, m_hash, export_id):
@@ -156,6 +157,7 @@ class FilterHandler:
                 self.__sources_export_map[source] = {export_id}
             else:
                 self.__sources_export_map[source].add(export_id)
+            self.__sources_timestamp = time.time_ns()
         except Exception as ex:
             raise exceptions.AddSourceError(ex)
 
@@ -165,6 +167,7 @@ class FilterHandler:
             if not self.__sources_export_map[source]:
                 self.__sources.discard(source)
                 del self.__sources_export_map[source]
+                self.__sources_timestamp = time.time_ns()
         except Exception as ex:
             raise exceptions.DeleteSourceError(ex)
 
@@ -207,13 +210,13 @@ class FilterHandler:
                     m_hash=m_hash,
                     export_id=export_id
                 )
-                self.__updated = time.time_ns()
+                self.__sources_timestamp = time.time_ns()
             except exceptions.FilterHandlerError as ex:
                 logger.error(ex)
                 if not isinstance(ex, exceptions.HashMappingError):
-                    self.__del(export_id=export_id, update_time=False)
+                    self.__del(export_id=export_id)
 
-    def __del(self, export_id: str, update_time: bool = True):
+    def __del(self, export_id: str):
         if export_id in self.__exports:
             try:
                 export = self.__exports[export_id]
@@ -227,8 +230,6 @@ class FilterHandler:
                     m_hash=export[model.Filter.m_hash],
                     export_id=export_id
                 )
-                if update_time:
-                    self.__updated = time.time_ns()
             except exceptions.FilterHandlerError as ex:
                 logger.error(ex)
 
@@ -275,14 +276,14 @@ class FilterHandler:
     @property
     def sources(self):
         with self.__lock:
-            return self.__sources.copy()
+            return list(self.__sources)
 
     @property
-    def updated(self):
+    def sources_timestamp(self):
         with self.__lock:
-            return self.__updated
+            return self.__sources_timestamp
 
-    def run(self) -> None:
+    def __handle_filter(self) -> None:
         while not self.__stop:
             try:
                 start = time.time_ns()
