@@ -56,7 +56,7 @@ class KafkaFilterConsumer(FilterConsumer):
             if not msg.error():
                 return json.loads(msg.value())
             else:
-                logger.error(f"filter consumer message error: {msg.error()}")
+                logger.error(f"kafka filter consumer message error: {msg.error()}")
 
     def close(self):
         self.__consumer.close()
