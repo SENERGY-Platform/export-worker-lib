@@ -14,26 +14,5 @@
    limitations under the License.
 """
 
+from ._builders import *
 
-import typing
-
-
-def dict_builder(mapper: typing.Generator) -> typing.Dict[str, typing.Any]:
-    data = dict()
-    for key, value in mapper:
-        data[key] = value
-    return data
-
-
-def string_list_builder(mapper: typing.Generator) -> typing.List[str]:
-    data = list()
-    for key, value in mapper:
-        data.append(f'{key}={value}')
-    return data
-
-
-def tuple_list_builder(mapper: typing.Generator) -> typing.List[typing.Tuple[str, typing.Any]]:
-    data = list()
-    for key, value in mapper:
-        data.append((key, value))
-    return data
