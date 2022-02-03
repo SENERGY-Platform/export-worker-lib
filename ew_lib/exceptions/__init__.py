@@ -39,6 +39,16 @@ class NoFilterError(FilterHandlerError):
         super().__init__(f"no filters for: {arg}")
 
 
+class FilterMessageError(FilterHandlerError):
+    def __init__(self, arg):
+        super().__init__(f"filtering message failed: {arg}")
+
+
+class MappingError(FilterHandlerError):
+    def __init__(self, arg):
+        super().__init__(f"mapping error: {arg}")
+
+
 class MessageIdentifierMissmatchError(FilterHandlerError):
     def __init__(self, arg):
         super().__init__(f"provided identifier already exists with different value: {arg}")
