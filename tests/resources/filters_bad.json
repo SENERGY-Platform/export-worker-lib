@@ -1,0 +1,70 @@
+[
+  {
+    "method": "remove",
+    "payload": {
+      "export_id": "export-0"
+    }
+  },
+  {
+    "method": "put",
+    "payload": {
+      "identifier_one_key": "service_id",
+      "identifier_one_val": "service-1",
+      "identifier_two_key": "device_id",
+      "identifier_two_val": "device-1",
+      "mapping": {
+        "val_a:float": "value.root.val_a",
+        "val_b:float": "value.root.val_b",
+        "time:integer": "value.root.time"
+      },
+      "export_id": "export-1"
+    }
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "service_service-1",
+      "misspelled": "service_id",
+      "identifier_one_val": "service-1",
+      "identifier_two_key": "device_id",
+      "identifier_two_val": "device-2",
+      "mapping": {
+        "val_b:float": "value.root.val_b",
+        "val_a:float": "value.root.val_a",
+        "time:integer": "value.root.time"
+      },
+      "export_id": "export-2"
+    }
+  },
+  {
+    "payload": {
+      "source": "service_service-2",
+      "identifier_one_key": "service_id",
+      "identifier_one_val": "service-2",
+      "identifier_two_key": "device_id",
+      "identifier_two_val": "device-1",
+      "mapping": {
+        "val_b:float": "value.root.val_b",
+        "val_a:float": "value.root.val_a",
+        "time:integer": "value.root.time"
+      },
+      "export_id": "export-3"
+    }
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "service_service-2",
+      "identifier_one_key": "service_id",
+      "identifier_one_val": "service-2",
+      "identifier_two_key": "device_id",
+      "identifier_two_val": "device-1",
+      "mapping": {
+        "val_b:float": "value.root.val_b",
+        "val_a:float": "value.root.val_a",
+        "time:integer": "value.root.time"
+      },
+      "export_id": "export-4"
+    }
+  }
+]
