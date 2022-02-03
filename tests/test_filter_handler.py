@@ -74,7 +74,3 @@ class TestFilterHandler(unittest.TestCase):
                 count += 1
         self.assertEqual(count, len(messages))
         self.__close(filter_handler=filter_handler)
-
-
-if __name__ == '__main__':
-    unittest.main()
