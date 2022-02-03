@@ -89,29 +89,29 @@ class FilterHandler:
         self.__sources_timestamp = None
         self.__stop = False
 
-    def __add_filter(self, lvl_one_value, lvl_two_value, m_hash, export_id):
+    def __add_filter(self, identifier_one_val, identifier_two_val, m_hash, export_id):
         try:
             try:
-                self.__msg_filters[lvl_one_value][lvl_two_value][m_hash].add(export_id)
+                self.__msg_filters[identifier_one_val][identifier_two_val][m_hash].add(export_id)
             except KeyError:
-                if lvl_one_value not in self.__msg_filters:
-                    self.__msg_filters[lvl_one_value] = dict()
-                if lvl_two_value not in self.__msg_filters[lvl_one_value]:
-                    self.__msg_filters[lvl_one_value][lvl_two_value] = dict()
-                if m_hash not in self.__msg_filters[lvl_one_value][lvl_two_value]:
-                    self.__msg_filters[lvl_one_value][lvl_two_value][m_hash] = {export_id}
+                if identifier_one_val not in self.__msg_filters:
+                    self.__msg_filters[identifier_one_val] = dict()
+                if identifier_two_val not in self.__msg_filters[identifier_one_val]:
+                    self.__msg_filters[identifier_one_val][identifier_two_val] = dict()
+                if m_hash not in self.__msg_filters[identifier_one_val][identifier_two_val]:
+                    self.__msg_filters[identifier_one_val][identifier_two_val][m_hash] = {export_id}
         except Exception as ex:
             raise exceptions.AddFilterError(ex)
 
-    def __del_filter(self, lvl_one_value, lvl_two_value, m_hash, export_id):
+    def __del_filter(self, identifier_one_val, identifier_two_val, m_hash, export_id):
         try:
-            self.__msg_filters[lvl_one_value][lvl_two_value][m_hash].discard(export_id)
-            if not self.__msg_filters[lvl_one_value][lvl_two_value][m_hash]:
-                del self.__msg_filters[lvl_one_value][lvl_two_value][m_hash]
-                if not self.__msg_filters[lvl_one_value][lvl_two_value]:
-                    del self.__msg_filters[lvl_one_value][lvl_two_value]
-                    if not self.__msg_filters[lvl_one_value]:
-                        del self.__msg_filters[lvl_one_value]
+            self.__msg_filters[identifier_one_val][identifier_two_val][m_hash].discard(export_id)
+            if not self.__msg_filters[identifier_one_val][identifier_two_val][m_hash]:
+                del self.__msg_filters[identifier_one_val][identifier_two_val][m_hash]
+                if not self.__msg_filters[identifier_one_val][identifier_two_val]:
+                    del self.__msg_filters[identifier_one_val][identifier_two_val]
+                    if not self.__msg_filters[identifier_one_val]:
+                        del self.__msg_filters[identifier_one_val]
         except Exception as ex:
             raise exceptions.DeleteFilterError(ex)
 
@@ -135,28 +135,28 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.DeleteMappingError(ex)
 
-    def __add_msg_identifier(self, lvl_one_key: str, lvl_two_key: str, export_id: str):
+    def __add_msg_identifier(self, identifier_one_key: str, identifier_two_key: str, export_id: str):
         try:
-            if lvl_one_key not in self.__msg_identifiers:
-                self.__msg_identifiers[lvl_one_key] = lvl_two_key
-                self.__msg_identifier_keys.add(lvl_one_key)
+            if identifier_one_key not in self.__msg_identifiers:
+                self.__msg_identifiers[identifier_one_key] = identifier_two_key
+                self.__msg_identifier_keys.add(identifier_one_key)
             else:
-                if self.__msg_identifiers[lvl_one_key] != lvl_two_key:
-                    raise exceptions.MessageIdentifierMissmatchError((self.__msg_identifiers[lvl_one_key], lvl_two_key))
-            if lvl_one_key not in self.__msg_identifiers_export_map:
-                self.__msg_identifiers_export_map[lvl_one_key] = {export_id}
+                if self.__msg_identifiers[identifier_one_key] != identifier_two_key:
+                    raise exceptions.MessageIdentifierMissmatchError((self.__msg_identifiers[identifier_one_key], identifier_two_key))
+            if identifier_one_key not in self.__msg_identifiers_export_map:
+                self.__msg_identifiers_export_map[identifier_one_key] = {export_id}
             else:
-                self.__msg_identifiers_export_map[lvl_one_key].add(export_id)
+                self.__msg_identifiers_export_map[identifier_one_key].add(export_id)
         except Exception as ex:
             raise exceptions.AddMessageIdentifierError(ex)
 
-    def __del_msg_identifier(self, lvl_one_key: str, export_id: str):
+    def __del_msg_identifier(self, identifier_one_key: str, export_id: str):
         try:
-            self.__msg_identifiers_export_map[lvl_one_key].discard(export_id)
-            if not self.__msg_identifiers_export_map[lvl_one_key]:
-                del self.__msg_identifiers[lvl_one_key]
-                self.__msg_identifier_keys.discard(lvl_one_key)
-                del self.__msg_identifiers_export_map[lvl_one_key]
+            self.__msg_identifiers_export_map[identifier_one_key].discard(export_id)
+            if not self.__msg_identifiers_export_map[identifier_one_key]:
+                del self.__msg_identifiers[identifier_one_key]
+                self.__msg_identifier_keys.discard(identifier_one_key)
+                del self.__msg_identifiers_export_map[identifier_one_key]
         except Exception as ex:
             raise exceptions.DeleteMessageIdentifierError(ex)
 
@@ -181,13 +181,13 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.DeleteSourceError(ex)
 
-    def __add_export(self, export_id: str, source: str, lvl_one_key: str, lvl_one_value: str, lvl_two_value: str, m_hash: str):
+    def __add_export(self, export_id: str, source: str, identifier_one_key: str, identifier_one_val: str, identifier_two_val: str, m_hash: str):
         try:
             self.__exports[export_id] = {
                 model.Filter.source: source,
-                model.Filter.lvl_one_key: lvl_one_key,
-                model.Filter.lvl_one_value: lvl_one_value,
-                model.Filter.lvl_two_value: lvl_two_value,
+                model.Filter.identifier_one_key: identifier_one_key,
+                model.Filter.identifier_one_val: identifier_one_val,
+                model.Filter.identifier_two_val: identifier_two_val,
                 model.Filter.m_hash: m_hash
             }
         except Exception as ex:
@@ -199,24 +199,24 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.DeleteExportError(ex)
 
-    def __add(self, source: str, lvl_one_key: str, lvl_one_value: str, lvl_two_key: str, lvl_two_value: str, mapping: typing.Dict, export_id: str):
+    def __add(self, source: str, identifier_one_key: str, identifier_one_val: str, identifier_two_key: str, identifier_two_val: str, mapping: typing.Dict, export_id: str):
         with self.__lock:
             try:
                 m_hash = hash_mapping(mapping=mapping)
                 self.__add_export(
                     export_id=export_id,
                     source=source,
-                    lvl_one_key=lvl_one_key,
-                    lvl_one_value=lvl_one_value,
-                    lvl_two_value=lvl_two_value,
+                    identifier_one_key=identifier_one_key,
+                    identifier_one_val=identifier_one_val,
+                    identifier_two_val=identifier_two_val,
                     m_hash=m_hash
                 )
                 self.__add_mapping(mapping=mapping, m_hash=m_hash, export_id=export_id)
                 self.__add_source(source=source, export_id=export_id)
-                self.__add_msg_identifier(lvl_one_key=lvl_one_key, lvl_two_key=lvl_two_key, export_id=export_id)
+                self.__add_msg_identifier(identifier_one_key=identifier_one_key, identifier_two_key=identifier_two_key, export_id=export_id)
                 self.__add_filter(
-                    lvl_one_value=lvl_one_value,
-                    lvl_two_value=lvl_two_value,
+                    identifier_one_val=identifier_one_val,
+                    identifier_two_val=identifier_two_val,
                     m_hash=m_hash,
                     export_id=export_id
                 )
@@ -233,10 +233,10 @@ class FilterHandler:
                 self.__del_export(export_id=export_id)
                 self.__del_mapping(m_hash=export[model.Filter.m_hash], export_id=export_id)
                 self.__del_source(source=export[model.Filter.source], export_id=export_id)
-                self.__del_msg_identifier(lvl_one_key=export[model.Filter.lvl_one_key], export_id=export_id)
+                self.__del_msg_identifier(identifier_one_key=export[model.Filter.identifier_one_key], export_id=export_id)
                 self.__del_filter(
-                    lvl_one_value=export[model.Filter.lvl_one_value],
-                    lvl_two_value=export[model.Filter.lvl_two_value],
+                    identifier_one_val=export[model.Filter.identifier_one_val],
+                    identifier_two_val=export[model.Filter.identifier_two_val],
                     m_hash=export[model.Filter.m_hash],
                     export_id=export_id
                 )

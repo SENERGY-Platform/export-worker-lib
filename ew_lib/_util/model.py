@@ -35,9 +35,9 @@ class FilterMessage:
 
 class Filter:
     source = "source"
-    lvl_one_key = "lvl_one_key"
-    lvl_one_value = "lvl_one_value"
-    lvl_two_key = "lvl_two_key"
-    lvl_two_value = "lvl_two_value"
+    identifier_one_key = "identifier_one_key"
+    identifier_one_val = "identifier_one_val"
+    identifier_two_key = "identifier_two_key"
+    identifier_two_val = "identifier_two_val"
     mapping = "mapping"
     m_hash = "m_hash"
