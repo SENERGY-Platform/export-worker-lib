@@ -98,7 +98,6 @@ class TestFilterHandler(unittest.TestCase):
         for message in messages:
             try:
                 filter_handler.filter_message(msg=message)
-                count += 1
             except (ew_lib.exceptions.MessageIdentificationError, ew_lib.exceptions.NoFilterError, ew_lib.exceptions.FilterMessageError) as ex:
                 self.assertIsInstance(ex, Exception)
                 count += 1
@@ -108,5 +107,3 @@ class TestFilterHandler(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-# python -m unittest tests.test_filter_handler -v
