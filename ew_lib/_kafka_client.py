@@ -103,6 +103,8 @@ class KafkaClient:
                         return exports
                     except (exceptions.MessageIdentificationError, exceptions.NoFilterError):
                         pass
+                    except exceptions.FilterMessageError as ex:
+                        logger.error(f"{KafkaClient.__log_err_msg_prefix}: {ex}")
                 else:
                     handle_kafka_error(
                         msg_obj=msg_obj,
@@ -129,6 +131,8 @@ class KafkaClient:
                                         exports_batch[export_id].append(data[0])
                         except (exceptions.MessageIdentificationError, exceptions.NoFilterError):
                             pass
+                        except exceptions.FilterMessageError as ex:
+                            logger.error(f"{KafkaClient.__log_err_msg_prefix}: {ex}")
                     else:
                         handle_kafka_error(
                             msg_obj=msg_obj,
