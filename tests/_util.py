@@ -28,10 +28,7 @@ with open("tests/resources/sources.json") as file:
     sources: list = json.load(file)
 
 with open("tests/resources/data.json") as file:
-    messages = json.load(file)
-
-with open("tests/resources/filter_message_results.json") as file:
-    results = json.load(file)
+    messages: list = json.load(file)
 
 
 class TestFilterConsumer(ew_lib.filter.FilterConsumer):

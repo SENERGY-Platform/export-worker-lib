@@ -21,6 +21,10 @@ import json
 import time
 
 
+with open("tests/resources/filter_message_results.json") as file:
+    results: list = json.load(file)
+
+
 class TestFilterHandler(unittest.TestCase):
     def __test_ingestion(self, path):
         test_filter_consumer = TestFilterConsumer(path=path)
