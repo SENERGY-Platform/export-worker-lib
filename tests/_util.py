@@ -24,6 +24,16 @@ ew_lib_logger = logging.getLogger('ew-lib')
 ew_lib_logger.setLevel(logging.CRITICAL)
 
 
+with open("tests/resources/sources.json") as file:
+    sources: list = json.load(file)
+
+with open("tests/resources/data.json") as file:
+    messages = json.load(file)
+
+with open("tests/resources/filter_message_results.json") as file:
+    results = json.load(file)
+
+
 class TestFilterConsumer(ew_lib.filter.FilterConsumer):
     def __init__(self, path, timeout=1):
         self.__timeout = timeout
@@ -41,13 +51,3 @@ class TestFilterConsumer(ew_lib.filter.FilterConsumer):
 
     def empty(self):
         return self.__queue.empty()
-
-
-with open("tests/resources/sources.json") as file:
-    sources = json.load(file)
-
-with open("tests/resources/data.json") as file:
-    messages = json.load(file)
-
-with open("tests/resources/filter_message_results.json") as file:
-    results = json.load(file)
