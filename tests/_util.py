@@ -14,8 +14,8 @@
    limitations under the License.
 """
 
-
 import ew_lib.filter._handler
+import confluent_kafka
 import logging
 import json
 import queue
@@ -48,6 +48,38 @@ class TestFilterConsumer(ew_lib.filter.FilterConsumer):
             return self.__queue.get(timeout=self.__timeout)
         except queue.Empty:
             pass
+
+    def empty(self):
+        return self.__queue.empty()
+
+
+class TestKafkaConsumer(confluent_kafka.Consumer):
+    def __init__(self):
+        self.__queue = queue.Queue()
+        for message in messages:
+            self.__queue.put(message)
+
+    def subscribe(self, topics, on_assign=None, *args, **kwargs):
+        for topic in topics:
+            assert sources.count(topic)
+
+    def poll(self, timeout=None):
+        try:
+            return self.__queue.get(timeout=timeout)
+        except queue.Empty:
+            pass
+
+    def consume(self, num_messages=1, timeout=None, *args, **kwargs):
+        msgs = list()
+        while len(msgs) < num_messages:
+            try:
+                msgs.append(self.__queue.get(timeout=timeout))
+            except queue.Empty:
+                break
+        return msgs
+
+    def close(self, *args, **kwargs):
+        pass
 
     def empty(self):
         return self.__queue.empty()
