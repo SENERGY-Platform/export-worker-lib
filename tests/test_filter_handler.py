@@ -14,44 +14,11 @@
    limitations under the License.
 """
 
+from ._util import *
 import unittest
 import ew_lib.filter._handler
-import logging
 import json
-import queue
 import time
-
-ew_lib_logger = logging.getLogger('ew-lib')
-ew_lib_logger.setLevel(logging.CRITICAL)
-
-
-class TestFilterConsumer(ew_lib.filter.FilterConsumer):
-    def __init__(self, path, timeout=1):
-        self.__timeout = timeout
-        self.__queue = queue.Queue()
-        with open(path, "r") as file:
-            filters = json.load(file)
-            for filter in filters:
-                self.__queue.put(filter)
-
-    def get_filter(self):
-        try:
-            return self.__queue.get(timeout=self.__timeout)
-        except queue.Empty:
-            pass
-
-    def empty(self):
-        return self.__queue.empty()
-
-
-with open("tests/resources/sources.json") as file:
-    sources = json.load(file)
-
-with open("tests/resources/data.json") as file:
-    messages = json.load(file)
-
-with open("tests/resources/filter_message_results.json") as file:
-    results = json.load(file)
 
 
 class TestFilterHandler(unittest.TestCase):
