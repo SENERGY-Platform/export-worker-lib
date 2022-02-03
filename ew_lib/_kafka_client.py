@@ -32,8 +32,13 @@ class KafkaClient:
     __log_msg_prefix = "kafka client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, config: typing.Dict, filter_consumer: FilterConsumer, builder=builders.dict_builder, subscribe_interval: int = 5):
-        self.__consumer = confluent_kafka.Consumer(config, logger=logger)
+    def __init__(self, config: typing.Dict, filter_consumer: FilterConsumer, builder=builders.dict_builder, subscribe_interval: int = 5, kafka_consumer_cls: typing.Optional[typing.Type[confluent_kafka.Consumer]] = None):
+        if kafka_consumer_cls:
+            if not issubclass(kafka_consumer_cls, confluent_kafka.Consumer):
+                raise TypeError(f"{type(kafka_consumer_cls)} !=> {confluent_kafka.Consumer}")
+            self.__consumer = kafka_consumer_cls(config, logger=logger)
+        else:
+            self.__consumer = confluent_kafka.Consumer(config, logger=logger)
         self.__filter_handler = FilterHandler(filter_consumer=filter_consumer)
         self.__builder = builder
         self.__subscribe_interval = subscribe_interval
