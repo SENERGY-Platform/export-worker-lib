@@ -50,11 +50,37 @@ class TestFilterConsumer(ew_lib.filter.FilterConsumer):
         return self.__queue.empty()
 
 
+class TestKafkaError:
+    def __init__(self, fatal=False):
+        self.__fatal = fatal
+
+    def fatal(self,):
+        return self.__fatal
+
+    def retriable(self):
+        return not self.__fatal
+
+    def str(self):
+        return "error text"
+
+
+class TestKafkaMessage:
+    def __init__(self, value=None, err_obj=None):
+        self.__value = value
+        self.__err_obj = err_obj
+
+    def error(self) -> TestKafkaError:
+        return self.__err_obj
+
+    def value(self):
+        return self.__value
+
+
 class TestKafkaConsumer(confluent_kafka.Consumer):
     def __init__(self):
         self.__queue = queue.Queue()
         for message in messages:
-            self.__queue.put(message)
+            self.__queue.put(TestKafkaMessage(value=json.dumps(message)))
 
     def subscribe(self, topics, on_assign=None, *args, **kwargs):
         for topic in topics:
