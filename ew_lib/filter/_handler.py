@@ -69,6 +69,8 @@ class FilterHandler:
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
     def __init__(self, filter_consumer: FilterConsumer, fallback_delay: int = 1):
+        if not isinstance(filter_consumer, FilterConsumer):
+            raise TypeError(f"{type(filter_consumer)} !=> {FilterConsumer}")
         self.__filter_consumer = filter_consumer
         self.__fallback_delay = fallback_delay
         self.__thread = threading.Thread(
