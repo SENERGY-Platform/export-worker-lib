@@ -42,10 +42,9 @@ setuptools.setup(
     install_requires=[
         'confluent_kafka>=1,<2'
     ],
-    packages=setuptools.find_packages(exclude="tests"),
-    python_requires='>=3.8',
+    packages=setuptools.find_packages(exclude=("tests", )),
+    python_requires='>=3.8,<4',
     classifiers=[
-        'Programming Language :: Python :: 3.8',
         'Intended Audience :: Developers',
         'Operating System :: Unix',
         'Natural Language :: English',
