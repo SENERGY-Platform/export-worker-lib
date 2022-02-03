@@ -142,7 +142,7 @@ class KafkaClient:
             if exports:
                 yield exports
 
-    def batch_exports(self, timeout: float, limit: int):
+    def exports_batch(self, timeout: float, limit: int):
         while True:
             exports_batch = self.get_exports_batch(timeout=timeout, limit=limit)
             if exports_batch:
