@@ -14,13 +14,5 @@
    limitations under the License.
 """
 
-import logging
-
-msg_fmt = '%(levelname)s: [%(name)s] %(message)s'
-
-handler = logging.StreamHandler()
-handler.setFormatter(logging.Formatter(fmt=msg_fmt))
-
-ew_lib_logger = logging.getLogger("ew-lib")
-ew_lib_logger.addHandler(handler)
-ew_lib_logger.setLevel(logging.DEBUG)
+from .test_filter_handler import *
+from .test_kafka_client import *
