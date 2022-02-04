@@ -35,7 +35,7 @@ class TestKafkaClient(unittest.TestCase):
             kafka_consumer=test_kafka_consumer,
             filter_consumer=TestFilterConsumer(path=filters_path)
         )
-        kafka_client.begin()
+        kafka_client.start()
         time.sleep(0.1)
         return kafka_client, test_kafka_consumer
 
