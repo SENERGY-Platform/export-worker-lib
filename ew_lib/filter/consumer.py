@@ -16,7 +16,6 @@
 
 __all__ = ("FilterConsumer", "KafkaFilterConsumer")
 
-from .. import exceptions
 from .._util import logger, handle_kafka_error
 import typing
 import abc
