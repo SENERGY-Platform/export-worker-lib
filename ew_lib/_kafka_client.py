@@ -154,10 +154,8 @@ class KafkaClient:
     #             yield exports_batch
 
     def start(self):
-        self.__filter_handler.start()
         self.__thread.start()
 
     def stop(self):
         self.__stop = True
-        self.__filter_handler.stop()
         self.__thread.join()
