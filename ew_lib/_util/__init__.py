@@ -21,7 +21,6 @@ import hashlib
 
 logger = logging.getLogger("ew-lib")
 logger.propagate = False
-logger.setLevel(logging.WARNING)
 
 
 def hash_dict(obj: typing.Dict):
