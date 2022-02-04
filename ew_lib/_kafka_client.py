@@ -142,17 +142,17 @@ class KafkaClient:
                 if exports_batch:
                     return exports_batch
 
-    def exports(self, timeout: float):
-        while True:
-            exports = self.get_exports(timeout=timeout)
-            if exports:
-                yield exports
-
-    def exports_batch(self, timeout: float, limit: int):
-        while True:
-            exports_batch = self.get_exports_batch(timeout=timeout, limit=limit)
-            if exports_batch:
-                yield exports_batch
+    # def exports(self, timeout: float):
+    #     while True:
+    #         exports = self.get_exports(timeout=timeout)
+    #         if exports:
+    #             yield exports
+    #
+    # def exports_batch(self, timeout: float, limit: int):
+    #     while True:
+    #         exports_batch = self.get_exports_batch(timeout=timeout, limit=limit)
+    #         if exports_batch:
+    #             yield exports_batch
 
     def start(self):
         self.__filter_handler.start()
