@@ -33,11 +33,11 @@ class FilterConsumer(abc.ABC):
 class KafkaFilterConsumer(FilterConsumer):
     __log_msg_prefix = "kafka filter consumer"
 
-    def __init__(self, brokers: typing.List, consumer_group: str, filter_topic: str, poll_timeout: float = 1.0):
+    def __init__(self, metadata_broker_list: str, group_id: str, filter_topic: str, poll_timeout: float = 1.0):
         self.__consumer = confluent_kafka.Consumer(
             {
-                "metadata.broker.list": ",".join(brokers),
-                "group.id": consumer_group,
+                "metadata.broker.list": metadata_broker_list,
+                "group.id": group_id,
                 "auto.offset.reset": "earliest"
             },
             logger=logger
