@@ -39,7 +39,6 @@ class TestFilterHandler(unittest.TestCase):
 
     def __close(self, filter_handler):
         filter_handler.stop()
-        filter_handler.join()
 
     def test_ingestion_good_filters(self):
         filter_handler = self.__test_ingestion(path="tests/resources/filters.json")

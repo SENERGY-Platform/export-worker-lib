@@ -281,8 +281,6 @@ class FilterHandler:
 
     def stop(self):
         self.__stop = True
-
-    def join(self):
         self.__thread.join()
 
     @property

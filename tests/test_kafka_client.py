@@ -40,7 +40,7 @@ class TestKafkaClient(unittest.TestCase):
         return kafka_client, test_kafka_consumer
 
     def __close(self, kafka_client):
-        kafka_client.close()
+        kafka_client.stop()
 
     def test_get_exports_good_filters(self):
         kafka_client, test_kafka_consumer = self.__init_client(filters_path="tests/resources/filters.json")

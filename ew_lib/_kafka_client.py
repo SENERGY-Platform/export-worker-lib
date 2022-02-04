@@ -158,9 +158,7 @@ class KafkaClient:
         self.__filter_handler.start()
         self.__thread.start()
 
-    def close(self):
+    def stop(self):
         self.__stop = True
         self.__filter_handler.stop()
-        self.__consumer.close()
-        self.__filter_handler.join()
         self.__thread.join()
