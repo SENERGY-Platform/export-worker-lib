@@ -101,8 +101,5 @@ class TestKafkaConsumer(confluent_kafka.Consumer):
                 break
         return msgs
 
-    def close(self, *args, **kwargs):
-        pass
-
     def empty(self):
         return self.__queue.empty()
