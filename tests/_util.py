@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-import ew_lib.filter._handler
+import ew_lib
 import confluent_kafka
 import logging
 import json

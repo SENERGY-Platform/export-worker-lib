@@ -16,7 +16,7 @@
 
 from ._util import *
 import unittest
-import ew_lib.filter._handler
+import ew_lib
 import json
 import time
 
@@ -28,7 +28,7 @@ with open("tests/resources/filter_message_results.json") as file:
 class TestFilterHandler(unittest.TestCase):
     def __test_ingestion(self, path):
         test_filter_consumer = TestFilterConsumer(path=path)
-        filter_handler = ew_lib.filter._handler.FilterHandler(filter_consumer=test_filter_consumer)
+        filter_handler = ew_lib.filter.FilterHandler(filter_consumer=test_filter_consumer)
         filter_handler.start()
         while not test_filter_consumer.empty():
             time.sleep(0.1)
