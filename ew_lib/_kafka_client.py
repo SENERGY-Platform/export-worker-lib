@@ -18,7 +18,7 @@ __all__ = ("KafkaClient", )
 
 from . import exceptions, builders
 from ._util import logger, handle_kafka_error
-from .filter import FilterHandler, FilterConsumer
+from .filter import FilterHandler
 import uuid
 import typing
 import confluent_kafka
@@ -31,11 +31,11 @@ class KafkaClient:
     __log_msg_prefix = "kafka client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_consumer: FilterConsumer, builder=builders.dict_builder, subscribe_interval: int = 5):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, builder=builders.dict_builder, subscribe_interval: int = 5):
         if not isinstance(kafka_consumer, confluent_kafka.Consumer):
             raise TypeError(f"{type(kafka_consumer)} !=> {confluent_kafka.Consumer}")
         self.__consumer = kafka_consumer
-        self.__filter_handler = FilterHandler(filter_consumer=filter_consumer)
+        self.__filter_handler = filter_handler
         self.__builder = builder
         self.__subscribe_interval = subscribe_interval
         self.__thread = threading.Thread(
