@@ -16,3 +16,4 @@
 
 from .consumer import *
 from .handler import *
+from .kafka_consumer import *
