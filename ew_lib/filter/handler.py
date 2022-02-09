@@ -284,12 +284,12 @@ class FilterHandler:
         self.__thread.join()
 
     @property
-    def sources(self):
+    def sources(self) -> list:
         with self.__lock:
             return list(self.__sources)
 
     @property
-    def sources_timestamp(self):
+    def sources_timestamp(self) -> str:
         with self.__lock:
             return self.__sources_timestamp
 
