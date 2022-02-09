@@ -16,7 +16,8 @@
 
 __all__ = ("FilterConsumer", "KafkaFilterConsumer")
 
-from .._util import logger, handle_kafka_error
+from .._util import handle_kafka_error
+import logging
 import typing
 import abc
 import confluent_kafka
@@ -32,7 +33,7 @@ class FilterConsumer(abc.ABC):
 class KafkaFilterConsumer(FilterConsumer):
     __log_msg_prefix = "kafka filter consumer"
 
-    def __init__(self, metadata_broker_list: str, group_id: str, filter_topic: str, poll_timeout: float = 1.0):
+    def __init__(self, metadata_broker_list: str, group_id: str, filter_topic: str, poll_timeout: float = 1.0, logger: typing.Optional[logging.Logger] = None):
         self.__consumer = confluent_kafka.Consumer(
             {
                 "metadata.broker.list": metadata_broker_list,
