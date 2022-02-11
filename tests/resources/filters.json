@@ -105,5 +105,37 @@
       },
       "export_id": "export-6"
     }
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "analytics_operator-1",
+      "identifier_one_key": "pipeline_id",
+      "identifier_one_val": "pipeline-1",
+      "identifier_two_key": "operator_id",
+      "identifier_two_val": "operator-1",
+      "mapping": {
+        "val_a:float": "analytics.val_a",
+        "val_b:float": "analytics.val_b",
+        "time:integer": "time"
+      },
+      "export_id": "export-7"
+    }
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "import-1",
+      "identifier_one_key": "import_id",
+      "identifier_one_val": "import-1",
+      "identifier_two_key": "import_id",
+      "identifier_two_val": "import-1",
+      "mapping": {
+        "val_a:float": "value.val_a",
+        "val_b:float": "value.val_b",
+        "time:integer": "time"
+      },
+      "export_id": "export-8"
+    }
   }
 ]
