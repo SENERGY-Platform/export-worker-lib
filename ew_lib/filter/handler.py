@@ -26,9 +26,10 @@ import time
 import uuid
 
 # Filter tree
-#             1st lvl         2nd lvl         3rd lvl           4th lvl
-# devices     service_id      device_id       mapping hash      [export_id]
-# analytics   pipeline_id     operator_id     mapping hash      [export_id]
+#             identifier_one_val    identifier_two_val      mapping      export
+# devices     service_id            device_id               m_hash       [export_id]
+# analytics   pipeline_id           operator_id             m_hash       [export_id]
+# imports     import_id             import_id               m_hash       [export_id]
 
 
 def hash_mapping(mapping: typing.Dict):
@@ -249,11 +250,11 @@ class FilterHandler:
         with self.__lock:
             self.__del(export_id=export_id)
 
-    def __get_filters(self, lvl_one_value: str, lvl_two_value: str):
+    def __get_filters(self, identifier_one_val: str, identifier_two_val: str):
         try:
-            return self.__msg_filters[lvl_one_value][lvl_two_value]
+            return self.__msg_filters[identifier_one_val][identifier_two_val]
         except KeyError:
-            raise exceptions.NoFilterError((lvl_one_value, lvl_two_value))
+            raise exceptions.NoFilterError((identifier_one_val, identifier_two_val))
 
     def __identify_msg(self, keys: typing.Set, msg: typing.Dict):
         try:
