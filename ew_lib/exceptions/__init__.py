@@ -19,11 +19,6 @@ class FilterHandlerError(Exception):
     pass
 
 
-class NoMessageIdentifierError(FilterHandlerError):
-    def __init__(self, arg):
-        super().__init__(f"missing identifiers for message with keys: {arg}")
-
-
 class MessageIdentificationError(FilterHandlerError):
     def __init__(self, arg):
         super().__init__(f"message identification failed: {arg}")
@@ -47,11 +42,6 @@ class FilterMessageError(FilterHandlerError):
 class MappingError(FilterHandlerError):
     def __init__(self, arg):
         super().__init__(f"mapping error: {arg}")
-
-
-class MessageIdentifierMissmatchError(FilterHandlerError):
-    def __init__(self, arg):
-        super().__init__(f"provided identifier already exists with different value: {arg}")
 
 
 class HashMappingError(FilterHandlerError):
