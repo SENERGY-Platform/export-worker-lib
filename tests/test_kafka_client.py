@@ -78,3 +78,15 @@ class TestKafkaClient(unittest.TestCase):
         while not test_kafka_consumer.empty():
             self.assertIsNone(kafka_client.get_exports_batch(timeout=5.0, limit=2))
         self.__close(kafka_client=kafka_client, filter_handler=filter_handler)
+
+    def test_get_exports_bad_messages(self):
+        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters, data=data_bad)
+        while not test_kafka_consumer.empty():
+            self.assertIsNone(kafka_client.get_exports(timeout=1.0))
+        self.__close(kafka_client=kafka_client, filter_handler=filter_handler)
+
+    def test_get_exports_batch_bad_messages(self):
+        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters, data=data_bad)
+        while not test_kafka_consumer.empty():
+            self.assertIsNone(kafka_client.get_exports_batch(timeout=5.0, limit=2))
+        self.__close(kafka_client=kafka_client, filter_handler=filter_handler)
