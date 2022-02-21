@@ -3,7 +3,7 @@ import confluent_kafka
 import signal
 import os
 
-METADATA_BROKER_LIST = os.getenv("METADATA_BROKER_LIST", "localhost:7092")
+METADATA_BROKER_LIST = os.getenv("METADATA_BROKER_LIST")
 KAFKA_CONSUMER_GROUP_ID = os.getenv("KAFKA_CONSUMER_GROUP_ID", "export-worker-test")
 FILTER_CONSUMER_GROUP_ID = os.getenv("FILTER_CONSUMER_GROUP_ID")
 FILTER_TOPIC = os.getenv("FILTER_TOPIC", "export-worker-test-filters")
