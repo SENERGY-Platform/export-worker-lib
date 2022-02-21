@@ -225,5 +225,20 @@
       },
       "export_id": "export-15"
     }
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "src_1",
+      "identifiers": [
+        {
+          "test": "test"
+        }
+      ],
+      "mapping": {
+        "val:int": "val"
+      },
+      "export_id": "export-16"
+    }
   }
 ]
