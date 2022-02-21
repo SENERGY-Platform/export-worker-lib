@@ -77,3 +77,17 @@ class TestFilterHandler(unittest.TestCase):
                     count -= 1
         self.assertEqual(count, 0)
         self.__close(filter_handler=filter_handler)
+
+    def test_filter_bad_message(self):
+        filter_handler = self.__test_ingestion(path="tests/resources/filters.json")
+        self.assertIsNotNone(filter_handler.sources_timestamp)
+        count = 0
+        for source in data_bad:
+            for message in data_bad[source]:
+                try:
+                    filter_handler.filter_message(msg=message, source=source)
+                    count += 1
+                except ew_lib.exceptions.MessageIdentificationError:
+                    pass
+        self.assertEqual(count, 0)
+        self.__close(filter_handler=filter_handler)
