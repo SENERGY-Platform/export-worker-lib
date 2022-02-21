@@ -62,7 +62,7 @@ def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
     for mapping in mappings:
         try:
             src_path = mapping[model.Mapping.src_path].split(".")
-            yield mapping[model.Mapping.dst_path], get_value(src_path, msg, len(src_path) - 1)
+            yield mapping[model.Mapping.dst_path], type_map[mapping[model.Mapping.type]](get_value(src_path, msg, len(src_path) - 1))
         except Exception as ex:
             raise exceptions.MappingError(ex)
 
