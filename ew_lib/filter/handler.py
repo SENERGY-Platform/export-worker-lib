@@ -147,28 +147,28 @@ class FilterHandler:
 
     def __add_msg_identifier(self, identifiers: list, export_id: str):
         try:
-            identifiers = sorted(identifiers, key=lambda obj: obj[model.Identifier.key])
-            i_keys = list()
             i_val_keys = list()
-            i_str = str()
-            i_str_postfix = str()
+            i_no_val_keys = list()
+            i_values = list()
             for identifier in identifiers:
                 key, value = validate_identifier(**identifier)
-                i_keys.append(key)
                 if value:
                     i_val_keys.append(key)
-                    i_str += value
+                    i_values.append(value)
                 else:
-                    i_str_postfix += key
-            i_str += i_str_postfix
+                    i_no_val_keys.append(key)
+            i_val_keys.sort()
+            i_no_val_keys.sort()
+            i_values.sort()
+            i_keys = i_val_keys + i_no_val_keys
             i_hash = hash_list(i_keys)
             if i_hash not in self.__msg_identifiers:
-                self.__msg_identifiers[i_hash] = (set(i_keys), i_val_keys, i_str_postfix, len(i_keys))
+                self.__msg_identifiers[i_hash] = (set(i_keys), i_val_keys, "".join(i_no_val_keys), len(i_keys))
             if i_hash not in self.__msg_identifiers_export_map:
                 self.__msg_identifiers_export_map[i_hash] = {export_id}
             else:
                 self.__msg_identifiers_export_map[i_hash].add(export_id)
-            return i_hash, i_str
+            return i_hash, "".join(i_values) + self.__msg_identifiers[i_hash][2]
         except Exception as ex:
             raise exceptions.AddMessageIdentifierError(ex)
 
