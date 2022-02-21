@@ -56,7 +56,7 @@ class TestFilterHandler(unittest.TestCase):
         for source in data:
             for message in data[source]:
                 try:
-                    result = filter_handler.filter_message(msg=message, source=source)
+                    result = filter_handler.filter_message(message=message, source=source)
                     self.assertIn(str(result), results)
                     count += 1
                 except ew_lib.exceptions.NoFilterError:
@@ -72,7 +72,7 @@ class TestFilterHandler(unittest.TestCase):
             for message in data[source]:
                 count += 1
                 try:
-                    filter_handler.filter_message(msg=message, source=source)
+                    filter_handler.filter_message(message=message, source=source)
                 except ew_lib.exceptions.NoFilterError:
                     count -= 1
         self.assertEqual(count, 0)
@@ -85,7 +85,7 @@ class TestFilterHandler(unittest.TestCase):
         for source in data_bad:
             for message in data_bad[source]:
                 try:
-                    filter_handler.filter_message(msg=message, source=source)
+                    filter_handler.filter_message(message=message, source=source)
                     count += 1
                 except ew_lib.exceptions.MessageIdentificationError:
                     pass

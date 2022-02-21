@@ -92,7 +92,7 @@ class KafkaClient:
                 if not msg_obj.error():
                     try:
                         filtered_data = self.__filter_handler.filter_message(
-                            msg=json.loads(msg_obj.value()),
+                            message=json.loads(msg_obj.value()),
                             source=msg_obj.topic(),
                             builder=self.__builder
                         )
@@ -120,7 +120,7 @@ class KafkaClient:
                     if not msg_obj.error():
                         try:
                             filtered_data = self.__filter_handler.filter_message(
-                                msg=json.loads(msg_obj.value()),
+                                message=json.loads(msg_obj.value()),
                                 source=msg_obj.topic(),
                                 builder=self.__builder
                             )

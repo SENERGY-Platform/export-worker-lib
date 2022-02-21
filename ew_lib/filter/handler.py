@@ -291,23 +291,23 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.MessageIdentificationError(ex)
 
-    def filter_message(self, msg: typing.Dict, source: typing.Optional[str] = None, builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = builders.dict_builder):
+    def filter_message(self, message: typing.Dict, source: typing.Optional[str] = None, builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = builders.dict_builder):
         with self.__lock:
-            i_str = self.__identify_msg(msg=msg) or source
+            i_str = self.__identify_msg(msg=message) or source
             data_sets = list()
             if i_str in self.__msg_filters:
                 try:
                     for mapping_id in self.__msg_filters[i_str]:
                         data_sets.append(
                             (
-                                builder(mapper(self.__mappings[mapping_id], msg)),
+                                builder(mapper(self.__mappings[mapping_id], message)),
                                 tuple(self.__msg_filters[i_str][mapping_id])
                             )
                         )
                 except Exception as ex:
                     raise exceptions.FilterMessageError(ex)
             else:
-                raise exceptions.NoFilterError(msg)
+                raise exceptions.NoFilterError(message)
             return data_sets
 
     def start(self):
