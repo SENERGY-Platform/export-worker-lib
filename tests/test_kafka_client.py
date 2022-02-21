@@ -56,7 +56,7 @@ class TestKafkaClient(unittest.TestCase):
                 e_count += 1
             m_count += 1
         self.assertEqual(e_count, len(results))
-        self.assertEqual(m_count, len(messages))
+        self.assertEqual(m_count, len(data))
         self.__close(kafka_client=kafka_client, filter_handler=filter_handler)
 
     def test_get_exports_batch_good_filters(self):
@@ -70,7 +70,7 @@ class TestKafkaClient(unittest.TestCase):
                 e_count += 1
             m_count += 1
         self.assertEqual(e_count, len(batch_results))
-        self.assertEqual(m_count, len(messages) / 2)
+        self.assertEqual(m_count, len(data) / 2)
         self.__close(kafka_client=kafka_client, filter_handler=filter_handler)
 
     def test_get_exports_erroneous_filters(self):
@@ -79,7 +79,7 @@ class TestKafkaClient(unittest.TestCase):
         while not test_kafka_consumer.empty():
             self.assertIsNone(kafka_client.get_exports(timeout=1.0))
             count += 1
-        self.assertEqual(count, len(messages))
+        self.assertEqual(count, len(data))
         self.__close(kafka_client=kafka_client, filter_handler=filter_handler)
 
     def test_get_exports_batch_erroneous_filters(self):
@@ -88,5 +88,5 @@ class TestKafkaClient(unittest.TestCase):
         while not test_kafka_consumer.empty():
             self.assertIsNone(kafka_client.get_exports_batch(timeout=5.0, limit=2))
             count += 1
-        self.assertEqual(count, len(messages) / 2)
+        self.assertEqual(count, len(data) / 2)
         self.__close(kafka_client=kafka_client, filter_handler=filter_handler)
