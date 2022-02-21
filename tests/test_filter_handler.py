@@ -34,7 +34,6 @@ class TestFilterHandler(unittest.TestCase):
             time.sleep(0.1)
         for source in filter_handler.sources:
             self.assertIn(source, sources)
-        self.assertIsNotNone(filter_handler.sources_timestamp)
         return filter_handler
 
     def __close(self, filter_handler):
@@ -42,10 +41,12 @@ class TestFilterHandler(unittest.TestCase):
 
     def test_ingestion_good_filters(self):
         filter_handler = self.__test_ingestion(path="tests/resources/filters.json")
+        self.assertIsNotNone(filter_handler.sources_timestamp)
         self.__close(filter_handler=filter_handler)
 
     def test_ingestion_erroneous_filters(self):
         filter_handler = self.__test_ingestion(path="tests/resources/filters_bad.json")
+        self.assertIsNone(filter_handler.sources_timestamp)
         self.__close(filter_handler=filter_handler)
 
     def test_filter_message_good_filters(self):
