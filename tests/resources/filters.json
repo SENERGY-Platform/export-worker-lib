@@ -8,15 +8,15 @@
   {
     "method": "put",
     "payload": {
-      "source": "service_service-1",
-      "identifier_one_key": "service_id",
-      "identifier_one_val": "service-1",
-      "identifier_two_key": "device_id",
-      "identifier_two_val": "device-1",
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        }
+      ],
       "mapping": {
-        "val_a:float": "value.root.val_a",
-        "val_b:float": "value.root.val_b",
-        "time:integer": "value.root.time"
+        "val:int": "val"
       },
       "export_id": "export-1"
     }
@@ -24,15 +24,19 @@
   {
     "method": "put",
     "payload": {
-      "source": "service_service-1",
-      "identifier_one_key": "service_id",
-      "identifier_one_val": "service-1",
-      "identifier_two_key": "device_id",
-      "identifier_two_val": "device-2",
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        },
+        {
+          "key": "id_b",
+          "value": "b-1"
+        }
+      ],
       "mapping": {
-        "val_b:float": "value.root.val_b",
-        "val_a:float": "value.root.val_a",
-        "time:integer": "value.root.time"
+        "val:int": "val"
       },
       "export_id": "export-2"
     }
@@ -40,14 +44,19 @@
   {
     "method": "put",
     "payload": {
-      "source": "service_service-1",
-      "identifier_one_key": "service_id",
-      "identifier_one_val": "service-1",
-      "identifier_two_key": "device_id",
-      "identifier_two_val": "device-1",
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        },
+        {
+          "key": "id_b",
+          "value": "b-1"
+        }
+      ],
       "mapping": {
-        "val_a:float": "value.root.val_a",
-        "time:integer": "value.root.time"
+        "val:int": "val"
       },
       "export_id": "export-3"
     }
@@ -55,15 +64,19 @@
   {
     "method": "put",
     "payload": {
-      "source": "service_service-2",
-      "identifier_one_key": "service_id",
-      "identifier_one_val": "service-2",
-      "identifier_two_key": "device_id",
-      "identifier_two_val": "device-1",
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        },
+        {
+          "key": "id_b",
+          "value": "b-2"
+        }
+      ],
       "mapping": {
-        "val_c:float": "value.root.val_c",
-        "val_d:float": "value.root.val_d",
-        "time:integer": "value.root.time"
+        "val:int": "val"
       },
       "export_id": "export-4"
     }
@@ -71,21 +84,53 @@
   {
     "method": "delete",
     "payload": {
-      "export_id": "export-2"
+      "export_id": "export-4"
     }
   },
   {
     "method": "put",
     "payload": {
-      "source": "service_service-1",
-      "identifier_one_key": "service_id",
-      "identifier_one_val": "service-1",
-      "identifier_two_key": "device_id",
-      "identifier_two_val": "device-2",
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        },
+        {
+          "key": "id_b",
+          "value": "b-1"
+        },
+        {
+          "key": "id_c",
+          "value": "c-1"
+        }
+      ],
       "mapping": {
-        "val_b:float": "value.root.val_b",
-        "val_a:float": "value.root.val_a",
-        "time:integer": "value.root.time"
+        "val:int": "val"
+      },
+      "export_id": "export-4"
+    }
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        },
+        {
+          "key": "id_b",
+          "value": "b-1"
+        },
+        {
+          "key": "id_c",
+          "value": "c-1"
+        }
+      ],
+      "mapping": {
+        "value:int": "val"
       },
       "export_id": "export-5"
     }
@@ -93,15 +138,15 @@
   {
     "method": "put",
     "payload": {
-      "source": "service_service-2",
-      "identifier_one_key": "service_id",
-      "identifier_one_val": "service-2",
-      "identifier_two_key": "device_id",
-      "identifier_two_val": "device-2",
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_d",
+          "value": "d-1"
+        }
+      ],
       "mapping": {
-        "val_c:float": "value.root.val_c",
-        "val_d:float": "value.root.val_d",
-        "time:integer": "value.root.time"
+        "val:int": "val"
       },
       "export_id": "export-6"
     }
@@ -109,15 +154,16 @@
   {
     "method": "put",
     "payload": {
-      "source": "analytics_operator-1",
-      "identifier_one_key": "pipeline_id",
-      "identifier_one_val": "pipeline-1",
-      "identifier_two_key": "operator_id",
-      "identifier_two_val": "operator-1",
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_g",
+          "value": "g-1"
+        }
+      ],
       "mapping": {
-        "val_a:float": "analytics.val_a",
-        "val_b:float": "analytics.val_b",
-        "time:integer": "time"
+        "val_a:int": "data.val",
+        "val_b:int": "data.sub.val"
       },
       "export_id": "export-7"
     }
@@ -125,17 +171,32 @@
   {
     "method": "put",
     "payload": {
-      "source": "import-1",
-      "identifier_one_key": "import_id",
-      "identifier_one_val": "import-1",
-      "identifier_two_key": "import_id",
-      "identifier_two_val": "import-1",
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_h",
+          "value": "h-1"
+        }
+      ],
       "mapping": {
-        "val_a:float": "value.val_a",
-        "val_b:float": "value.val_b",
-        "time:integer": "time"
+        "val_int:int": "val_int",
+        "val_float:float": "val_float",
+        "val_str:string": "val_str",
+        "val_bool:bool": "val_bool",
+        "val_json:string_json": "val_json"
       },
       "export_id": "export-8"
+    }
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "src_2",
+      "identifiers": null,
+      "mapping": {
+        "val:int": "val"
+      },
+      "export_id": "export-9"
     }
   }
 ]

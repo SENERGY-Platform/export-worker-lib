@@ -1,84 +1,58 @@
-[
-  {
-    "device_id": "device-1",
-    "service_id": "service-1",
-    "value": {
-      "root": {
-        "time": 1643720359426229561,
-        "val_a": 0.21630750908886753,
-        "val_b": 0.06833464234948883
+{
+  "src_1": [
+    {
+      "id_a": "a-1",
+      "val": 1
+    },
+    {
+      "id_a": "a-1",
+      "id_b": "b-1",
+      "val": 2
+    },
+    {
+      "id_a": "a-1",
+      "id_b": "b-2",
+      "val": 3
+    },
+    {
+      "id_a": "a-1",
+      "id_b": "b-1",
+      "id_c": "c-1",
+      "val": 4
+    },
+    {
+      "id_d": "d-1",
+      "id_e": "e-1",
+      "val": 5
+    },
+    {
+      "id_d": "d-1",
+      "id_f": "f-1",
+      "val": 6
+    },
+    {
+      "id_g": "g-1",
+      "data": {
+        "val": 7,
+        "sub": {
+          "val": 7
+        }
+      }
+    },
+    {
+      "id_h": "h-1",
+      "val_int": 8,
+      "val_float": 8.0,
+      "val_str": "eight",
+      "val_bool": true,
+      "val_json": {
+        "key": "val"
       }
     }
-  },
-  {
-    "device_id": "device-1",
-    "service_id": "service-2",
-    "value": {
-      "root": {
-        "time": 1643720359577528004,
-        "val_c": 0.9704941113647122,
-        "val_d": 0.8059969913905689
-      }
+  ],
+  "src_2": [
+    {
+      "val": 9
     }
-  },
-  {
-    "device_id": "device-2",
-    "service_id": "service-1",
-    "value": {
-      "root": {
-        "time": 1643720359626317742,
-        "val_a": 0.4692244958955283,
-        "val_b": 0.756389806533854
-      }
-    }
-  },
-  {
-    "device_id": "device-2",
-    "service_id": "service-2",
-    "value": {
-      "root": {
-        "time": 1643720359845510802,
-        "val_c": 0.41851247669518055,
-        "val_d": 0.940303297727401
-      }
-    }
-  },
-  {
-    "device_id": "device-3",
-    "service_id": "service-2",
-    "value": {
-      "root": {
-        "time": 1643720359851659240,
-        "val_c": 0.7376674163682357,
-        "val_d": 0.23306645964253447
-      }
-    }
-  },
-  {
-    "device_id": "device-1",
-    "service_id": "service-3",
-    "value": {
-      "root": {
-        "time": 1643720359949112274,
-        "val_e": 0.37159522757146735
-      }
-    }
-  },
-  {
-    "pipeline_id": "pipeline-1",
-    "operator_id": "operator-1",
-    "time": 1643720359949156785,
-    "analytics": {
-        "val_a": 0.45634645647567534,
-        "val_b": 0.42536758785675345
-      }
-  },
-  {
-    "import_id": "import-1",
-    "time": 1643720359949254675,
-    "value": {
-        "val_a": 0.35364675675675346,
-        "val_b": 0.23435545645645745
-      }
-  }
-]
+  ]
+}
