@@ -153,13 +153,13 @@ class FilterHandler:
             i_str = str()
             i_str_postfix = str()
             for identifier in identifiers:
-                validate(identifier[model.Identifier.key], str, "identifier key")
-                i_keys.append(identifier[model.Identifier.key])
-                if model.Identifier.value in identifier:
-                    i_val_keys.append(identifier[model.Identifier.key])
-                    i_str += identifier[model.Identifier.value]
+                key, value = validate_identifier(**identifier)
+                i_keys.append(key)
+                if value:
+                    i_val_keys.append(key)
+                    i_str += value
                 else:
-                    i_str_postfix += identifier[model.Identifier.key]
+                    i_str_postfix += key
             i_str += i_str_postfix
             i_hash = hash_list(i_keys)
             if i_hash not in self.__msg_identifiers:
