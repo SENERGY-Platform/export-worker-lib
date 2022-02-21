@@ -25,11 +25,13 @@ import threading
 import time
 import uuid
 
-# Filter tree
-#             identifier_one_val    identifier_two_val      mapping      export
-# devices     service_id            device_id               m_hash       [export_id]
-# analytics   pipeline_id           operator_id             m_hash       [export_id]
-# imports     import_id             import_id               m_hash       [export_id]
+type_map = {
+    "int": int,
+    "float": float,
+    "string": str,
+    "bool": bool,
+    "string_json": json_to_str
+}
 
 
 def hash_mapping(mapping: typing.Dict):
