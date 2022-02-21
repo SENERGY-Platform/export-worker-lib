@@ -30,6 +30,9 @@ with open("tests/resources/sources.json") as file:
 with open("tests/resources/data.json") as file:
     data: list = json.load(file)
 
+with open("tests/resources/data_bad.json") as file:
+    data_bad: list = json.load(file)
+
 
 class TestFilterConsumer(ew_lib.filter.FilterConsumer):
     def __init__(self, path, timeout=1):
