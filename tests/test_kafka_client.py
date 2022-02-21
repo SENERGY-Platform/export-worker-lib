@@ -29,9 +29,9 @@ with open("tests/resources/exports_batch_results.json") as file:
 
 
 class TestKafkaClient(unittest.TestCase):
-    def __init_client(self, filters_path):
+    def __init_client(self, filters):
         test_kafka_consumer = TestKafkaConsumer()
-        filter_handler = ew_lib.filter.FilterHandler(filter_consumer=TestFilterConsumer(path=filters_path))
+        filter_handler = ew_lib.filter.FilterHandler(filter_consumer=TestFilterConsumer(filters=filters))
         kafka_client = ew_lib.KafkaClient(
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler
@@ -46,7 +46,7 @@ class TestKafkaClient(unittest.TestCase):
         filter_handler.stop()
 
     def test_get_exports_good_filters(self):
-        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters_path="tests/resources/filters.json")
+        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters)
         count = 0
         while not test_kafka_consumer.empty():
             exports = kafka_client.get_exports(timeout=1.0)
@@ -57,7 +57,7 @@ class TestKafkaClient(unittest.TestCase):
         self.__close(kafka_client=kafka_client, filter_handler=filter_handler)
 
     def test_get_exports_batch_good_filters(self):
-        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters_path="tests/resources/filters.json")
+        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters)
         count = 0
         while not test_kafka_consumer.empty():
             exports_batch = kafka_client.get_exports_batch(timeout=5.0, limit=2)
@@ -68,13 +68,13 @@ class TestKafkaClient(unittest.TestCase):
         self.__close(kafka_client=kafka_client, filter_handler=filter_handler)
 
     def test_get_exports_erroneous_filters(self):
-        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters_path="tests/resources/filters_bad.json")
+        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters_bad)
         while not test_kafka_consumer.empty():
             self.assertIsNone(kafka_client.get_exports(timeout=1.0))
         self.__close(kafka_client=kafka_client, filter_handler=filter_handler)
 
     def test_get_exports_batch_erroneous_filters(self):
-        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters_path="tests/resources/filters_bad.json")
+        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters_bad)
         while not test_kafka_consumer.empty():
             self.assertIsNone(kafka_client.get_exports_batch(timeout=5.0, limit=2))
         self.__close(kafka_client=kafka_client, filter_handler=filter_handler)

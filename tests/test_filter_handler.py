@@ -26,8 +26,8 @@ with open("tests/resources/filter_message_results.json") as file:
 
 
 class TestFilterHandler(unittest.TestCase):
-    def __test_ingestion(self, path):
-        test_filter_consumer = TestFilterConsumer(path=path)
+    def __test_ingestion(self, filters):
+        test_filter_consumer = TestFilterConsumer(filters=filters)
         filter_handler = ew_lib.filter.FilterHandler(filter_consumer=test_filter_consumer)
         filter_handler.start()
         while not test_filter_consumer.empty():
@@ -40,17 +40,17 @@ class TestFilterHandler(unittest.TestCase):
         filter_handler.stop()
 
     def test_ingestion_good_filters(self):
-        filter_handler = self.__test_ingestion(path="tests/resources/filters.json")
+        filter_handler = self.__test_ingestion(filters=filters)
         self.assertIsNotNone(filter_handler.sources_timestamp)
         self.__close(filter_handler=filter_handler)
 
     def test_ingestion_erroneous_filters(self):
-        filter_handler = self.__test_ingestion(path="tests/resources/filters_bad.json")
+        filter_handler = self.__test_ingestion(filters=filters_bad)
         self.assertIsNone(filter_handler.sources_timestamp)
         self.__close(filter_handler=filter_handler)
 
     def test_filter_message_good_filters(self):
-        filter_handler = self.__test_ingestion(path="tests/resources/filters.json")
+        filter_handler = self.__test_ingestion(filters=filters)
         self.assertIsNotNone(filter_handler.sources_timestamp)
         count = 0
         for source in data:
@@ -65,7 +65,7 @@ class TestFilterHandler(unittest.TestCase):
         self.__close(filter_handler=filter_handler)
 
     def test_filter_message_erroneous_filters(self):
-        filter_handler = self.__test_ingestion(path="tests/resources/filters_bad.json")
+        filter_handler = self.__test_ingestion(filters=filters_bad)
         self.assertIsNone(filter_handler.sources_timestamp)
         count = 0
         for source in data:
@@ -79,7 +79,7 @@ class TestFilterHandler(unittest.TestCase):
         self.__close(filter_handler=filter_handler)
 
     def test_filter_bad_message(self):
-        filter_handler = self.__test_ingestion(path="tests/resources/filters.json")
+        filter_handler = self.__test_ingestion(filters=filters)
         self.assertIsNotNone(filter_handler.sources_timestamp)
         count = 0
         for source in data_bad:

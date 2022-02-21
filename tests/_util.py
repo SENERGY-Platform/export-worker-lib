@@ -33,15 +33,19 @@ with open("tests/resources/data.json") as file:
 with open("tests/resources/data_bad.json") as file:
     data_bad: list = json.load(file)
 
+with open("tests/resources/filters.json") as file:
+    filters: list = json.load(file)
+
+with open("tests/resources/filters_bad.json") as file:
+    filters_bad: list = json.load(file)
+
 
 class TestFilterConsumer(ew_lib.filter.FilterConsumer):
-    def __init__(self, path, timeout=1):
+    def __init__(self, filters, timeout=1):
         self.__timeout = timeout
         self.__queue = queue.Queue()
-        with open(path, "r") as file:
-            filters = json.load(file)
-            for filter in filters:
-                self.__queue.put(filter)
+        for filter in filters:
+            self.__queue.put(filter)
 
     def get_filter(self):
         try:
