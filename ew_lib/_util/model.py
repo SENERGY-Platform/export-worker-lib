@@ -14,13 +14,7 @@
    limitations under the License.
 """
 
-__all__ = ("Mapping", "Methods", "FilterMessage", "Filter")
-
-
-class Mapping:
-    src_path = "src_path"
-    dst_path = "dst_path"
-    type = "type"
+__all__ = ("Methods", "FilterMessage", "FilterMessagePayload", "Mapping", "Identifier", "Export")
 
 
 class Methods:
@@ -33,11 +27,26 @@ class FilterMessage:
     payload = "payload"
 
 
-class Filter:
+class FilterMessagePayload:
     source = "source"
-    identifier_one_key = "identifier_one_key"
-    identifier_one_val = "identifier_one_val"
-    identifier_two_key = "identifier_two_key"
-    identifier_two_val = "identifier_two_val"
+    identifiers = "identifiers"
     mapping = "mapping"
+    export_id = "export_id"
+
+
+class Mapping:
+    src_path = "src_path"
+    dst_path = "dst_path"
+    type = "type"
+
+
+class Identifier:
+    key = "key"
+    value = "value"
+
+
+class Export:
+    source = "source"
     m_hash = "m_hash"
+    i_hash = "i_hash"
+    i_str = "i_str"
