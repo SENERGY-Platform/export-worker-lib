@@ -19,6 +19,7 @@ import confluent_kafka
 import logging
 import json
 import queue
+import typing
 
 ew_lib_logger = logging.getLogger('ew-lib')
 ew_lib_logger.setLevel(logging.CRITICAL)
@@ -88,7 +89,7 @@ class TestKafkaMessage:
 
 
 class TestKafkaConsumer(confluent_kafka.Consumer):
-    def __init__(self):
+    def __init__(self, data: typing.Dict):
         self.__queue = queue.Queue()
         for source in data:
             for message in data[source]:
