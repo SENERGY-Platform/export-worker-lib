@@ -70,6 +70,13 @@ def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
             raise exceptions.MappingError(ex)
 
 
+def validate_identifier(key: str, value: typing.Optional[typing.Union[str, int, float]] = None):
+    validate(key, str, "identifier key")
+    if value:
+        validate(value, (str, int, float), "identifier value")
+    return key, value
+
+
 class FilterHandler:
     __log_msg_prefix = "filter handler"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
