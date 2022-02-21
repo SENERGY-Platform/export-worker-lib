@@ -45,7 +45,10 @@ def parse_mapping(mapping: typing.Dict) -> typing.List[typing.Dict]:
     try:
         parsed_mapping = list()
         for key, value in mapping.items():
+            validate(value, str, "source path")
             dst_path, val_type = key.split(":")
+            validate(dst_path, str, "destination path")
+            validate(val_type, str, "destination type")
             parsed_mapping.append(
                 {
                     model.Mapping.src_path: value,
@@ -249,6 +252,7 @@ class FilterHandler:
                 logger.error(f"{FilterHandler.__log_err_msg_prefix}: {ex}")
 
     def __del_with_lock(self, export_id: str):
+        validate(export_id, str, model.FilterMessagePayload.export_id)
         with self.__lock:
             self.__del(export_id=export_id)
 
