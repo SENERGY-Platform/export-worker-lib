@@ -28,7 +28,7 @@ with open("tests/resources/sources.json") as file:
     sources: list = json.load(file)
 
 with open("tests/resources/data.json") as file:
-    messages: list = json.load(file)
+    data: list = json.load(file)
 
 
 class TestFilterConsumer(ew_lib.filter.FilterConsumer):
@@ -79,7 +79,7 @@ class TestKafkaMessage:
 class TestKafkaConsumer(confluent_kafka.Consumer):
     def __init__(self):
         self.__queue = queue.Queue()
-        for message in messages:
+        for message in data:
             self.__queue.put(TestKafkaMessage(value=json.dumps(message)))
 
     def subscribe(self, topics, on_assign=None, *args, **kwargs):
