@@ -53,26 +53,27 @@ class TestFilterHandler(unittest.TestCase):
         filter_handler = self.__test_ingestion(path="tests/resources/filters.json")
         self.assertIsNotNone(filter_handler.sources_timestamp)
         count = 0
-        for message in messages:
-            try:
-                result = json.loads(json.dumps(filter_handler.filter_message(msg=message)))
-                self.assertIn(result, results)
-                count += 1
-            except (ew_lib.exceptions.MessageIdentificationError, ew_lib.exceptions.NoFilterError) as ex:
-                self.assertIsInstance(ex, Exception)
-                count += 1
-        self.assertEqual(count, len(messages))
+        for source in data:
+            for message in data[source]:
+                try:
+                    result = filter_handler.filter_message(msg=message, source=source)
+                    self.assertIn(str(result), results)
+                    count += 1
+                except ew_lib.exceptions.NoFilterError:
+                    pass
+        self.assertEqual(count, len(results) - 1)
         self.__close(filter_handler=filter_handler)
 
     def test_filter_message_erroneous_filters(self):
         filter_handler = self.__test_ingestion(path="tests/resources/filters_bad.json")
         self.assertIsNone(filter_handler.sources_timestamp)
         count = 0
-        for message in messages:
-            try:
-                filter_handler.filter_message(msg=message)
-            except (ew_lib.exceptions.MessageIdentificationError, ew_lib.exceptions.NoFilterError, ew_lib.exceptions.FilterMessageError) as ex:
-                self.assertIsInstance(ex, Exception)
+        for source in data:
+            for message in data[source]:
                 count += 1
-        self.assertEqual(count, len(messages))
+                try:
+                    filter_handler.filter_message(msg=message, source=source)
+                except ew_lib.exceptions.NoFilterError:
+                    count -= 1
+        self.assertEqual(count, 0)
         self.__close(filter_handler=filter_handler)
