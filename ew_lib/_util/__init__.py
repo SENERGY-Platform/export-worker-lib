@@ -18,6 +18,7 @@ from .. import exceptions
 import logging
 import typing
 import hashlib
+import json
 
 logger = logging.getLogger("ew-lib")
 logger.propagate = False
@@ -51,3 +52,12 @@ def handle_kafka_error(msg_obj, text: str, raise_error: bool = True):
             raise exceptions.KafkaMessageError(arg=msg_obj.error().str(), prefix=text)
         else:
             logger.error(exceptions.KafkaMessageError.gen_text(arg=msg_obj.error().str(), prefix=text))
+
+
+def json_to_str(obj):
+    return json.dumps(obj, separators=(',', ':'))
+
+
+def validate(obj, cls, name):
+    assert obj, f"'{name}' can't be None"
+    assert isinstance(obj, cls), f"'{name}' can't be of type '{type(obj).__name__}'"
