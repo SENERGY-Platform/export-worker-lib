@@ -65,9 +65,10 @@ class TestKafkaError:
 
 
 class TestKafkaMessage:
-    def __init__(self, value=None, err_obj=None):
+    def __init__(self, value=None, topic=None, err_obj=None):
         self.__value = value
         self.__err_obj = err_obj
+        self.__topic = topic
 
     def error(self) -> TestKafkaError:
         return self.__err_obj
@@ -75,12 +76,16 @@ class TestKafkaMessage:
     def value(self):
         return self.__value
 
+    def topic(self):
+        return self.__topic
+
 
 class TestKafkaConsumer(confluent_kafka.Consumer):
     def __init__(self):
         self.__queue = queue.Queue()
-        for message in data:
-            self.__queue.put(TestKafkaMessage(value=json.dumps(message)))
+        for source in data:
+            for message in source:
+                self.__queue.put(TestKafkaMessage(value=json.dumps(message), topic=source))
 
     def subscribe(self, topics, on_assign=None, *args, **kwargs):
         for topic in topics:
