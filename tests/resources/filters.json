@@ -191,12 +191,31 @@
   {
     "method": "put",
     "payload": {
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_i",
+          "value": "i-1"
+        },
+        {
+          "key": "data"
+        }
+      ],
+      "mapping": {
+        "val:int": "data.val"
+      },
+      "export_id": "export-9"
+    }
+  },
+  {
+    "method": "put",
+    "payload": {
       "source": "src_2",
       "identifiers": null,
       "mapping": {
         "val:int": "val"
       },
-      "export_id": "export-9"
+      "export_id": "export-10"
     }
   }
 ]
