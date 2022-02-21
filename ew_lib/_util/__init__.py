@@ -23,11 +23,18 @@ logger = logging.getLogger("ew-lib")
 logger.propagate = False
 
 
-def hash_dict(obj: typing.Dict):
+def hash_str(obj: str) -> str:
+    return hashlib.sha256(obj.encode()).hexdigest()
+
+
+def hash_list(obj: typing.List) -> str:
+    return hash_str("".join(obj))
+
+
+def hash_dict(obj: typing.Dict) -> str:
     items = ["{}{}".format(key, value) for key, value in obj.items()]
     items.sort()
-    items_str = "".join(items)
-    return hashlib.sha256(items_str.encode()).hexdigest()
+    return hash_list(items)
 
 
 def get_value(path: typing.List, obj: typing.Dict, size: int, pos: typing.Optional[int] = 0) -> typing.Any:
