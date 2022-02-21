@@ -6,7 +6,7 @@ services:
     build: .
     image: export-worker-example:latest
     environment:
-      METADATA_BROKER_LIST: '${METADATA_BROKER_LIST}'
+      METADATA_BROKER_LIST: '${MD_BKR_LS}'
       KAFKA_CONSUMER_GROUP_ID: 'export-worker-example'
       FILTER_CONSUMER_GROUP_ID: 'export-worker-example-0'
       FILTER_TOPIC: 'export-worker-example-filters'
@@ -17,10 +17,8 @@ services:
     build: .
     image: export-worker-example:latest
     environment:
-      METADATA_BROKER_LIST: '${METADATA_BROKER_LIST}'
+      METADATA_BROKER_LIST: '${MD_BKR_LS}'
       KAFKA_CONSUMER_GROUP_ID: 'export-worker-example'
       FILTER_CONSUMER_GROUP_ID: 'export-worker-example-1'
       FILTER_TOPIC: 'export-worker-example-filters'
     restart: unless-stopped
-
-
