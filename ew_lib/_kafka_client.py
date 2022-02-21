@@ -93,6 +93,7 @@ class KafkaClient:
                     try:
                         filtered_data = self.__filter_handler.filter_message(
                             msg=json.loads(msg_obj.value()),
+                            source=msg_obj.topic(),
                             builder=self.__builder
                         )
                         exports = dict()
@@ -120,6 +121,7 @@ class KafkaClient:
                         try:
                             filtered_data = self.__filter_handler.filter_message(
                                 msg=json.loads(msg_obj.value()),
+                                source=msg_obj.topic(),
                                 builder=self.__builder
                             )
                             for data in filtered_data:
