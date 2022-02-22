@@ -17,7 +17,7 @@
 __all__ = ("KafkaDataClient", )
 
 from .. import exceptions, builders
-from .._util import logger, handle_kafka_error, log_kafka_sub_action
+from .._util import logger, handle_kafka_error, log_kafka_sub_action, validate
 from ..filter import FilterHandler
 import uuid
 import typing
@@ -32,8 +32,8 @@ class KafkaDataClient:
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
     def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, builder=builders.dict_builder, subscribe_interval: int = 5):
-        if not isinstance(kafka_consumer, confluent_kafka.Consumer):
-            raise TypeError(f"{type(kafka_consumer)} !=> {confluent_kafka.Consumer}")
+        validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
+        validate(filter_handler, FilterHandler, "filter_handler")
         self.__consumer = kafka_consumer
         self.__filter_handler = filter_handler
         self.__builder = builder
