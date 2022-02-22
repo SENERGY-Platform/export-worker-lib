@@ -258,11 +258,6 @@ class FilterHandler:
             except exceptions.FilterHandlerError as ex:
                 logger.error(f"{FilterHandler.__log_err_msg_prefix}: {ex}")
 
-    def __del_with_lock(self, export_id: str):
-        validate(export_id, str, model.FilterMessagePayload.export_id)
-        with self.__lock:
-            self.__del(export_id=export_id)
-
     def __identify_msg(self, msg: typing.Dict):
         try:
             msg_keys = set(msg.keys())
