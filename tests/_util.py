@@ -41,23 +41,6 @@ with open("tests/resources/filters_bad.json") as file:
     filters_bad: list = json.load(file)
 
 
-class TestFilterConsumer(ew_lib.filter.FilterConsumer):
-    def __init__(self, filters, timeout=1):
-        self.__timeout = timeout
-        self.__queue = queue.Queue()
-        for filter in filters:
-            self.__queue.put(filter)
-
-    def get_filter(self):
-        try:
-            return self.__queue.get(timeout=self.__timeout)
-        except queue.Empty:
-            pass
-
-    def empty(self):
-        return self.__queue.empty()
-
-
 class TestKafkaError:
     def __init__(self, fatal=False):
         self.__fatal = fatal
