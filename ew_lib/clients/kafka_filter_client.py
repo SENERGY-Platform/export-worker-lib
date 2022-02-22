@@ -17,36 +17,29 @@
 __all__ = ("KafkaFilterClient", )
 
 from .. import exceptions
-from .._util import logger, handle_kafka_error, model, log_kafka_sub_action
+from .._util import logger, handle_kafka_error, model, log_kafka_sub_action, validate
 from ..filter import FilterHandler
 import typing
 import uuid
 import confluent_kafka
 import threading
 import json
-import logging
 
 
 class KafkaFilterClient:
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, filter_handler: FilterHandler, metadata_broker_list: str, group_id: str, filter_topic: str, poll_timeout: float = 1.0, consumer_logger: typing.Optional[logging.Logger] = None):
-        if not isinstance(filter_handler, FilterHandler):
-            raise TypeError(f"{type(filter_handler)} !=> {FilterHandler}")
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, filter_topic: str, poll_timeout: float = 1.0):
+        validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
+        validate(filter_handler, FilterHandler, "filter_handler")
+        validate(filter_topic, str, "filter_topic")
+        self.__consumer = kafka_consumer
         self.__filter_handler = filter_handler
         self.__thread = threading.Thread(
             name=f"{self.__class__.__name__}-{uuid.uuid4()}",
             target=self.__consume_filters,
             daemon=True
-        )
-        self.__consumer = confluent_kafka.Consumer(
-            {
-                "metadata.broker.list": metadata_broker_list,
-                "group.id": group_id,
-                "auto.offset.reset": "earliest"
-            },
-            logger=consumer_logger
         )
         self.__consumer.subscribe(
             [filter_topic],
