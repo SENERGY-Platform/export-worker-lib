@@ -30,13 +30,13 @@ class TestKafkaFilterClient(unittest.TestCase, TestFilterHandlerBase):
     def _init_filter_handler(self, filters):
         test_kafka_consumer = TestKafkaConsumer(data=filters, sources=False)
         filter_handler = ew_lib.filter.FilterHandler()
-        self.__kafka_filter_client = ew_lib.clients.KafkaFilterClient(
+        kafka_filter_client = ew_lib.clients.KafkaFilterClient(
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler,
             filter_topic="filters"
         )
-        self.__kafka_filter_client.start()
+        kafka_filter_client.start()
         while not test_kafka_consumer.empty():
             time.sleep(0.1)
-        self.__kafka_filter_client.stop()
+        kafka_filter_client.stop()
         return filter_handler
