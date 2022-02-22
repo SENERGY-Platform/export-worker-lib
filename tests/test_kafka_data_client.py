@@ -32,56 +32,56 @@ class TestKafkaDataClient(unittest.TestCase):
     def __init_client(self, filters, data):
         test_kafka_consumer = TestKafkaConsumer(data=data)
         filter_handler = test_filter_ingestion(test_obj=self, filters=filters)
-        kafka_client = ew_lib.clients.KafkaDataClient(
+        kafka_data_client = ew_lib.clients.KafkaDataClient(
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler,
             subscribe_interval=1
         )
-        kafka_client.start()
-        return kafka_client, filter_handler, test_kafka_consumer
+        kafka_data_client.start()
+        return kafka_data_client, filter_handler, test_kafka_consumer
 
     def test_get_exports_good_filters(self):
-        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters, data=data)
+        kafka_data_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters, data=data)
         count = 0
         while not test_kafka_consumer.empty():
-            exports = kafka_client.get_exports(timeout=1.0)
+            exports = kafka_data_client.get_exports(timeout=1.0)
             if exports:
                 self.assertIn(exports, results)
                 count += 1
         self.assertEqual(count, len(results))
-        kafka_client.stop()
+        kafka_data_client.stop()
 
     def test_get_exports_batch_good_filters(self):
-        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters, data=data)
+        kafka_data_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters, data=data)
         count = 0
         while not test_kafka_consumer.empty():
-            exports_batch = kafka_client.get_exports_batch(timeout=5.0, limit=2)
+            exports_batch = kafka_data_client.get_exports_batch(timeout=5.0, limit=2)
             if exports_batch:
                 self.assertIn(exports_batch, batch_results)
                 count += 1
         self.assertEqual(count, len(batch_results))
-        kafka_client.stop()
+        kafka_data_client.stop()
 
     def test_get_exports_erroneous_filters(self):
-        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters_bad, data=data)
+        kafka_data_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters_bad, data=data)
         while not test_kafka_consumer.empty():
-            self.assertIsNone(kafka_client.get_exports(timeout=1.0))
-        kafka_client.stop()
+            self.assertIsNone(kafka_data_client.get_exports(timeout=1.0))
+        kafka_data_client.stop()
 
     def test_get_exports_batch_erroneous_filters(self):
-        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters_bad, data=data)
+        kafka_data_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters_bad, data=data)
         while not test_kafka_consumer.empty():
-            self.assertIsNone(kafka_client.get_exports_batch(timeout=5.0, limit=2))
-        kafka_client.stop()
+            self.assertIsNone(kafka_data_client.get_exports_batch(timeout=5.0, limit=2))
+        kafka_data_client.stop()
 
     def test_get_exports_bad_messages(self):
-        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters, data=data_bad)
+        kafka_data_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters, data=data_bad)
         while not test_kafka_consumer.empty():
-            self.assertIsNone(kafka_client.get_exports(timeout=1.0))
-        kafka_client.stop()
+            self.assertIsNone(kafka_data_client.get_exports(timeout=1.0))
+        kafka_data_client.stop()
 
     def test_get_exports_batch_bad_messages(self):
-        kafka_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters, data=data_bad)
+        kafka_data_client, filter_handler, test_kafka_consumer = self.__init_client(filters=filters, data=data_bad)
         while not test_kafka_consumer.empty():
-            self.assertIsNone(kafka_client.get_exports_batch(timeout=5.0, limit=2))
-        kafka_client.stop()
+            self.assertIsNone(kafka_data_client.get_exports_batch(timeout=5.0, limit=2))
+        kafka_data_client.stop()
