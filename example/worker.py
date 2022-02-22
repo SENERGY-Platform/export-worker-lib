@@ -21,7 +21,7 @@ class Worker:
 
     def stop(self):
         """
-        Call to break while loop in run() method below.
+        Call to break loop of the 'run' method.
         :return: None
         """
         self.__stop = True
