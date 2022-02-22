@@ -17,8 +17,8 @@
 from ._util import *
 import unittest
 import ew_lib
+import ew_lib._util.model
 import json
-import time
 
 
 with open("tests/resources/filter_message_results.json") as file:
@@ -27,27 +27,31 @@ with open("tests/resources/filter_message_results.json") as file:
 
 class TestFilterHandler(unittest.TestCase):
     def __test_ingestion(self, filters):
-        test_filter_consumer = TestFilterConsumer(filters=filters)
-        filter_handler = ew_lib.filter.FilterHandler(filter_consumer=test_filter_consumer)
-        filter_handler.start()
-        while not test_filter_consumer.empty():
-            time.sleep(0.1)
+        filter_handler = ew_lib.filter.FilterHandler()
+        count = 0
+        for filter in filters:
+            try:
+                if filter[ew_lib._util.model.FilterMessage.method] == ew_lib._util.model.Methods.put:
+                    filter_handler.add(filter=filter[ew_lib._util.model.FilterMessage.payload])
+                if filter[ew_lib._util.model.FilterMessage.method] == ew_lib._util.model.Methods.delete:
+                    filter_handler.delete(
+                        export_id=filter[ew_lib._util.model.FilterMessage.payload][ew_lib._util.model.FilterMessagePayload.export_id]
+                    )
+                count += 1
+            except Exception:
+                count += 1
+        self.assertEqual(count, len(filters))
         for source in filter_handler.sources:
             self.assertIn(source, sources)
         return filter_handler
 
-    def __close(self, filter_handler):
-        filter_handler.stop()
-
     def test_ingestion_good_filters(self):
         filter_handler = self.__test_ingestion(filters=filters)
         self.assertIsNotNone(filter_handler.sources_timestamp)
-        self.__close(filter_handler=filter_handler)
 
     def test_ingestion_erroneous_filters(self):
         filter_handler = self.__test_ingestion(filters=filters_bad)
         self.assertIsNone(filter_handler.sources_timestamp)
-        self.__close(filter_handler=filter_handler)
 
     def test_filter_message_good_filters(self):
         filter_handler = self.__test_ingestion(filters=filters)
@@ -62,7 +66,6 @@ class TestFilterHandler(unittest.TestCase):
                 except ew_lib.exceptions.NoFilterError:
                     pass
         self.assertEqual(count, len(results) - 1)
-        self.__close(filter_handler=filter_handler)
 
     def test_filter_message_erroneous_filters(self):
         filter_handler = self.__test_ingestion(filters=filters_bad)
@@ -76,7 +79,6 @@ class TestFilterHandler(unittest.TestCase):
                 except ew_lib.exceptions.NoFilterError:
                     count -= 1
         self.assertEqual(count, 0)
-        self.__close(filter_handler=filter_handler)
 
     def test_filter_bad_message(self):
         filter_handler = self.__test_ingestion(filters=filters)
@@ -90,4 +92,3 @@ class TestFilterHandler(unittest.TestCase):
                 except ew_lib.exceptions.MessageIdentificationError:
                     pass
         self.assertEqual(count, 0)
-        self.__close(filter_handler=filter_handler)
