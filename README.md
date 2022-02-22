@@ -35,7 +35,7 @@ Replace 'X.X.X' with the desired version.
 
 The current version only offers integration with Kafka but users can create their own clients to consume data and filters.
 
-    # Initialize a KafkaFilterConsumer to consume filters from a Kafka topic.
+    # Initialize a KafkaFilterConsumer to consume filters.
     kafka_filter_consumer = ew_lib.filter.KafkaFilterConsumer(
         metadata_broker_list="<your kafka broker>",
         group_id="filter-consumer",
@@ -45,7 +45,7 @@ The current version only offers integration with Kafka but users can create thei
     # Initialize a FilterHandler.
     filter_handler = ew_lib.filter.FilterHandler(filter_consumer=kafka_filter_consumer)
     
-    # Initialize a Kafka consumer to consume messages to be filtered.
+    # Initialize a Kafka consumer to consume data.
     kafka_message_consumer = confluent_kafka.Consumer(
         {
             "metadata.broker.list": "<your kafka broker>",
