@@ -28,7 +28,7 @@ with open("tests/resources/exports_batch_results.json") as file:
     batch_results: list = json.load(file)
 
 
-class TestKafkaClient(unittest.TestCase):
+class TestKafkaDataClient(unittest.TestCase):
     def __init_client(self, filters, data):
         test_kafka_consumer = TestKafkaConsumer(data=data)
         filter_handler = ew_lib.filter.FilterHandler(filter_consumer=TestFilterConsumer(filters=filters))
