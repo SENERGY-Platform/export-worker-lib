@@ -19,11 +19,9 @@ __all__ = ("FilterHandler",)
 from .._util import hash_dict, hash_list, get_value, logger, model, json_to_str, validate
 from .. import exceptions
 from .. import builders
-from .consumer import FilterConsumer
 import typing
 import threading
 import time
-import uuid
 
 type_map = {
     "int": int,
@@ -81,16 +79,7 @@ class FilterHandler:
     __log_msg_prefix = "filter handler"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, filter_consumer: FilterConsumer, fallback_delay: int = 1):
-        if not isinstance(filter_consumer, FilterConsumer):
-            raise TypeError(f"{type(filter_consumer)} !=> {FilterConsumer}")
-        self.__filter_consumer = filter_consumer
-        self.__fallback_delay = fallback_delay
-        self.__thread = threading.Thread(
-            name=f"{self.__class__.__name__}-{uuid.uuid4()}",
-            target=self.__handle_filter,
-            daemon=True
-        )
+    def __init__(self):
         self.__lock = threading.Lock()
         self.__msg_identifiers = dict()
         self.__msg_filters = dict()
@@ -101,7 +90,6 @@ class FilterHandler:
         self.__msg_identifiers_export_map = dict()
         self.__sources_export_map = dict()
         self.__sources_timestamp = None
-        self.__stop = False
 
     def __add_filter(self, i_str, m_hash, export_id):
         try:
@@ -310,13 +298,6 @@ class FilterHandler:
                 raise exceptions.NoFilterError(message)
             return data_sets
 
-    def start(self):
-        self.__thread.start()
-
-    def stop(self):
-        self.__stop = True
-        self.__thread.join()
-
     @property
     def sources(self) -> list:
         with self.__lock:
@@ -327,26 +308,3 @@ class FilterHandler:
         with self.__lock:
             return self.__sources_timestamp
 
-    def __handle_filter(self) -> None:
-        while not self.__stop:
-            try:
-                start = time.time_ns()
-                msg = self.__filter_consumer.get_filter()
-                if msg:
-                    try:
-                        method = msg[model.FilterMessage.method]
-                        if method == model.Methods.put:
-                            self.__add(**msg[model.FilterMessage.payload])
-                        elif method == model.Methods.delete:
-                            self.__del_with_lock(**msg[model.FilterMessage.payload])
-                        else:
-                            raise exceptions.MethodError(method)
-                    except Exception as ex:
-                        logger.error(f"{FilterHandler.__log_err_msg_prefix}: handling filter failed: {ex}")
-                else:
-                    duration = self.__fallback_delay * 1000000000 - (time.time_ns() - start)
-                    if duration > 0:
-                        time.sleep(duration / 1000000000)
-            except Exception as ex:
-                logger.error(f"{FilterHandler.__log_err_msg_prefix}: consuming filter failed: {ex}")
-                time.sleep(self.__fallback_delay)
