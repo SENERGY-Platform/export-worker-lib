@@ -34,7 +34,8 @@ class TestKafkaDataClient(unittest.TestCase):
         filter_handler = test_filter_ingestion(test_obj=self, filters=filters)
         kafka_client = ew_lib.clients.KafkaDataClient(
             kafka_consumer=test_kafka_consumer,
-            filter_handler=filter_handler
+            filter_handler=filter_handler,
+            subscribe_interval=1
         )
         kafka_client.start()
         time.sleep(0.1)
