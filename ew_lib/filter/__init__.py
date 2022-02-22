@@ -14,6 +14,4 @@
    limitations under the License.
 """
 
-from .consumer import *
 from .handler import *
-from .kafka_consumer import *
