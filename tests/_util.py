@@ -94,8 +94,9 @@ class TestKafkaMessage:
 
 class TestKafkaConsumer(confluent_kafka.Consumer):
     def __init__(self, data: typing.Dict, sources: bool = True):
+        self.__sources = sources
         self.__queue = queue.Queue()
-        if sources:
+        if self.__sources:
             for source in data:
                 for message in data[source]:
                     self.__queue.put(TestKafkaMessage(value=json.dumps(message), topic=source))
@@ -104,8 +105,9 @@ class TestKafkaConsumer(confluent_kafka.Consumer):
                 self.__queue.put(TestKafkaMessage(value=json.dumps(message)))
 
     def subscribe(self, topics, on_assign=None, *args, **kwargs):
-        for topic in topics:
-            assert sources.count(topic)
+        if self.__sources:
+            for topic in topics:
+                assert sources.count(topic)
 
     def poll(self, timeout=None):
         try:
