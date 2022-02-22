@@ -237,8 +237,8 @@ class FilterHandler:
             self.__sources_timestamp = time.time_ns()
 
     def __del(self, export_id: str):
-        if export_id in self.__exports:
-            try:
+        with self.__lock:
+            if export_id in self.__exports:
                 export = self.__exports[export_id]
                 self.__del_export(export_id=export_id)
                 if export[model.Export.i_hash]:
@@ -250,8 +250,6 @@ class FilterHandler:
                     m_hash=export[model.Export.m_hash],
                     export_id=export_id
                 )
-            except exceptions.FilterHandlerError as ex:
-                logger.error(f"{FilterHandler.__log_err_msg_prefix}: {ex}")
 
     def __identify_msg(self, msg: typing.Dict):
         try:
@@ -294,8 +292,7 @@ class FilterHandler:
 
     def delete(self, export_id: str):
         validate(export_id, str, "export_id")
-        with self.__lock:
-            self.__del(export_id=export_id)
+        self.__del(export_id=export_id)
 
     @property
     def sources(self) -> list:
