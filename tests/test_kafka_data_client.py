@@ -38,7 +38,6 @@ class TestKafkaDataClient(unittest.TestCase):
             subscribe_interval=1
         )
         kafka_client.start()
-        time.sleep(0.1)
         return kafka_client, filter_handler, test_kafka_consumer
 
     def __close(self, kafka_client, filter_handler):
