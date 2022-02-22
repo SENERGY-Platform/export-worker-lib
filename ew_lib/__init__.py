@@ -23,7 +23,7 @@ __license__ = 'Apache License 2.0'
 __copyright__ = 'Copyright 2022 InfAI (CC SES)'
 
 
-from ._kafka_client import *
 import ew_lib.exceptions
 import ew_lib.builders
 import ew_lib.filter
+import ew_lib.clients

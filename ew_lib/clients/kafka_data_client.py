@@ -14,11 +14,11 @@
    limitations under the License.
 """
 
-__all__ = ("KafkaClient", )
+__all__ = ("KafkaDataClient", )
 
-from . import exceptions, builders
-from ._util import logger, handle_kafka_error
-from .filter import FilterHandler
+from .. import exceptions, builders
+from .._util import logger, handle_kafka_error, log_kafka_sub_action
+from ..filter import FilterHandler
 import uuid
 import typing
 import confluent_kafka
@@ -27,8 +27,8 @@ import json
 import time
 
 
-class KafkaClient:
-    __log_msg_prefix = "kafka client"
+class KafkaDataClient:
+    __log_msg_prefix = "kafka data client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
     def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, builder=builders.dict_builder, subscribe_interval: int = 5):
@@ -57,33 +57,27 @@ class KafkaClient:
                         if sources:
                             self.__consumer.subscribe(
                                 sources,
-                                on_assign=KafkaClient.__on_assign,
-                                on_revoke=KafkaClient.__on_revoke,
-                                on_lost=KafkaClient.__on_lost
+                                on_assign=KafkaDataClient.__on_assign,
+                                on_revoke=KafkaDataClient.__on_revoke,
+                                on_lost=KafkaDataClient.__on_lost
                             )
                     self.__sources_timestamp = timestamp
                 time.sleep(self.__subscribe_interval)
             except Exception as ex:
-                logger.error(f"{KafkaClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
-
-    @staticmethod
-    def __log_sub_action(action: str, partitions: typing.List[confluent_kafka.TopicPartition]):
-        for partition in partitions:
-            logger.info(
-                f"{KafkaClient.__log_msg_prefix}: subscription event: action={action} topic={partition.topic} partition={partition.partition} offset={partition.offset}"
-            )
+                logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
+        self.__consumer.close()
 
     @staticmethod
     def __on_assign(_, p):
-        KafkaClient.__log_sub_action("assign", p)
+        log_kafka_sub_action("assign", p, KafkaDataClient.__log_msg_prefix)
 
     @staticmethod
     def __on_revoke(_, p):
-        KafkaClient.__log_sub_action("revoke", p)
+        log_kafka_sub_action("revoke", p, KafkaDataClient.__log_msg_prefix)
 
     @staticmethod
     def __on_lost(_, p):
-        KafkaClient.__log_sub_action("lost", p)
+        log_kafka_sub_action("lost", p, KafkaDataClient.__log_msg_prefix)
 
     def get_exports(self, timeout: float) -> typing.Optional[typing.Dict[str, typing.Any]]:
         with self.__lock:
@@ -104,11 +98,11 @@ class KafkaClient:
                     except (exceptions.MessageIdentificationError, exceptions.NoFilterError):
                         pass
                     except exceptions.FilterMessageError as ex:
-                        logger.error(f"{KafkaClient.__log_err_msg_prefix}: {ex}")
+                        logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                 else:
                     handle_kafka_error(
                         msg_obj=msg_obj,
-                        text=KafkaClient.__log_err_msg_prefix
+                        text=KafkaDataClient.__log_err_msg_prefix
                     )
 
     def get_exports_batch(self, timeout: float, limit: int) -> typing.Optional[typing.Dict[str, typing.List[typing.Any]]]:
@@ -133,27 +127,15 @@ class KafkaClient:
                         except (exceptions.MessageIdentificationError, exceptions.NoFilterError):
                             pass
                         except exceptions.FilterMessageError as ex:
-                            logger.error(f"{KafkaClient.__log_err_msg_prefix}: {ex}")
+                            logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                     else:
                         handle_kafka_error(
                             msg_obj=msg_obj,
-                            text=KafkaClient.__log_err_msg_prefix,
+                            text=KafkaDataClient.__log_err_msg_prefix,
                             raise_error=False
                         )
                 if exports_batch:
                     return exports_batch
-
-    # def exports(self, timeout: float):
-    #     while True:
-    #         exports = self.get_exports(timeout=timeout)
-    #         if exports:
-    #             yield exports
-    #
-    # def exports_batch(self, timeout: float, limit: int):
-    #     while True:
-    #         exports_batch = self.get_exports_batch(timeout=timeout, limit=limit)
-    #         if exports_batch:
-    #             yield exports_batch
 
     def start(self):
         self.__thread.start()
