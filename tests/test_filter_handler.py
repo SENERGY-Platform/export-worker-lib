@@ -24,17 +24,17 @@ with open("tests/resources/filter_message_results.json") as file:
     results: list = json.load(file)
 
 
-class TestFilterHandler(unittest.TestCase):
+class TestFilterHandlerBase:
     def test_ingestion_good_filters(self):
-        filter_handler = test_filter_ingestion(test_obj=self, filters=filters)
+        filter_handler = self._init_filter_handler(filters=filters)
         self.assertIsNotNone(filter_handler.sources_timestamp)
 
     def test_ingestion_erroneous_filters(self):
-        filter_handler = test_filter_ingestion(test_obj=self, filters=filters_bad)
+        filter_handler = self._init_filter_handler(filters=filters_bad)
         self.assertIsNone(filter_handler.sources_timestamp)
 
     def test_filter_message_good_filters(self):
-        filter_handler = test_filter_ingestion(test_obj=self, filters=filters)
+        filter_handler = self._init_filter_handler(filters=filters)
         self.assertIsNotNone(filter_handler.sources_timestamp)
         count = 0
         for source in data:
@@ -48,7 +48,7 @@ class TestFilterHandler(unittest.TestCase):
         self.assertEqual(count, len(results) - 1)
 
     def test_filter_message_erroneous_filters(self):
-        filter_handler = test_filter_ingestion(test_obj=self, filters=filters_bad)
+        filter_handler = self._init_filter_handler(filters=filters_bad)
         self.assertIsNone(filter_handler.sources_timestamp)
         count = 0
         for source in data:
@@ -61,7 +61,7 @@ class TestFilterHandler(unittest.TestCase):
         self.assertEqual(count, 0)
 
     def test_filter_bad_message(self):
-        filter_handler = test_filter_ingestion(test_obj=self, filters=filters)
+        filter_handler = self._init_filter_handler(filters=filters)
         self.assertIsNotNone(filter_handler.sources_timestamp)
         count = 0
         for source in data_bad:
@@ -72,3 +72,8 @@ class TestFilterHandler(unittest.TestCase):
                 except ew_lib.exceptions.MessageIdentificationError:
                     pass
         self.assertEqual(count, 0)
+
+
+class TestFilterHandler(unittest.TestCase, TestFilterHandlerBase):
+    def _init_filter_handler(self, filters):
+        return test_filter_ingestion(test_obj=self, filters=filters)
