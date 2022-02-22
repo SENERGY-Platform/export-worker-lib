@@ -236,21 +236,6 @@ class FilterHandler:
             )
             self.__sources_timestamp = time.time_ns()
 
-    def __del(self, export_id: str):
-        with self.__lock:
-            if export_id in self.__exports:
-                export = self.__exports[export_id]
-                self.__del_export(export_id=export_id)
-                if export[model.Export.i_hash]:
-                    self.__del_msg_identifier(i_hash=export[model.Export.i_hash], export_id=export_id)
-                self.__del_mapping(m_hash=export[model.Export.m_hash], export_id=export_id)
-                self.__del_source(source=export[model.Export.source], export_id=export_id)
-                self.__del_filter(
-                    i_str=export[model.Export.i_str],
-                    m_hash=export[model.Export.m_hash],
-                    export_id=export_id
-                )
-
     def __identify_msg(self, msg: typing.Dict):
         try:
             msg_keys = set(msg.keys())
@@ -292,7 +277,19 @@ class FilterHandler:
 
     def delete(self, export_id: str):
         validate(export_id, str, "export_id")
-        self.__del(export_id=export_id)
+        with self.__lock:
+            if export_id in self.__exports:
+                export = self.__exports[export_id]
+                self.__del_export(export_id=export_id)
+                if export[model.Export.i_hash]:
+                    self.__del_msg_identifier(i_hash=export[model.Export.i_hash], export_id=export_id)
+                self.__del_mapping(m_hash=export[model.Export.m_hash], export_id=export_id)
+                self.__del_source(source=export[model.Export.source], export_id=export_id)
+                self.__del_filter(
+                    i_str=export[model.Export.i_str],
+                    m_hash=export[model.Export.m_hash],
+                    export_id=export_id
+                )
 
     @property
     def sources(self) -> list:
