@@ -31,12 +31,11 @@ with open("tests/resources/exports_batch_results.json") as file:
 class TestKafkaDataClient(unittest.TestCase):
     def __init_client(self, filters, data):
         test_kafka_consumer = TestKafkaConsumer(data=data)
-        filter_handler = ew_lib.filter.FilterHandler(filter_consumer=TestFilterConsumer(filters=filters))
-        kafka_client = ew_lib.KafkaClient(
+        filter_handler = test_filter_ingestion(test_obj=self, filters=filters)
+        kafka_client = ew_lib.clients.KafkaDataClient(
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler
         )
-        filter_handler.start()
         kafka_client.start()
         time.sleep(0.1)
         return kafka_client, filter_handler, test_kafka_consumer
