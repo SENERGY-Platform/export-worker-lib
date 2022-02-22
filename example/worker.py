@@ -14,9 +14,8 @@ class Worker:
     """
     Basic example worker that outputs exports to the console.
     """
-    def __init__(self, kafka_client: ew_lib.KafkaClient, filter_handler: ew_lib.filter.FilterHandler):
-        self.__kafka_client = kafka_client
-        self.__filter_handler = filter_handler
+    def __init__(self, kafka_data_client: ew_lib.clients.KafkaDataClient):
+        self.__kafka_data_client = kafka_data_client
         self.__stop = False
 
     def stop(self):
@@ -32,39 +31,42 @@ class Worker:
         :return: None
         """
         while not self.__stop:
-            exports = self.__kafka_client.get_exports(timeout=1.0)
+            exports = self.__kafka_data_client.get_exports(timeout=1.0)
             if exports:
                 print(exports)
 
 
-# Initialize a KafkaFilterConsumer to consume filters from a Kafka topic.
-kafka_filter_consumer = ew_lib.filter.KafkaFilterConsumer(
-    metadata_broker_list=METADATA_BROKER_LIST,
-    group_id=FILTER_CONSUMER_GROUP_ID,
+# Initialize a FilterHandler.
+filter_handler = ew_lib.filter.FilterHandler()
+
+# Initialize a KafkaFilterClient to consume filters from a kafka topic.
+kafka_filter_client = ew_lib.clients.KafkaFilterClient(
+    kafka_consumer=confluent_kafka.Consumer(
+        {
+            "metadata.broker.list": METADATA_BROKER_LIST,
+            "group.id": FILTER_CONSUMER_GROUP_ID,
+            "auto.offset.reset": "earliest",
+        }
+    ),
+    filter_handler=filter_handler,
     filter_topic=FILTER_TOPIC
 )
 
-# Initialize a FilterHandler with the above KafkaFilterConsumer.
-filter_handler = ew_lib.filter.FilterHandler(filter_consumer=kafka_filter_consumer)
-
-# Initialize a Kafka consumer to consume messages to be filtered.
-kafka_message_consumer = confluent_kafka.Consumer(
-    {
-        "metadata.broker.list": METADATA_BROKER_LIST,
-        "group.id": KAFKA_CONSUMER_GROUP_ID,
-        "auto.offset.reset": "earliest",
-        "partition.assignment.strategy": "cooperative-sticky"
-    }
-)
-
-# Initialize a KakfaClient by providing a FilterHandler and Kafka Consumer.
-kafka_client = ew_lib.KafkaClient(
-    kafka_consumer=kafka_message_consumer,
+# Initialize a KafkaDataClient by providing a kafka consumer and FilterHandler.
+kafka_data_client = ew_lib.clients.KafkaDataClient(
+    kafka_consumer=confluent_kafka.Consumer(
+        {
+            "metadata.broker.list": METADATA_BROKER_LIST,
+            "group.id": KAFKA_CONSUMER_GROUP_ID,
+            "auto.offset.reset": "earliest",
+            "partition.assignment.strategy": "cooperative-sticky"
+        }
+    ),
     filter_handler=filter_handler
 )
 
-# Initialize the example Worker by providing a KafkaClient and FilterHandler.
-worker = Worker(kafka_client=kafka_client, filter_handler=filter_handler)
+# Initialize the example Worker by providing a KafkaDataClient.
+worker = Worker(kafka_data_client=kafka_data_client)
 
 
 def handle_shutdown(signo, stack_frame):
@@ -73,17 +75,15 @@ def handle_shutdown(signo, stack_frame):
     """
     print(f"got signal '{signo}': exiting ...")
     worker.stop()
-    kafka_client.stop()
-    filter_handler.stop()
-    kafka_filter_consumer.close()
-    kafka_message_consumer.close()
+    kafka_data_client.stop()
+    kafka_filter_client.stop()
 
 
 # Register relevant signals to be handled by the above function.
 signal.signal(signal.SIGTERM, handle_shutdown)
 signal.signal(signal.SIGINT, handle_shutdown)
 
-# Start the FilterHandler, KafkaClient and example Worker.
-filter_handler.start()
-kafka_client.start()
+# Start the KafkaFilterClient, KafkaDataClient and example Worker.
+kafka_filter_client.start()
+kafka_data_client.start()
 worker.run()
