@@ -214,32 +214,27 @@ class FilterHandler:
         if identifiers:
             validate(identifiers, list, model.FilterMessagePayload.identifiers)
         with self.__lock:
-            try:
-                m_hash = hash_mapping(mapping=mapping)
-                if identifiers:
-                    i_hash, i_str = self.__add_msg_identifier(identifiers=identifiers, export_id=export_id)
-                else:
-                    i_hash = None
-                    i_str = source
-                self.__add_export(
-                    export_id=export_id,
-                    source=source,
-                    m_hash=m_hash,
-                    i_hash=i_hash,
-                    i_str=i_str
-                )
-                self.__add_mapping(mapping=mapping, m_hash=m_hash, export_id=export_id)
-                self.__add_source(source=source, export_id=export_id)
-                self.__add_filter(
-                    i_str=i_str,
-                    m_hash=m_hash,
-                    export_id=export_id
-                )
-                self.__sources_timestamp = time.time_ns()
-            except exceptions.FilterHandlerError as ex:
-                logger.error(f"{FilterHandler.__log_err_msg_prefix}: {ex}")
-                if not isinstance(ex, exceptions.HashMappingError):
-                    self.__del(export_id=export_id)
+            m_hash = hash_mapping(mapping=mapping)
+            if identifiers:
+                i_hash, i_str = self.__add_msg_identifier(identifiers=identifiers, export_id=export_id)
+            else:
+                i_hash = None
+                i_str = source
+            self.__add_export(
+                export_id=export_id,
+                source=source,
+                m_hash=m_hash,
+                i_hash=i_hash,
+                i_str=i_str
+            )
+            self.__add_mapping(mapping=mapping, m_hash=m_hash, export_id=export_id)
+            self.__add_source(source=source, export_id=export_id)
+            self.__add_filter(
+                i_str=i_str,
+                m_hash=m_hash,
+                export_id=export_id
+            )
+            self.__sources_timestamp = time.time_ns()
 
     def __del(self, export_id: str):
         if export_id in self.__exports:
