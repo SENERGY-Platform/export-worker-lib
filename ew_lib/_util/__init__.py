@@ -61,3 +61,10 @@ def json_to_str(obj):
 def validate(obj, cls, name):
     assert obj, f"'{name}' can't be None"
     assert isinstance(obj, cls), f"'{name}' can't be of type '{type(obj).__name__}'"
+
+
+def log_kafka_sub_action(action: str, partitions: typing.List, prefix: str):
+    for partition in partitions:
+        logger.info(
+            f"{prefix}: subscription event: action={action} topic={partition.topic} partition={partition.partition} offset={partition.offset}"
+        )
