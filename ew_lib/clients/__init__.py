@@ -14,5 +14,5 @@
    limitations under the License.
 """
 
-from kafka_data_client import *
-from kafka_filter_client import *
+from .kafka_data_client import *
+from .kafka_filter_client import *
