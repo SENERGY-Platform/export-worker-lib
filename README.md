@@ -9,13 +9,21 @@ Library for implementing export-workers to transfer data from the SENERGY stream
 
 ----------
 
-##### Installation
+### Installation
 
-Install the `export-worker-lib` package via pip by using the following command in combination with a desired version `X.X.X` from the available git tags: 
+#### Install
 
-`pip install git+https://github.com/SENERGY-Platform/export-worker-lib.git@X.X.X` 
+`pip install git+https://github.com/SENERGY-Platform/export-worker-lib.git@X.X.X`
 
-Upgrade to new version: `pip install --upgrade git+https://github.com/SENERGY-Platform/export-worker-lib.git@X.X.X`
+Replace 'X.X.X' with the desired version.
 
-Uninstall: `pip uninstall export-worker-lib`
+#### Upgrade
+
+`pip install --upgrade git+https://github.com/SENERGY-Platform/export-worker-lib.git@X.X.X`
+
+Replace 'X.X.X' with the desired version.
+
+#### Uninstall
+
+`pip uninstall export-worker-lib`
 
