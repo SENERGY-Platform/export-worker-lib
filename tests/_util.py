@@ -15,6 +15,7 @@
 """
 
 import ew_lib
+import ew_lib._util.model
 import confluent_kafka
 import logging
 import json
@@ -39,6 +40,26 @@ with open("tests/resources/filters.json") as file:
 
 with open("tests/resources/filters_bad.json") as file:
     filters_bad: list = json.load(file)
+
+
+def test_filter_ingestion(test_obj, filters):
+    filter_handler = ew_lib.filter.FilterHandler()
+    count = 0
+    for filter in filters:
+        try:
+            if filter[ew_lib._util.model.FilterMessage.method] == ew_lib._util.model.Methods.put:
+                filter_handler.add(filter=filter[ew_lib._util.model.FilterMessage.payload])
+            if filter[ew_lib._util.model.FilterMessage.method] == ew_lib._util.model.Methods.delete:
+                filter_handler.delete(
+                    export_id=filter[ew_lib._util.model.FilterMessage.payload][ew_lib._util.model.FilterMessagePayload.export_id]
+                )
+            count += 1
+        except Exception:
+            count += 1
+    test_obj.assertEqual(count, len(filters))
+    for source in filter_handler.sources:
+        test_obj.assertIn(source, sources)
+    return filter_handler
 
 
 class TestKafkaError:
