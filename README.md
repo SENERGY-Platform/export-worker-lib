@@ -35,6 +35,9 @@ Replace 'X.X.X' with the desired version.
 
 The current version only offers integration with Kafka but users can create their own clients to consume data and filters.
 
+    import ew_lib
+    import confluent_kafka
+    
     # Initialize a KafkaFilterConsumer to consume filters.
     kafka_filter_consumer = ew_lib.filter.KafkaFilterConsumer(
         metadata_broker_list="<your kafka broker>",
