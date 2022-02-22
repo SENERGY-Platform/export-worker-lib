@@ -18,12 +18,7 @@ import unittest
 from ._util import *
 from .test_filter_handler import TestFilterHandlerBase
 import ew_lib
-import json
 import time
-
-
-with open("tests/resources/filter_message_results.json") as file:
-    results: list = json.load(file)
 
 
 class TestKafkaFilterClient(unittest.TestCase, TestFilterHandlerBase):
