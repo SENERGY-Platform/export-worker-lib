@@ -16,3 +16,4 @@
 
 from .test_filter_handler import *
 from .test_kafka_data_client import *
+from .test_kafka_filter_client import *
