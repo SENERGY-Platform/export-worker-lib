@@ -111,3 +111,12 @@ class KafkaMessageError(Exception):
             return f"{prefix}: {KafkaMessageError.__text}: {arg}"
         else:
             return f"{KafkaMessageError.__text}: {arg}"
+
+
+class KafkaFilterClientError(Exception):
+    pass
+
+
+class MethodError(KafkaFilterClientError):
+    def __init__(self, arg):
+        super().__init__(f"unknown method: {arg}")
