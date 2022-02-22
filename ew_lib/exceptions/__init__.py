@@ -24,11 +24,6 @@ class MessageIdentificationError(FilterHandlerError):
         super().__init__(f"message identification failed: {arg}")
 
 
-class MethodError(FilterHandlerError):
-    def __init__(self, arg):
-        super().__init__(f"unknown method: {arg}")
-
-
 class NoFilterError(FilterHandlerError):
     def __init__(self, arg):
         super().__init__(f"no filters for: {arg}")
