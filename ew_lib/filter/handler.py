@@ -293,6 +293,15 @@ class FilterHandler:
                 raise exceptions.NoFilterError(message)
             return data_sets
 
+    def add(self, filter: typing.Dict):
+        validate(filter, dict, "filter")
+        self.__add(**filter)
+
+    def delete(self, export_id: str):
+        validate(export_id, str, "export_id")
+        with self.__lock:
+            self.__del(export_id=export_id)
+
     @property
     def sources(self) -> list:
         with self.__lock:
