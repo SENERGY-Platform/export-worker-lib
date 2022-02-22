@@ -83,7 +83,7 @@ def handle_shutdown(signo, stack_frame):
 signal.signal(signal.SIGTERM, handle_shutdown)
 signal.signal(signal.SIGINT, handle_shutdown)
 
-# Start the FilterHandler, KfakaClient and example Worker.
+# Start the FilterHandler, KafkaClient and example Worker.
 filter_handler.start()
 kafka_client.start()
 worker.run()
