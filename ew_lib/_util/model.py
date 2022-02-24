@@ -50,3 +50,4 @@ class Export:
     m_hash = "m_hash"
     i_hash = "i_hash"
     i_str = "i_str"
+    identifiers = "identifiers"
