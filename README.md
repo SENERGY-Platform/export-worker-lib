@@ -98,8 +98,7 @@ The JSON data structure of a filter is shown below:
   "export_id": "<export id>",
   "source": "<message source>",
   "mapping": {
-    "<target path>:<target type>": "<source path>",
-    ...
+    "<target path>:<target type>": "<source path>"
   },
   "identifiers": [
     {
@@ -108,8 +107,7 @@ The JSON data structure of a filter is shown below:
     },
     {
       "key": "<message key name>"
-    },
-    ...
+    }
   ]
 }
 ```
@@ -121,8 +119,7 @@ The source path to the message data to be extracted is specified as the value:
 
 ```JSON
 {
-  "<target path>:<target type>": "<source path>",
-  ...
+  "<target path>:<target type>": "<source path>"
 }
 ```
 
