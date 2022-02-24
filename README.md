@@ -71,10 +71,14 @@ The current version only offers integration with Kafka but users can create thei
     )
 
     # Get exports.
-    while True:
+    while not stop:
         exports = kafka_data_client.get_exports(timeout=1.0)
         if exports:
             ...
+    
+    # Stop clients when done.
+    kafka_data_client.stop()
+    kafka_filter_client.stop()
 
 For more details please refer to the [example](https://github.com/SENERGY-Platform/export-worker-lib/tree/master/example) contained within this repository.
 
