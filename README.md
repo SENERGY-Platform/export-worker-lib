@@ -86,4 +86,36 @@ For more details please refer to the [example](https://github.com/SENERGY-Platfo
 
 ### Filters
 
-Filters are consumed by the FilterHandler and determine which data from which sources are provided as exports.
+Filters are used to identify messages and extract data to be provided as exports.
+A filter is composed of an export ID, a source from which the messages originate, a mapping for data extraction as well as type conversion, and optional message identifiers.
+
+The JSON data structure of a filter is shown below:
+
+    {
+      "export_id": "<export id>",
+      "source": "<message source>",
+      "mapping": {
+        "<target path>:<target type>": "<source path>",
+        ...
+      },
+      "identifiers": [
+        {
+          "key": "<message key>",
+          "value": "<message value>"
+        },
+        {
+          "key": "<message key>"
+        },
+        ...
+      ]
+    }
+
+#### Mapping
+
+A mapping is specified as a JSON object. A key consists of a target path under which data is stored in the export and a target type to which the data is to be converted. 
+The source path to the message data to be extracted is specified as the value.
+
+    {
+      "<target path>:<target type>": "<source path>",
+      ...
+    }
