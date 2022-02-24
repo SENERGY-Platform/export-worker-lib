@@ -139,8 +139,7 @@ Identifiers are specified as a list of JSON objects. An identifier must have a "
   },
   {
     "key": "<message key name>"
-  },
-  ...
+  }
 ]
 ```
 
