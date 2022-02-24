@@ -26,7 +26,7 @@ class MessageIdentificationError(FilterHandlerError):
 
 class NoFilterError(FilterHandlerError):
     def __init__(self, arg):
-        super().__init__(f"no filters for: {arg}")
+        super().__init__(f"no filter for: {arg}")
 
 
 class FilterMessageError(FilterHandlerError):
