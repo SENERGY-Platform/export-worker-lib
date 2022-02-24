@@ -128,7 +128,7 @@ The source path to the message data to be extracted is specified as the value:
 
 #### Identifiers
 
-Identifiers allow messages to be identified by their content. 
+Identifiers allow messages to be identified by their content and structure. 
 The use of identifiers makes it possible to differentiate messages and apply appropriate mappings.
 This is relevant when messages with different structures originate from the same or multiple sources and an allocation via the source is not possible. 
 Or messages with the same structure are to be distinguished by their content.
