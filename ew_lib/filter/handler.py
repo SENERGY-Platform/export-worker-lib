@@ -293,6 +293,18 @@ class FilterHandler:
                     export_id=export_id
                 )
 
+    def get_metadata(self, export_id: str):
+        validate(export_id, str, "export_id")
+        with self.__lock:
+            try:
+                return {
+                    "export_id": export_id,
+                    model.Export.source: self.__exports[export_id][model.Export.source],
+                    model.Export.identifiers: self.__exports[export_id][model.Export.identifiers]
+                }
+            except KeyError as ex:
+                raise exceptions.NoFilterError(ex)
+
     @property
     def sources(self) -> list:
         with self.__lock:
