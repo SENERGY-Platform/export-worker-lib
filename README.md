@@ -7,7 +7,7 @@ Library for implementing export-workers to transfer data from the SENERGY stream
 
 + [Installation](#installation)
   + [Install](#install)
-  + [Update](#update)
+  + [Upgrade](#Upgrade)
   + [Uninstall](#uninstall)
 + [Quickstart](#quickstart)
 + [Filters](#filters)
@@ -56,7 +56,6 @@ The current version only offers integration with Kafka but users can create thei
         filter_handler=filter_handler,
         filter_topic="filters"
     )
-
     
     # Initialize a KafkaDataClient to consume data and get exports.
     kafka_data_client = ew_lib.clients.KafkaDataClient(
