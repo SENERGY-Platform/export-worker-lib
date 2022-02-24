@@ -5,9 +5,9 @@ import os
 
 # Environment variables for configuration. See 'docker-compose.yml' for more information.
 METADATA_BROKER_LIST = os.getenv("METADATA_BROKER_LIST")
-KAFKA_CONSUMER_GROUP_ID = os.getenv("KAFKA_CONSUMER_GROUP_ID", "export-worker-test")
+KAFKA_CONSUMER_GROUP_ID = os.getenv("KAFKA_CONSUMER_GROUP_ID")
 FILTER_CONSUMER_GROUP_ID = os.getenv("FILTER_CONSUMER_GROUP_ID")
-FILTER_TOPIC = os.getenv("FILTER_TOPIC", "export-worker-test-filters")
+FILTER_TOPIC = os.getenv("FILTER_TOPIC")
 
 
 class Worker:
