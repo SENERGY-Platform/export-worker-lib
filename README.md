@@ -123,8 +123,9 @@ The source path to the message data to be extracted is specified as the value:
 #### Identifiers
 
 Identifiers allow messages to be identified by their content. 
-The use of identifiers makes it possible to differentiate heterogeneous message structures and apply appropriate mappings.
-This is relevant when messages with different structures originate from the same or multiple sources and an allocation via the source is not possible.
+The use of identifiers makes it possible to differentiate messages and apply appropriate mappings.
+This is relevant when messages with different structures originate from the same or multiple sources and an allocation via the source is not possible. 
+Or messages with the same structure are to be distinguished by their content.
 Identifiers are specified as a list of JSON objects. An identifier must have a "key" field and optionally a "value" field:
 
     [
