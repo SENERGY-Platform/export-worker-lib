@@ -254,7 +254,7 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.MessageIdentificationError(ex)
 
-    def filter_message(self, message: typing.Dict, source: typing.Optional[str] = None, builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = builders.dict_builder):
+    def process_message(self, message: typing.Dict, source: typing.Optional[str] = None, builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = builders.dict_builder):
         with self.__lock:
             i_str = self.__identify_msg(msg=message) or source
             data_sets = list()

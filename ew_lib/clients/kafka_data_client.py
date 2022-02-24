@@ -85,7 +85,7 @@ class KafkaDataClient:
             if msg_obj:
                 if not msg_obj.error():
                     try:
-                        filtered_data = self.__filter_handler.filter_message(
+                        filtered_data = self.__filter_handler.process_message(
                             message=json.loads(msg_obj.value()),
                             source=msg_obj.topic(),
                             builder=self.__builder
@@ -113,7 +113,7 @@ class KafkaDataClient:
                 for msg_obj in msg_obj_list:
                     if not msg_obj.error():
                         try:
-                            filtered_data = self.__filter_handler.filter_message(
+                            filtered_data = self.__filter_handler.process_message(
                                 message=json.loads(msg_obj.value()),
                                 source=msg_obj.topic(),
                                 builder=self.__builder
