@@ -190,13 +190,14 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.DeleteSourceError(ex)
 
-    def __add_export(self, export_id: str, source: str, m_hash: str, i_hash: str, i_str: str):
+    def __add_export(self, export_id: str, source: str, m_hash: str, i_hash: str, i_str: str, identifiers: typing.Optional[typing.List] = None):
         try:
             self.__exports[export_id] = {
                 model.Export.source: source,
                 model.Export.m_hash: m_hash,
                 model.Export.i_hash: i_hash,
-                model.Export.i_str: i_str
+                model.Export.i_str: i_str,
+                model.Export.identifiers: identifiers
             }
         except Exception as ex:
             raise exceptions.AddExportError(ex)
@@ -225,7 +226,8 @@ class FilterHandler:
                 source=source,
                 m_hash=m_hash,
                 i_hash=i_hash,
-                i_str=i_str
+                i_str=i_str,
+                identifiers=identifiers
             )
             self.__add_mapping(mapping=mapping, m_hash=m_hash, export_id=export_id)
             self.__add_source(source=source, export_id=export_id)
