@@ -100,11 +100,11 @@ The JSON data structure of a filter is shown below:
       },
       "identifiers": [
         {
-          "key": "<message key>",
-          "value": "<message value>"
+          "key": "<message key name>",
+          "value": "<message key value>"
         },
         {
-          "key": "<message key>"
+          "key": "<message key name>"
         },
         ...
       ]
@@ -113,9 +113,31 @@ The JSON data structure of a filter is shown below:
 #### Mapping
 
 A mapping is specified as a JSON object. A key consists of a target path under which data is stored in the export and a target type to which the data is to be converted. 
-The source path to the message data to be extracted is specified as the value.
+The source path to the message data to be extracted is specified as the value:
 
     {
       "<target path>:<target type>": "<source path>",
       ...
     }
+
+#### Identifiers
+
+Identifiers allow messages to be identified by their content. 
+The use of identifiers makes it possible to differentiate heterogeneous message structures and apply appropriate mappings.
+This is relevant when messages with different structures originate from the same or multiple sources and an allocation via the source is not possible.
+Identifiers are specified as a list of JSON objects. An identifier must have a "key" field and optionally a "value" field:
+
+    [
+      {
+        "key": "<message key name>",
+        "value": "<message key value>"
+      },
+      {
+        "key": "<message key name>"
+      },
+      ...
+    ]
+
+The key field of an identifier specifies the name of a key that must be present in a message.
+The Value field specifies a value for the key so that messages with the same data structures can be differentiated.
+If no value field is used, the existence of the key referenced in the key field is sufficient for a message to be identified.
