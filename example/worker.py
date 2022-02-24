@@ -71,7 +71,7 @@ worker = Worker(kafka_data_client=kafka_data_client)
 
 def handle_shutdown(signo, stack_frame):
     """
-    Ensure a clean shutdown by stopping active threads and closing consumers.
+    Ensure a clean shutdown by stopping active threads.
     """
     print(f"got signal '{signo}': exiting ...")
     worker.stop()
