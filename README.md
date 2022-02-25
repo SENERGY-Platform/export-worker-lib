@@ -92,7 +92,7 @@ For more details please refer to the [example](https://github.com/SENERGY-Platfo
 Filters are used to identify messages and extract data to be provided as exports.
 A filter is composed of an export ID, a source from which the messages originate, a mapping for data extraction as well as type conversion, and optional message identifiers.
 
-The JSON data structure of a filter is shown below:
+The structure of a filter is shown below:
 
 ```python
 {
@@ -115,7 +115,7 @@ The JSON data structure of a filter is shown below:
 
 #### Mapping
 
-A mapping is specified as a JSON object. A key consists of a target path under which data is stored in the export and a target type to which the data is to be converted. 
+A mapping is specified as dictionary. A key consists of a target path under which data is stored in the export and a target type to which the data is to be converted. 
 The source path to the message data to be extracted is specified as the value:
 
 ```python
@@ -130,7 +130,7 @@ Identifiers allow messages to be identified by their content and structure.
 The use of identifiers makes it possible to differentiate messages and apply appropriate mappings.
 This is relevant when messages with different structures originate from the same or multiple sources and an allocation via the source is not possible. 
 Or messages with the same structure are to be distinguished by their content.
-Identifiers are specified as a list of JSON objects. An identifier must have a "key" field and optionally a "value" field:
+Identifiers are specified as a list of dictionaries. An identifier must have a "key" field and optionally a "value" field:
 
 ```python
 [
