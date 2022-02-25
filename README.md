@@ -11,6 +11,7 @@ Library for implementing export-workers to transfer data from the SENERGY stream
   + [Uninstall](#uninstall)
 + [Quickstart](#quickstart)
 + [Filters](#filters)
++ [FilterHandler](#filterhandler)
 
 ----------
 
@@ -93,7 +94,7 @@ A filter is composed of an export ID, a source from which the messages originate
 
 The JSON data structure of a filter is shown below:
 
-```JSON
+```python
 {
   "export_id": "<export id>",
   "source": "<message source>",
@@ -117,7 +118,7 @@ The JSON data structure of a filter is shown below:
 A mapping is specified as a JSON object. A key consists of a target path under which data is stored in the export and a target type to which the data is to be converted. 
 The source path to the message data to be extracted is specified as the value:
 
-```JSON
+```python
 {
   "<target path>:<target type>": "<source path>"
 }
@@ -131,7 +132,7 @@ This is relevant when messages with different structures originate from the same
 Or messages with the same structure are to be distinguished by their content.
 Identifiers are specified as a list of JSON objects. An identifier must have a "key" field and optionally a "value" field:
 
-```JSON
+```python
 [
   {
     "key": "<message key name>",
@@ -146,3 +147,21 @@ Identifiers are specified as a list of JSON objects. An identifier must have a "
 The key field of an identifier specifies the name of a key that must be present in a message.
 The Value field specifies a value for the key so that messages with the same data structures can be differentiated.
 If no value field is used, the existence of the key referenced in the key field is sufficient for a message to be identified.
+
+---
+
+### FilterHandler
+
+The FilterHandler class provides functionality for adding, removing and applying filters via the following methods:
+
+`add(filter)`: Add a filter with the structure defined in [Filters](#filters). The _filter_ argument requires a dictionary.
+
+`delete(export_id)`: Removes a filter by passing the ID of an export as a string to the _export_id_ argument.
+
+`sources()`: Returns a list of strings containing all sources added by filters.
+
+`sources_timestamp()`: Returns a timestamp as a string that indicates the last time a filter was added or removed.
+
+`get_metadata(export_id)`: Returns a dictionary with the source and the identifiers of a filter that corresponds to the export ID provided as a string to the _export_id_ argument.
+
+`process_message(message, source, builder)`: This method is used to apply filters by passing a message as a dictionary to the _message_ argument. Optionally, the source of the message can be passed as a string to the _source_ argument and a custom [builder](builders) to the _builder_ argument.
