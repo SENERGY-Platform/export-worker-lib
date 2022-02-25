@@ -6,9 +6,6 @@ Library for implementing export-workers to transfer data from the SENERGY stream
 ----------
 
 + [Installation](#installation)
-  + [Install](#install)
-  + [Upgrade](#Upgrade)
-  + [Uninstall](#uninstall)
 + [Quickstart](#quickstart)
 + [Filters](#filters)
 + [FilterHandler](#filterhandler)
