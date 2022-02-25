@@ -149,7 +149,8 @@ If no value field is used, the existence of the key referenced in the key field 
 
 ### FilterHandler
 
-The FilterHandler class provides functionality for adding, removing and applying filters via the following methods:
+The FilterHandler class provides functionality for adding, removing filters as well as applying filters to messages and extract data.
+The following methods are made available by instances of the class:
 
 `add_filter(filter)`: Add a filter with the structure defined in [Filters](#filters). The _filter_ argument requires a dictionary.
 
@@ -161,4 +162,6 @@ The FilterHandler class provides functionality for adding, removing and applying
 
 `get_export_metadata(export_id)`: Returns a dictionary with the source and the identifiers of a filter that corresponds to the export ID provided as a string to the _export_id_ argument.
 
-`process_message(message, source, builder)`: This method is used to apply filters by passing a message as a dictionary to the _message_ argument. Optionally, the source of the message can be passed as a string to the _source_ argument and a custom [builder](builders) to the _builder_ argument.
+`process_message(message, source, builder)`: This method is used to apply filters by passing a message as a dictionary to the _message_ argument. 
+Optionally, the source of the message can be passed as a string to the _source_ argument and a custom [builder](builders) to the _builder_ argument.
+The method returns a list of tuples, which in turn contain the extracted data and the corresponding IDs of exports.
