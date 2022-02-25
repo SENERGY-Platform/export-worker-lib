@@ -27,15 +27,15 @@ with open("tests/resources/filter_message_results.json") as file:
 class TestFilterHandlerBase:
     def test_ingestion_good_filters(self):
         filter_handler = self._init_filter_handler(filters=filters)
-        self.assertIsNotNone(filter_handler.sources_timestamp)
+        self.assertIsNotNone(filter_handler.get_sources_timestamp())
 
     def test_ingestion_erroneous_filters(self):
         filter_handler = self._init_filter_handler(filters=filters_bad)
-        self.assertIsNone(filter_handler.sources_timestamp)
+        self.assertIsNone(filter_handler.get_sources_timestamp())
 
     def test_filter_message_good_filters(self):
         filter_handler = self._init_filter_handler(filters=filters)
-        self.assertIsNotNone(filter_handler.sources_timestamp)
+        self.assertIsNotNone(filter_handler.get_sources_timestamp())
         count = 0
         for source in data:
             for message in data[source]:
@@ -49,7 +49,7 @@ class TestFilterHandlerBase:
 
     def test_filter_message_erroneous_filters(self):
         filter_handler = self._init_filter_handler(filters=filters_bad)
-        self.assertIsNone(filter_handler.sources_timestamp)
+        self.assertIsNone(filter_handler.get_sources_timestamp())
         count = 0
         for source in data:
             for message in data[source]:
@@ -62,7 +62,7 @@ class TestFilterHandlerBase:
 
     def test_filter_bad_message(self):
         filter_handler = self._init_filter_handler(filters=filters)
-        self.assertIsNotNone(filter_handler.sources_timestamp)
+        self.assertIsNotNone(filter_handler.get_sources_timestamp())
         count = 0
         for source in data_bad:
             for message in data_bad[source]:

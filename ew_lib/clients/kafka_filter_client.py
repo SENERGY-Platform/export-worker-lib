@@ -69,9 +69,9 @@ class KafkaFilterClient:
                             msg_obj = json.loads(msg_obj.value())
                             method = msg_obj[model.FilterMessage.method]
                             if method == model.Methods.put:
-                                self.__filter_handler.add(msg_obj[model.FilterMessage.payload])
+                                self.__filter_handler.add_filter(msg_obj[model.FilterMessage.payload])
                             elif method == model.Methods.delete:
-                                self.__filter_handler.delete(**msg_obj[model.FilterMessage.payload])
+                                self.__filter_handler.delete_filter(**msg_obj[model.FilterMessage.payload])
                             else:
                                 raise exceptions.MethodError(method)
                         except Exception as ex:

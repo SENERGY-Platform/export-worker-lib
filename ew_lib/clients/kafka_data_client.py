@@ -50,9 +50,9 @@ class KafkaDataClient:
     def __handle_subscriptions(self):
         while not self.__stop:
             try:
-                timestamp = self.__filter_handler.sources_timestamp
+                timestamp = self.__filter_handler.get_sources_timestamp()
                 if self.__sources_timestamp != timestamp:
-                    sources = self.__filter_handler.sources
+                    sources = self.__filter_handler.get_sources()
                     with self.__lock:
                         if sources:
                             self.__consumer.subscribe(

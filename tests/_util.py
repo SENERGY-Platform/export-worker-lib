@@ -48,16 +48,16 @@ def test_filter_ingestion(test_obj, filters):
     for filter in filters:
         try:
             if filter[ew_lib._util.model.FilterMessage.method] == ew_lib._util.model.Methods.put:
-                filter_handler.add(filter=filter[ew_lib._util.model.FilterMessage.payload])
+                filter_handler.add_filter(filter=filter[ew_lib._util.model.FilterMessage.payload])
             if filter[ew_lib._util.model.FilterMessage.method] == ew_lib._util.model.Methods.delete:
-                filter_handler.delete(
+                filter_handler.delete_filter(
                     export_id=filter[ew_lib._util.model.FilterMessage.payload][ew_lib._util.model.FilterMessagePayload.export_id]
                 )
             count += 1
         except Exception:
             count += 1
     test_obj.assertEqual(count, len(filters))
-    for source in filter_handler.sources:
+    for source in filter_handler.get_sources():
         test_obj.assertIn(source, sources)
     return filter_handler
 

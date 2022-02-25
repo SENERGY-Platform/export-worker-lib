@@ -273,11 +273,11 @@ class FilterHandler:
                 raise exceptions.NoFilterError(message)
             return data_sets
 
-    def add(self, filter: typing.Dict):
+    def add_filter(self, filter: typing.Dict):
         validate(filter, dict, "filter")
         self.__add(**filter)
 
-    def delete(self, export_id: str):
+    def delete_filter(self, export_id: str):
         validate(export_id, str, "export_id")
         with self.__lock:
             if export_id in self.__exports:
@@ -293,7 +293,7 @@ class FilterHandler:
                     export_id=export_id
                 )
 
-    def get_metadata(self, export_id: str) -> typing.Dict:
+    def get_export_metadata(self, export_id: str) -> typing.Dict:
         validate(export_id, str, "export_id")
         with self.__lock:
             try:
@@ -305,13 +305,11 @@ class FilterHandler:
             except KeyError as ex:
                 raise exceptions.NoFilterError(ex)
 
-    @property
-    def sources(self) -> list:
+    def get_sources(self) -> list:
         with self.__lock:
             return list(self.__sources)
 
-    @property
-    def sources_timestamp(self) -> str:
+    def get_sources_timestamp(self) -> str:
         with self.__lock:
             return self.__sources_timestamp
 
