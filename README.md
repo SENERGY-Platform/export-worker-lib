@@ -151,14 +151,14 @@ If no value field is used, the existence of the key referenced in the key field 
 
 The FilterHandler class provides functionality for adding, removing and applying filters via the following methods:
 
-`add(filter)`: Add a filter with the structure defined in [Filters](#filters). The _filter_ argument requires a dictionary.
+`add_filter(filter)`: Add a filter with the structure defined in [Filters](#filters). The _filter_ argument requires a dictionary.
 
-`delete(export_id)`: Removes a filter by passing the ID of an export as a string to the _export_id_ argument.
+`delete_filter(export_id)`: Removes a filter by passing the ID of an export as a string to the _export_id_ argument.
 
-`sources()`: Returns a list of strings containing all sources added by filters.
+`get_sources()`: Returns a list of strings containing all sources added by filters.
 
-`sources_timestamp()`: Returns a timestamp as a string that indicates the last time a filter was added or removed.
+`get_sources_timestamp()`: Returns a timestamp as a string that indicates the last time a filter was added or removed.
 
-`get_metadata(export_id)`: Returns a dictionary with the source and the identifiers of a filter that corresponds to the export ID provided as a string to the _export_id_ argument.
+`get_export_metadata(export_id)`: Returns a dictionary with the source and the identifiers of a filter that corresponds to the export ID provided as a string to the _export_id_ argument.
 
 `process_message(message, source, builder)`: This method is used to apply filters by passing a message as a dictionary to the _message_ argument. Optionally, the source of the message can be passed as a string to the _source_ argument and a custom [builder](builders) to the _builder_ argument.
