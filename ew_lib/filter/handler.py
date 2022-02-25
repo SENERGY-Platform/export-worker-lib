@@ -293,7 +293,7 @@ class FilterHandler:
                     export_id=export_id
                 )
 
-    def get_metadata(self, export_id: str):
+    def get_metadata(self, export_id: str) -> typing.Dict:
         validate(export_id, str, "export_id")
         with self.__lock:
             try:
