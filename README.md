@@ -3,7 +3,7 @@ export-worker-lib
 
 Library for implementing export-workers to transfer data from the SENERGY streaming platform to data sinks.
 
-----------
+---
 
 + [Quickstart](#quickstart)
 + [Installation](#installation)
@@ -12,7 +12,7 @@ Library for implementing export-workers to transfer data from the SENERGY stream
 + [Clients](#clients)
 + [Builders](#builders)
 
-----------
+---
 
 ## Quickstart
 
@@ -64,8 +64,6 @@ kafka_filter_client.stop()
 
 For more details please refer to the [example](https://github.com/SENERGY-Platform/export-worker-lib/tree/master/example) contained within this repository.
 
----
-
 ## Installation
 
 ### Install
@@ -83,8 +81,6 @@ Replace 'X.X.X' with the desired version.
 ### Uninstall
 
 `pip uninstall export-worker-lib`
-
----
 
 ## Filters
 
@@ -147,8 +143,6 @@ The key field of an identifier specifies the name of a key that must be present 
 The Value field specifies a value for the key so that messages with the same data structures can be differentiated.
 If no value field is used, the existence of the key referenced in the key field is sufficient for a message to be identified.
 
----
-
 ## FilterHandler
 
 The FilterHandler class provides functionality for adding and removing filters as well as applying filters to messages and extracting data.
@@ -187,8 +181,6 @@ Optionally, the source of the message can be passed as a string to the _source_ 
 The method returns a list of tuples, which in turn contain the extracted data and the corresponding export IDs.
 Raises FilterMessageError, NoFilterError, MessageIdentificationError and MappingError.
 
----
-
 ## Clients
 
 Clients consume data and / or filters, pass them to a FilterHandler object and provide the resulting exports, for further processing or storage.
@@ -209,8 +201,6 @@ For this, a background thread consumes and processes messages that use the follo
 ```
 
 ### KafkaDataClient
-
----
 
 ## Builders
 
