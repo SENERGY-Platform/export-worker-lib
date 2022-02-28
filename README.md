@@ -191,7 +191,7 @@ Raises FilterMessageError, NoFilterError, MessageIdentificationError and Mapping
 
 ### Clients
 
-Clients consume data and or filters, pass them to a FilterHandler object and provide the resulting exports, for further processing or storage.
+Clients consume data and / or filters, pass them to a FilterHandler object and provide the resulting exports, for further processing or storage.
 Clients can be regarded as optional wrappers for FilterHandler objects and are created by the user.
 
 In order to integrate with the SENERGY streaming platform, a client for consuming filters and a client for consuming data from Kafka are included in this repository:
