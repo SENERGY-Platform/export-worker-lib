@@ -150,6 +150,26 @@ If no value field is used, the existence of the key referenced in the key field 
 ### FilterHandler
 
 The FilterHandler class provides functionality for adding and removing filters as well as applying filters to messages and extract data.
+
+
+                                                                                                                
+                  +---\         +---\                                                                               
+                  |    ----+    |    ----+                                                                          
+                  |        |    |        |                                                                          
+                  | Filter |----| Filter |--\      +--------------+                                  +-------------+
+                  |        |    |        |   ---\  |              |     +---\         +---\          |             |
+                  |        |    |        |       ->|              |     |    ----+    |    ----+     |             |
+                  +--------+    +--------+         |              |     |        |    |        |     |             |
+                                                   | FilterHandler|-----| Export |----| Export |---->|  Database   |
+    +---\         +---\         +---\              |              |     |        |    |        |     |             |
+    |    ----+    |    ----+    |    ----+       ->|              |     |        |    |        |     |             |
+    |        |    |        |    |        |   ---/  |              |     +--------+    +--------+     |             |
+    | Message|----| Message|----| Message|--/      +--------------+                                  +-------------+
+    |        |    |        |    |        |                                                                          
+    |        |    |        |    |        |                                                                          
+    +--------+    +--------+    +--------+                                                                          
+
+
 The following methods are made available by instances of the class:
 
 `add_filter(filter)`: Add a filter with the structure defined in [Filters](#filters). The _filter_ argument requires a dictionary.
