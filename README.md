@@ -14,7 +14,7 @@ Library for implementing export-workers to transfer data from the SENERGY stream
 
 ----------
 
-### Quickstart
+## Quickstart
 
 The current version only offers integration with Kafka but users can create their own clients to consume data and filters.
 
@@ -66,27 +66,27 @@ For more details please refer to the [example](https://github.com/SENERGY-Platfo
 
 ---
 
-### Installation
+## Installation
 
-#### Install
+### Install
 
 `pip install git+https://github.com/SENERGY-Platform/export-worker-lib.git@X.X.X`
 
 Replace 'X.X.X' with the desired version.
 
-#### Upgrade
+### Upgrade
 
 `pip install --upgrade git+https://github.com/SENERGY-Platform/export-worker-lib.git@X.X.X`
 
 Replace 'X.X.X' with the desired version.
 
-#### Uninstall
+### Uninstall
 
 `pip uninstall export-worker-lib`
 
 ---
 
-### Filters
+## Filters
 
 Filters are used to identify messages and extract data to be provided as exports.
 A filter is composed of an export ID, a source from which the messages originate, a mapping for data extraction as well as type conversion, and optional message identifiers.
@@ -112,7 +112,7 @@ The structure of a filter is shown below:
 }
 ```
 
-#### Mapping
+### Mapping
 
 A mapping is specified as dictionary. A key consists of a target path under which data is stored in the export and a target type to which the data is to be converted. 
 The source path to the message data to be extracted is specified as the value:
@@ -123,7 +123,7 @@ The source path to the message data to be extracted is specified as the value:
 }
 ```
 
-#### Identifiers
+### Identifiers
 
 Identifiers allow messages to be identified by their content and structure. 
 The use of identifiers makes it possible to differentiate messages and apply appropriate mappings.
@@ -149,7 +149,7 @@ If no value field is used, the existence of the key referenced in the key field 
 
 ---
 
-### FilterHandler
+## FilterHandler
 
 The FilterHandler class provides functionality for adding and removing filters as well as applying filters to messages and extracting data.
 
@@ -189,23 +189,33 @@ Raises FilterMessageError, NoFilterError, MessageIdentificationError and Mapping
 
 ---
 
-### Clients
+## Clients
 
 Clients consume data and / or filters, pass them to a FilterHandler object and provide the resulting exports, for further processing or storage.
 Clients can be regarded as optional wrappers for FilterHandler objects and are created by the user.
 
 In order to integrate with the SENERGY streaming platform, a client for consuming filters and a client for consuming data from Kafka are included in this repository:
 
-#### KafkaFilterClient
+### KafkaFilterClient
 
-#### KafkaDataClient
+The KafkaFilterClient class consumes filters from a kafka topic and passes them to a FilterHandler. 
+For this, a background thread consumes and processes messages that use the following JSON structure:
+
+```json
+{
+  "method": "",
+  "payload": {}
+}
+```
+
+### KafkaDataClient
 
 ---
 
-### Builders
+## Builders
 
-#### Dictionary builder
+### Dictionary builder
 
-#### String list builder
+### String list builder
 
-#### Tuple list builder
+### Tuple list builder
