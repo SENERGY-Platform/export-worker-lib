@@ -199,7 +199,7 @@ In order to integrate with the SENERGY streaming platform, a client for consumin
 ### KafkaFilterClient
 
 The KafkaFilterClient class consumes filters from a kafka topic and passes them to a FilterHandler object.
-Filters are kept in memory, therefore filter consumption starts at the beginning of the topic.
+Filters are kept in memory by the FilterHandler object, therefore filter consumption starts at the beginning of the topic to ensure that all filters ar present after every startup.
 This is handled by a background thread that consumes and processes messages that use the following JSON structure:
 
 ```json
