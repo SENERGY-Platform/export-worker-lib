@@ -149,7 +149,7 @@ If no value field is used, the existence of the key referenced in the key field 
 
 ### FilterHandler
 
-The FilterHandler class provides functionality for adding and removing filters as well as applying filters to messages and extract data.
+The FilterHandler class provides functionality for adding and removing filters as well as applying filters to messages and extracting data.
 
                  +---\        +---\                                                                    
                  |    ----+   |    ----+                                                               
