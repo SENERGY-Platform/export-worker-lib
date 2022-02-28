@@ -151,24 +151,19 @@ If no value field is used, the existence of the key referenced in the key field 
 
 The FilterHandler class provides functionality for adding and removing filters as well as applying filters to messages and extract data.
 
-
-                                                                                                                
-                  +---\         +---\                                                                               
-                  |    ----+    |    ----+                                                                          
-                  |        |    |        |                                                                          
-                  | Filter |----| Filter |--\      +--------------+                                  +-------------+
-                  |        |    |        |   ---\  |              |     +---\         +---\          |             |
-                  |        |    |        |       ->|              |     |    ----+    |    ----+     |             |
-                  +--------+    +--------+         |              |     |        |    |        |     |             |
-                                                   | FilterHandler|-----| Export |----| Export |---->|  Database   |
-    +---\         +---\         +---\              |              |     |        |    |        |     |             |
-    |    ----+    |    ----+    |    ----+       ->|              |     |        |    |        |     |             |
-    |        |    |        |    |        |   ---/  |              |     +--------+    +--------+     |             |
-    | Message|----| Message|----| Message|--/      +--------------+                                  +-------------+
-    |        |    |        |    |        |                                                                          
-    |        |    |        |    |        |                                                                          
-    +--------+    +--------+    +--------+                                                                          
-
+                 +---\        +---\                                                                    
+                 |    ----+   |    ----+                                                               
+                 | Filter |---| Filter |-\                                                             
+                 |        |   |        |  -\ +--------------+                              +----------+
+                 +--------+   +--------+    >|              |   +---\        +---\         |          |
+                                             |              |   |    ----+   |    ----+    |          |
+                                             | FilterHandler|---| Export |---| Export |--->| Database |
+                                             |              |   |        |   |        |    |          |
+    +---\        +---\        +---\         >|              |   +--------+   +--------+    |          |
+    |    ----+   |    ----+   |    ----+  -/ +--------------+                              +----------+
+    | Message|---| Message|---| Message|-/                                                             
+    |        |   |        |   |        |                                                               
+    +--------+   +--------+   +--------+                                                               
 
 The following methods are made available by instances of the class:
 
