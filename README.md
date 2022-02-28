@@ -163,30 +163,28 @@ The FilterHandler class provides functionality for adding and removing filters a
 
 ### API
 
-Create a FilterHandler object via: `ew_lib.filter.FilterHandler()`
+Create a FilterHandler object:
+
+```python
+ew_lib.filter.FilterHandler()
+```
 
 FilterHandler objects provide the following methods:
 
-`add_filter(filter)`
-+ Add a filter with the structure defined in [Filters](#filters). The _filter_ argument requires a dictionary.
+`add_filter(filter)`: Add a filter with the structure defined in [Filters](#filters). The _filter_ argument requires a dictionary.
 Raises HashMappingError, AddMessageIdentifierError, AddExportError, AddMappingError, AddSourceError and AddFilterError.
 
-`delete_filter(export_id)`
-+ Removes a filter by passing the ID of an export as a string to the _export_id_ argument.
+`delete_filter(export_id)`: Removes a filter by passing the ID of an export as a string to the _export_id_ argument.
 Raises DeleteExportError, DeleteMessageIdentifierError, DeleteMappingError, DeleteSourceError and DeleteFilterError.
 
-`get_sources()`
-+ Returns a list of strings containing all sources added by filters.
+`get_sources()`: Returns a list of strings containing all sources added by filters.
 
-`get_sources_timestamp()`
-+ Returns a timestamp as a string that indicates the last time a filter was added or removed.
+`get_sources_timestamp()`: Returns a timestamp as a string that indicates the last time a filter was added or removed.
 
-`get_export_metadata(export_id)`
-+ Returns a dictionary with the source and the identifiers of a filter that corresponds to the export ID provided as a string to the _export_id_ argument.
+`get_export_metadata(export_id)`: Returns a dictionary with the source and the identifiers of a filter that corresponds to the export ID provided as a string to the _export_id_ argument.
 Raises NoFilterError.
 
-`process_message(message, source, builder)`
-+ This method is used to apply filters by passing a message as a dictionary to the _message_ argument. 
+`process_message(message, source, builder)`: This method is used to apply filters by passing a message as a dictionary to the _message_ argument. 
 Optionally, the source of the message can be passed as a string to the _source_ argument and a custom [builder](#builders) to the _builder_ argument.
 The method returns a list of tuples, which in turn contain the extracted data and the corresponding export IDs.
 Raises FilterMessageError, NoFilterError, MessageIdentificationError and MappingError.
