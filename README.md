@@ -266,7 +266,7 @@ KafkaFilterClient objects provide the following methods:
 ### KafkaDataClient
 
 The KafkaDataClient class consumes messages from any number of kafka topics and passes them to a FilterHandler object to get exports, and provides them to the user.
-For this purpose, a background thread automatically subscribes to topics that are specified as sources in filters stored by the FilterHandler object.
+For this purpose, a background thread automatically subscribes to topics that are specified as sources in filters stored by a FilterHandler object.
 
 #### API
 
@@ -278,9 +278,12 @@ ew_lib.clients.KafkaDataClient(kafka_consumer, filter_handler, builder=builders.
 
 KafkaDataClient objects provide the following methods:
 
-`get_exports(timeout)`: 
+`get_exports(timeout)`: Consumes one message and passes it to a FilterHandler object for processing.
+Returns a dictionary containing exports for the consumed message or None if no matching filters are present or if the _timeout_ period as been exceeded and no message has been consumed.
 
-`get_exports_batch(timeout, limit)`: 
+`get_exports_batch(timeout, limit)`: Consumes many messages and passes them to a FilterHandler object for processing. 
+The _limit_ argument defines the maximum number of messages that can be consumed.
+Returns a dictionary containing exports for the consumed messages or None if no matching filters are present or if the _timeout_ period as been exceeded and no messages have been consumed.
 
 `start()`: Starts the background thread.
 
