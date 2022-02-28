@@ -200,8 +200,9 @@ In order to integrate with the SENERGY streaming platform, a client for consumin
 
 ### KafkaFilterClient
 
-The KafkaFilterClient class consumes filters from a kafka topic and passes them to a FilterHandler. 
-For this, a background thread consumes and processes messages that use the following JSON structure:
+The KafkaFilterClient class consumes filters from a kafka topic and passes them to a FilterHandler object.
+Filters are kept in memory, therefore filter consumption starts at the beginning of the topic.
+This is handled by a background thread that consumes and processes messages that use the following JSON structure:
 
 ```json
 {
@@ -215,9 +216,7 @@ For this, a background thread consumes and processes messages that use the follo
 To add or remove filters, the methods _put_ and _delete_ are available. 
 The payload of the message varies depending on the method used.
 
-##### put
-
-If the put method is used, the payload corresponds to the structure defined in [Filters](#filters):
+If the **put** method is used, the payload corresponds to the structure defined in [Filters](#filters):
 
 ```json
 {
@@ -241,9 +240,7 @@ If the put method is used, the payload corresponds to the structure defined in [
 }
 ```
 
-##### delete
-
-If the delete method is used, only an export ID must be specified:
+If the **delete** method is used, only an export ID must be specified:
 
 ```json
 {
@@ -253,6 +250,20 @@ If the delete method is used, only an export ID must be specified:
   }
 }
 ```
+
+#### API
+
+Create a KafkaFilterClient object by providing a confluent kafka [Consumer](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#pythonclient-consumer) object, a FilterHandler object and the topic from which filters are to be consumed:
+`ew_lib.clients.KafkaFilterClient(self, kafka_consumer, filter_handler, filter_topic, poll_timeout=1.0)`
+If used in a cluster the group ID of the kafka consumer must be unique.
+
+KafkaFilterClient objects provide the following methods:
+
+`start()`
++ Starts the background thread.
+
+`stop()`
++ Stops the background thread. Blocks until the execution of the thread has finished.
 
 ### KafkaDataClient
 
