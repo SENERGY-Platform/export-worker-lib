@@ -10,8 +10,6 @@ Library for implementing export-workers to transfer data from the SENERGY stream
 + [Filters](#filters)
 + [FilterHandler](#filterhandler)
 + [Clients](#clients)
-  + [KafkaFilterClient](#kafkafilterclient)
-  + [KafkaDataClient](#kafkadataclient)
 + [Builders](#builders)
 
 ----------
