@@ -5,32 +5,12 @@ Library for implementing export-workers to transfer data from the SENERGY stream
 
 ----------
 
-+ [Installation](#installation)
 + [Quickstart](#quickstart)
++ [Installation](#installation)
 + [Filters](#filters)
 + [FilterHandler](#filterhandler)
 
 ----------
-
-### Installation
-
-#### Install
-
-`pip install git+https://github.com/SENERGY-Platform/export-worker-lib.git@X.X.X`
-
-Replace 'X.X.X' with the desired version.
-
-#### Upgrade
-
-`pip install --upgrade git+https://github.com/SENERGY-Platform/export-worker-lib.git@X.X.X`
-
-Replace 'X.X.X' with the desired version.
-
-#### Uninstall
-
-`pip uninstall export-worker-lib`
-
----
 
 ### Quickstart
 
@@ -81,6 +61,26 @@ kafka_filter_client.stop()
 ```
 
 For more details please refer to the [example](https://github.com/SENERGY-Platform/export-worker-lib/tree/master/example) contained within this repository.
+
+---
+
+### Installation
+
+#### Install
+
+`pip install git+https://github.com/SENERGY-Platform/export-worker-lib.git@X.X.X`
+
+Replace 'X.X.X' with the desired version.
+
+#### Upgrade
+
+`pip install --upgrade git+https://github.com/SENERGY-Platform/export-worker-lib.git@X.X.X`
+
+Replace 'X.X.X' with the desired version.
+
+#### Uninstall
+
+`pip uninstall export-worker-lib`
 
 ---
 
