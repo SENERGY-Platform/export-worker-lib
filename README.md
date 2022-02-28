@@ -200,6 +200,50 @@ For this, a background thread consumes and processes messages that use the follo
 }
 ```
 
+#### Methods
+
+To add or remove filters, the methods _put_ and _delete_ are available. 
+The payload of the message varies depending on the method used.
+
+##### put
+
+If the put method is used, the payload corresponds to the structure defined in [Filters](#filters):
+
+```json
+{
+  "method": "put",
+  "payload": {
+    "export_id": "<export id>",
+    "source": "<message source>",
+    "mapping": {
+      "<target path>:<target type>": "<source path>"
+    },
+    "identifiers": [
+      {
+        "key": "<message key name>",
+        "value": "<message key value>"
+      },
+      {
+        "key": "<message key name>"
+      }
+    ]
+  }
+}
+```
+
+##### delete
+
+If the delete method is used, only an export ID must be specified:
+
+```json
+{
+  "method": "delete",
+  "payload": {
+    "export_id": "<export id>"
+  }
+}
+```
+
 ### KafkaDataClient
 
 ## Builders
