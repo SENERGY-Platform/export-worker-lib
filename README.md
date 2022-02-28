@@ -198,3 +198,9 @@ Raises FilterMessageError, NoFilterError, MessageIdentificationError and Mapping
 ---
 
 ### Builders
+
+#### Dictionary builder
+
+#### String list builder
+
+#### Tuple list builder
