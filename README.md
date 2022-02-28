@@ -265,6 +265,27 @@ KafkaFilterClient objects provide the following methods:
 
 ### KafkaDataClient
 
+The KafkaDataClient class consumes messages from any number of kafka topics and passes them to a FilterHandler object to get exports, and provides them to the user.
+For this purpose, a background thread automatically subscribes to topics that are specified as sources in filters stored by the FilterHandler object.
+
+#### API
+
+Create a KafkaDataClient object by providing a confluent kafka [Consumer](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#pythonclient-consumer) object, a FilterHandler object and an optional [builder](#builders) function:
+
+```python
+ew_lib.clients.KafkaDataClient(kafka_consumer, filter_handler, builder=builders.dict_builder, subscribe_interval=5)
+```
+
+KafkaDataClient objects provide the following methods:
+
+`get_exports(timeout)`: 
+
+`get_exports_batch(timeout, limit)`: 
+
+`start()`: Starts the background thread.
+
+`stop()`: Stops the background thread. Blocks until the execution of the thread has finished.
+
 ## Builders
 
 ### Dictionary builder
