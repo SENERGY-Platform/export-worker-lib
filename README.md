@@ -9,6 +9,10 @@ Library for implementing export-workers to transfer data from the SENERGY stream
 + [Installation](#installation)
 + [Filters](#filters)
 + [FilterHandler](#filterhandler)
++ [Clients](#clients)
+  + [KafkaFilterClient](#kafkafilterclient)
+  + [KafkaDataClient](#kafkadataclient)
++ [Builders](#builders)
 
 ----------
 
@@ -181,6 +185,18 @@ Raises DeleteExportError, DeleteMessageIdentifierError, DeleteMappingError, Dele
 Raises NoFilterError.
 
 `process_message(message, source, builder)`: This method is used to apply filters by passing a message as a dictionary to the _message_ argument. 
-Optionally, the source of the message can be passed as a string to the _source_ argument and a custom [builder](builders) to the _builder_ argument.
+Optionally, the source of the message can be passed as a string to the _source_ argument and a custom [builder](#builders) to the _builder_ argument.
 The method returns a list of tuples, which in turn contain the extracted data and the corresponding export IDs.
 Raises FilterMessageError, NoFilterError, MessageIdentificationError and MappingError.
+
+---
+
+### Clients
+
+#### KafkaFilterClient
+
+#### KafkaDataClient
+
+---
+
+### Builders
