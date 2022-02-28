@@ -291,8 +291,17 @@ Returns a dictionary containing exports for the consumed messages `{"<export id>
 
 ## Builders
 
+Builder are functions that allow to customize the structure of export data according to the user's requirements.
+Three builder functions are already provided by this repository:
+
 ### Dictionary builder
+
+Stores data in a dictionary: `{"<key>": <value>, ...}`
 
 ### String list builder
 
+Stores data as delimited key value strings in a list: `["<key>=<value>", ...]`
+
 ### Tuple list builder
+
+Stores data as key value tuples in a list: `[(<key>, <value>), ...]`
