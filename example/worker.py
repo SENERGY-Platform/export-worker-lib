@@ -10,8 +10,9 @@ KAFKA_CONSUMER_GROUP_ID = os.getenv("KAFKA_CONSUMER_GROUP_ID")
 FILTER_CONSUMER_GROUP_ID = os.getenv("FILTER_CONSUMER_GROUP_ID")
 FILTER_TOPIC = os.getenv("FILTER_TOPIC")
 
-# Set ew_lib logger to debug
+# Add handler to ew_lib logger and set to debug
 ew_lib_logger = logging.getLogger('ew-lib')
+ew_lib_logger.addHandler(logging.StreamHandler())
 ew_lib_logger.setLevel(logging.DEBUG)
 
 
