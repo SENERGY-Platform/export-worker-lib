@@ -39,9 +39,6 @@ class TestKafkaFilterClient(unittest.TestCase, TestFilterHandlerBase):
 
 
 class TestKafkaFilterClientSyncCallback(unittest.TestCase, TestFilterHandlerBase):
-    def _callback(self):
-        self._event.set()
-
     def _init_filter_handler(self, filters, timeout=False):
         self._event = threading.Event()
         test_kafka_consumer = TestKafkaConsumer(data=filters, sources=False)
@@ -50,7 +47,7 @@ class TestKafkaFilterClientSyncCallback(unittest.TestCase, TestFilterHandlerBase
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler,
             filter_topic="filters",
-            on_sync=self._callback,
+            on_sync=self._event.set,
             sync_delay=5
         )
         self.assertFalse(self._event.is_set())
