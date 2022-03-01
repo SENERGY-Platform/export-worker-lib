@@ -24,6 +24,7 @@ import uuid
 import confluent_kafka
 import threading
 import json
+import time
 
 
 class Methods:
@@ -34,13 +35,14 @@ class Methods:
 class Message:
     method = "method"
     payload = "payload"
+    time = "time"
 
 
 class KafkaFilterClient:
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, filter_topic: str, poll_timeout: float = 1.0):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, filter_topic: str, poll_timeout: float = 1.0, on_sync: typing.Optional[typing.Callable] = None, sync_delay: int = 30):
         validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
         validate(filter_handler, FilterHandler, "filter_handler")
         validate(filter_topic, str, "filter_topic")
@@ -58,10 +60,23 @@ class KafkaFilterClient:
             on_lost=KafkaFilterClient.__on_lost
         )
         self.__poll_timeout = poll_timeout
+        self.__on_sync = on_sync
+        self.__sync_delay = sync_delay
         self.__reset = True
         self.__stop = False
+        self.__sync = False
+
+    def __handle_sync(self, time_a, time_b):
+        if time_a >= time_b:
+            self.__sync = True
+            try:
+                self.__on_sync()
+            except Exception as ex:
+                logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: {ex}")
 
     def __consume_filters(self) -> None:
+        start_time = None
+        last_item_time = 0
         while not self.__stop:
             try:
                 msg_obj = self.__consumer.poll(timeout=self.__poll_timeout)
@@ -76,6 +91,11 @@ class KafkaFilterClient:
                                 self.__filter_handler.delete_filter(**msg_obj[Message.payload])
                             else:
                                 raise exceptions.MethodError(method)
+                            if self.__on_sync and not self.__sync:
+                                if not start_time:
+                                    start_time = time.time()
+                                last_item_time = time.time()
+                                self.__handle_sync(msg_obj[Message.time], start_time)
                             logger.debug(
                                 f"{KafkaFilterClient.__log_msg_prefix}: method={method} payload={msg_obj[Message.payload]}"
                             )
@@ -86,7 +106,13 @@ class KafkaFilterClient:
                             msg_obj=msg_obj,
                             text=KafkaFilterClient.__log_err_msg_prefix
                         )
+                else:
+                    if self.__on_sync and not self.__sync:
+                        if start_time:
+                            self.__handle_sync(time.time() - last_item_time, self.__sync_delay)
             except Exception as ex:
+                start_time = None
+                last_item_time = 0
                 logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
         self.__consumer.close()
 
