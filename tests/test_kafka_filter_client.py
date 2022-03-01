@@ -19,6 +19,7 @@ from ._util import *
 from .test_filter_handler import TestFilterHandlerBase
 import ew_lib
 import time
+import threading
 
 
 class TestKafkaFilterClient(unittest.TestCase, TestFilterHandlerBase):
@@ -33,5 +34,27 @@ class TestKafkaFilterClient(unittest.TestCase, TestFilterHandlerBase):
         kafka_filter_client.start()
         while not test_kafka_consumer.empty():
             time.sleep(0.1)
+        kafka_filter_client.stop()
+        return filter_handler
+
+
+class TestKafkaFilterClientSyncCallback(unittest.TestCase, TestFilterHandlerBase):
+    def _callback(self):
+        self._event.set()
+
+    def _init_filter_handler(self, filters):
+        self._event = threading.Event()
+        test_kafka_consumer = TestKafkaConsumer(data=filters, sources=False)
+        filter_handler = ew_lib.filter.FilterHandler()
+        kafka_filter_client = ew_lib.clients.KafkaFilterClient(
+            kafka_consumer=test_kafka_consumer,
+            filter_handler=filter_handler,
+            filter_topic="filters",
+            on_sync=self._callback,
+            sync_delay=5
+        )
+        self.assertFalse(self._event.is_set())
+        kafka_filter_client.start()
+        self._event.wait(timeout=10)
         kafka_filter_client.stop()
         return filter_handler
