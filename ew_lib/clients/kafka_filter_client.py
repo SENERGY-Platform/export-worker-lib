@@ -61,14 +61,6 @@ class KafkaFilterClient:
         self.__reset = True
         self.__stop = False
 
-    def __on_assign(self, consumer: confluent_kafka.Consumer, partitions: typing.List[confluent_kafka.TopicPartition]):
-        if self.__reset:
-            for partition in partitions:
-                partition.offset = confluent_kafka.OFFSET_BEGINNING
-            consumer.assign(partitions)
-            self.__reset = False
-        log_kafka_sub_action("assign", partitions, KafkaFilterClient.__log_msg_prefix)
-
     def __consume_filters(self) -> None:
         while not self.__stop:
             try:
@@ -97,6 +89,14 @@ class KafkaFilterClient:
             except Exception as ex:
                 logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
         self.__consumer.close()
+
+    def __on_assign(self, consumer: confluent_kafka.Consumer, partitions: typing.List[confluent_kafka.TopicPartition]):
+        if self.__reset:
+            for partition in partitions:
+                partition.offset = confluent_kafka.OFFSET_BEGINNING
+            consumer.assign(partitions)
+            self.__reset = False
+        log_kafka_sub_action("assign", partitions, KafkaFilterClient.__log_msg_prefix)
 
     @staticmethod
     def __on_revoke(_, p):
