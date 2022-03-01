@@ -85,6 +85,7 @@ class KafkaFilterClient:
                         try:
                             msg_obj = json.loads(msg_obj.value())
                             method = msg_obj[Message.method]
+                            timestamp = msg_obj[Message.timestamp]
                             if method == Methods.put:
                                 self.__filter_handler.add_filter(msg_obj[Message.payload])
                             elif method == Methods.delete:
@@ -95,7 +96,7 @@ class KafkaFilterClient:
                                 if not start_time:
                                     start_time = time.time()
                                 last_item_time = time.time()
-                                self.__handle_sync(msg_obj[Message.time], start_time)
+                                self.__handle_sync(timestamp, start_time)
                             logger.debug(
                                 f"{KafkaFilterClient.__log_msg_prefix}: method={method} payload={msg_obj[Message.payload]}"
                             )
