@@ -30,7 +30,7 @@ class TestFilterHandlerBase:
         self.assertIsNotNone(filter_handler.get_sources_timestamp())
 
     def test_ingestion_erroneous_filters(self):
-        filter_handler = self._init_filter_handler(filters=filters_bad)
+        filter_handler = self._init_filter_handler(filters=filters_bad, timeout=True)
         self.assertIsNone(filter_handler.get_sources_timestamp())
 
     def test_filter_message_good_filters(self):
@@ -48,7 +48,7 @@ class TestFilterHandlerBase:
         self.assertEqual(count, len(results) - 1)
 
     def test_filter_message_erroneous_filters(self):
-        filter_handler = self._init_filter_handler(filters=filters_bad)
+        filter_handler = self._init_filter_handler(filters=filters_bad, timeout=True)
         self.assertIsNone(filter_handler.get_sources_timestamp())
         count = 0
         for source in data:
@@ -75,5 +75,5 @@ class TestFilterHandlerBase:
 
 
 class TestFilterHandler(unittest.TestCase, TestFilterHandlerBase):
-    def _init_filter_handler(self, filters):
+    def _init_filter_handler(self, filters, **kwargs):
         return test_filter_ingestion(test_obj=self, filters=filters)
