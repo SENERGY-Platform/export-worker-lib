@@ -75,14 +75,14 @@ class KafkaFilterClient:
                             else:
                                 raise exceptions.MethodError(method)
                         except Exception as ex:
-                            logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling filter failed: {ex}")
+                            logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
                     else:
                         handle_kafka_error(
                             msg_obj=msg_obj,
                             text=KafkaFilterClient.__log_err_msg_prefix
                         )
             except Exception as ex:
-                logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming filter failed: {ex}")
+                logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
         self.__consumer.close()
 
     @staticmethod
