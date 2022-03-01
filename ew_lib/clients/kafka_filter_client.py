@@ -35,7 +35,7 @@ class Methods:
 class Message:
     method = "method"
     payload = "payload"
-    time = "time"
+    timestamp = "timestamp"
 
 
 class KafkaFilterClient:
