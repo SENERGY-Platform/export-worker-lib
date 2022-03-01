@@ -30,11 +30,6 @@ class Mapping:
     type = "type"
 
 
-class Identifier:
-    key = "key"
-    value = "value"
-
-
 class Export:
     source = "source"
     m_hash = "m_hash"
