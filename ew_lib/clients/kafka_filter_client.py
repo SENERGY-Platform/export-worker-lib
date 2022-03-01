@@ -74,6 +74,9 @@ class KafkaFilterClient:
                                 self.__filter_handler.delete_filter(**msg_obj[model.FilterMessage.payload])
                             else:
                                 raise exceptions.MethodError(method)
+                            logger.debug(
+                                f"{KafkaFilterClient.__log_msg_prefix}: method={method} payload={msg_obj[model.FilterMessage.payload]}"
+                            )
                         except Exception as ex:
                             logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
                     else:
