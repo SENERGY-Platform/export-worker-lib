@@ -15,6 +15,7 @@
 """
 
 import ew_lib
+import ew_lib.clients.kafka_filter_client
 import ew_lib._util.model
 import confluent_kafka
 import logging
@@ -47,11 +48,11 @@ def test_filter_ingestion(test_obj, filters):
     count = 0
     for filter in filters:
         try:
-            if filter[ew_lib._util.model.FilterMessage.method] == ew_lib._util.model.Methods.put:
-                filter_handler.add_filter(filter=filter[ew_lib._util.model.FilterMessage.payload])
-            if filter[ew_lib._util.model.FilterMessage.method] == ew_lib._util.model.Methods.delete:
+            if filter[ew_lib.clients.kafka_filter_client.Message.method] == ew_lib.clients.kafka_filter_client.Methods.put:
+                filter_handler.add_filter(filter=filter[ew_lib.clients.kafka_filter_client.Message.payload])
+            if filter[ew_lib.clients.kafka_filter_client.Message.method] == ew_lib.clients.kafka_filter_client.Methods.delete:
                 filter_handler.delete_filter(
-                    export_id=filter[ew_lib._util.model.FilterMessage.payload][ew_lib._util.model.FilterMessagePayload.export_id]
+                    export_id=filter[ew_lib.clients.kafka_filter_client.Message.payload][ew_lib._util.model.Filter.export_id]
                 )
             count += 1
         except Exception:

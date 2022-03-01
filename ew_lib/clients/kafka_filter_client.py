@@ -17,13 +17,23 @@
 __all__ = ("KafkaFilterClient", )
 
 from .. import exceptions
-from .._util import logger, handle_kafka_error, model, log_kafka_sub_action, validate
+from .._util import logger, handle_kafka_error, log_kafka_sub_action, validate
 from ..filter import FilterHandler
 import typing
 import uuid
 import confluent_kafka
 import threading
 import json
+
+
+class Methods:
+    put = "put"
+    delete = "delete"
+
+
+class Message:
+    method = "method"
+    payload = "payload"
 
 
 class KafkaFilterClient:
@@ -67,15 +77,15 @@ class KafkaFilterClient:
                     if not msg_obj.error():
                         try:
                             msg_obj = json.loads(msg_obj.value())
-                            method = msg_obj[model.FilterMessage.method]
-                            if method == model.Methods.put:
-                                self.__filter_handler.add_filter(msg_obj[model.FilterMessage.payload])
-                            elif method == model.Methods.delete:
-                                self.__filter_handler.delete_filter(**msg_obj[model.FilterMessage.payload])
+                            method = msg_obj[Message.method]
+                            if method == Methods.put:
+                                self.__filter_handler.add_filter(msg_obj[Message.payload])
+                            elif method == Methods.delete:
+                                self.__filter_handler.delete_filter(**msg_obj[Message.payload])
                             else:
                                 raise exceptions.MethodError(method)
                             logger.debug(
-                                f"{KafkaFilterClient.__log_msg_prefix}: method={method} payload={msg_obj[model.FilterMessage.payload]}"
+                                f"{KafkaFilterClient.__log_msg_prefix}: method={method} payload={msg_obj[Message.payload]}"
                             )
                         except Exception as ex:
                             logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")

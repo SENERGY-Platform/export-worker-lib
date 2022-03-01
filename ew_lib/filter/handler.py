@@ -209,11 +209,11 @@ class FilterHandler:
             raise exceptions.DeleteExportError(ex)
 
     def __add(self, source: str, mapping: typing.Dict, export_id: str, identifiers: typing.Optional[list] = None):
-        validate(source, str, model.FilterMessagePayload.source)
-        validate(mapping, dict, model.FilterMessagePayload.mapping)
-        validate(export_id, str, model.FilterMessagePayload.export_id)
+        validate(source, str, model.Filter.source)
+        validate(mapping, dict, model.Filter.mapping)
+        validate(export_id, str, model.Filter.export_id)
         if identifiers:
-            validate(identifiers, list, model.FilterMessagePayload.identifiers)
+            validate(identifiers, list, model.Filter.identifiers)
         with self.__lock:
             m_hash = hash_mapping(mapping=mapping)
             if identifiers:

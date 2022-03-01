@@ -14,20 +14,10 @@
    limitations under the License.
 """
 
-__all__ = ("Methods", "FilterMessage", "FilterMessagePayload", "Mapping", "Identifier", "Export")
+__all__ = ("Filter", "Mapping", "Identifier", "Export")
 
 
-class Methods:
-    put = "put"
-    delete = "delete"
-
-
-class FilterMessage:
-    method = "method"
-    payload = "payload"
-
-
-class FilterMessagePayload:
+class Filter:
     source = "source"
     identifiers = "identifiers"
     mapping = "mapping"
