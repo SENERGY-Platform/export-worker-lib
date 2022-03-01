@@ -16,7 +16,7 @@
 
 __all__ = ("FilterHandler",)
 
-from .._util import hash_dict, hash_list, get_value, logger, model, json_to_str, validate
+from .._util import hash_dict, hash_list, get_value, model, json_to_str, validate
 from .. import exceptions
 from .. import builders
 import typing
