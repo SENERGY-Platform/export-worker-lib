@@ -2,12 +2,17 @@ import ew_lib
 import confluent_kafka
 import signal
 import os
+import logging
 
 # Environment variables for configuration. See 'docker-compose.yml' for more information.
 METADATA_BROKER_LIST = os.getenv("METADATA_BROKER_LIST")
 KAFKA_CONSUMER_GROUP_ID = os.getenv("KAFKA_CONSUMER_GROUP_ID")
 FILTER_CONSUMER_GROUP_ID = os.getenv("FILTER_CONSUMER_GROUP_ID")
 FILTER_TOPIC = os.getenv("FILTER_TOPIC")
+
+# Set ew_lib logger to debug
+ew_lib_logger = logging.getLogger('ew-lib')
+ew_lib_logger.setLevel(logging.DEBUG)
 
 
 class Worker:
