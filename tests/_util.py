@@ -22,6 +22,7 @@ import logging
 import json
 import queue
 import typing
+import time
 
 ew_lib_logger = logging.getLogger('ew-lib')
 ew_lib_logger.setLevel(logging.CRITICAL)
@@ -82,6 +83,7 @@ class TestKafkaMessage:
         self.__value = value
         self.__err_obj = err_obj
         self.__topic = topic
+        self.__timestamp = (confluent_kafka.TIMESTAMP_LOG_APPEND_TIME, time.time())
 
     def error(self) -> TestKafkaError:
         return self.__err_obj
@@ -91,6 +93,9 @@ class TestKafkaMessage:
 
     def topic(self):
         return self.__topic
+
+    def timestamp(self):
+        return self.__timestamp
 
 
 class TestKafkaConsumer(confluent_kafka.Consumer):
