@@ -25,6 +25,7 @@ import confluent_kafka
 import threading
 import json
 import time
+import datetime
 
 
 class Methods:
@@ -42,7 +43,7 @@ class KafkaFilterClient:
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, filter_topic: str, poll_timeout: float = 1.0, on_sync: typing.Optional[typing.Callable] = None, sync_delay: int = 30):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, filter_topic: str, poll_timeout: float = 1.0, on_sync: typing.Optional[typing.Callable] = None, sync_delay: int = 30, time_format: typing.Optional[str] = None):
         validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
         validate(filter_handler, FilterHandler, "filter_handler")
         validate(filter_topic, str, "filter_topic")
@@ -62,6 +63,7 @@ class KafkaFilterClient:
         self.__poll_timeout = poll_timeout
         self.__on_sync = on_sync
         self.__sync_delay = sync_delay
+        self.__time_format = time_format
         self.__reset = True
         self.__stop = False
         self.__sync = False
@@ -85,7 +87,14 @@ class KafkaFilterClient:
                         try:
                             msg_obj = json.loads(msg_obj.value())
                             method = msg_obj[Message.method]
-                            timestamp = msg_obj[Message.timestamp]
+                            if self.__time_format:
+                                timestamp = datetime.datetime.strptime(
+                                    date_string=msg_obj[Message.timestamp],
+                                    format=self.__time_format
+                                )
+                            else:
+                                timestamp = msg_obj[Message.timestamp]
+                                validate(timestamp, (float, int), "timestamp")
                             if method == Methods.put:
                                 self.__filter_handler.add_filter(msg_obj[Message.payload])
                             elif method == Methods.delete:
