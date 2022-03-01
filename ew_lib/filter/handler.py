@@ -16,7 +16,7 @@
 
 __all__ = ("FilterHandler",)
 
-from .._util import hash_dict, hash_list, get_value, model, json_to_str, validate
+from .._util import hash_dict, hash_list, get_value, json_to_str, validate
 from .. import exceptions
 from .. import builders
 import typing
@@ -30,6 +30,27 @@ type_map = {
     "bool": bool,
     "string_json": json_to_str
 }
+
+
+class Filter:
+    source = "source"
+    identifiers = "identifiers"
+    mapping = "mapping"
+    export_id = "export_id"
+
+
+class Mapping:
+    src_path = "src_path"
+    dst_path = "dst_path"
+    type = "type"
+
+
+class Export:
+    source = "source"
+    m_hash = "m_hash"
+    i_hash = "i_hash"
+    i_str = "i_str"
+    identifiers = "identifiers"
 
 
 def hash_mapping(mapping: typing.Dict):
@@ -49,9 +70,9 @@ def parse_mapping(mapping: typing.Dict) -> typing.List[typing.Dict]:
             validate(val_type, str, "destination type")
             parsed_mapping.append(
                 {
-                    model.Mapping.src_path: value,
-                    model.Mapping.dst_path: dst_path,
-                    model.Mapping.type: val_type
+                    Mapping.src_path: value,
+                    Mapping.dst_path: dst_path,
+                    Mapping.type: val_type
                 }
             )
         return parsed_mapping
@@ -62,8 +83,8 @@ def parse_mapping(mapping: typing.Dict) -> typing.List[typing.Dict]:
 def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
     for mapping in mappings:
         try:
-            src_path = mapping[model.Mapping.src_path].split(".")
-            yield mapping[model.Mapping.dst_path], type_map[mapping[model.Mapping.type]](get_value(src_path, msg, len(src_path) - 1))
+            src_path = mapping[Mapping.src_path].split(".")
+            yield mapping[Mapping.dst_path], type_map[mapping[Mapping.type]](get_value(src_path, msg, len(src_path) - 1))
         except Exception as ex:
             raise exceptions.MappingError(ex)
 
@@ -193,11 +214,11 @@ class FilterHandler:
     def __add_export(self, export_id: str, source: str, m_hash: str, i_hash: str, i_str: str, identifiers: typing.Optional[typing.List] = None):
         try:
             self.__exports[export_id] = {
-                model.Export.source: source,
-                model.Export.m_hash: m_hash,
-                model.Export.i_hash: i_hash,
-                model.Export.i_str: i_str,
-                model.Export.identifiers: identifiers
+                Export.source: source,
+                Export.m_hash: m_hash,
+                Export.i_hash: i_hash,
+                Export.i_str: i_str,
+                Export.identifiers: identifiers
             }
         except Exception as ex:
             raise exceptions.AddExportError(ex)
@@ -209,11 +230,11 @@ class FilterHandler:
             raise exceptions.DeleteExportError(ex)
 
     def __add(self, source: str, mapping: typing.Dict, export_id: str, identifiers: typing.Optional[list] = None):
-        validate(source, str, model.Filter.source)
-        validate(mapping, dict, model.Filter.mapping)
-        validate(export_id, str, model.Filter.export_id)
+        validate(source, str, Filter.source)
+        validate(mapping, dict, Filter.mapping)
+        validate(export_id, str, Filter.export_id)
         if identifiers:
-            validate(identifiers, list, model.Filter.identifiers)
+            validate(identifiers, list, Filter.identifiers)
         with self.__lock:
             m_hash = hash_mapping(mapping=mapping)
             if identifiers:
@@ -283,13 +304,13 @@ class FilterHandler:
             if export_id in self.__exports:
                 export = self.__exports[export_id]
                 self.__del_export(export_id=export_id)
-                if export[model.Export.i_hash]:
-                    self.__del_msg_identifier(i_hash=export[model.Export.i_hash], export_id=export_id)
-                self.__del_mapping(m_hash=export[model.Export.m_hash], export_id=export_id)
-                self.__del_source(source=export[model.Export.source], export_id=export_id)
+                if export[Export.i_hash]:
+                    self.__del_msg_identifier(i_hash=export[Export.i_hash], export_id=export_id)
+                self.__del_mapping(m_hash=export[Export.m_hash], export_id=export_id)
+                self.__del_source(source=export[Export.source], export_id=export_id)
                 self.__del_filter(
-                    i_str=export[model.Export.i_str],
-                    m_hash=export[model.Export.m_hash],
+                    i_str=export[Export.i_str],
+                    m_hash=export[Export.m_hash],
                     export_id=export_id
                 )
 
@@ -299,8 +320,8 @@ class FilterHandler:
             try:
                 return {
                     "export_id": export_id,
-                    model.Export.source: self.__exports[export_id][model.Export.source],
-                    model.Export.identifiers: self.__exports[export_id][model.Export.identifiers]
+                    Export.source: self.__exports[export_id][Export.source],
+                    Export.identifiers: self.__exports[export_id][Export.identifiers]
                 }
             except KeyError as ex:
                 raise exceptions.NoFilterError(ex)
