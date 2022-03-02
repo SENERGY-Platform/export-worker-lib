@@ -71,6 +71,7 @@ class KafkaFilterClient:
     def __handle_sync(self, time_a, time_b):
         if time_a >= time_b:
             self.__sync = True
+            logger.debug(f"{KafkaFilterClient.__log_msg_prefix}: filters synchronized")
             try:
                 self.__on_sync_callable()
             except Exception as ex:
