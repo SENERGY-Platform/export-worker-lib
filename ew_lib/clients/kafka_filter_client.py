@@ -39,12 +39,15 @@ class Message:
 
 
 class KafkaFilterClient:
+    """
+    Consumes messages which contain instructions to create or delete filters.
+    """
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
     def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True):
         """
-        Consumes messages which contain instructions to create or delete filters.
+        Creates a KafkaFilterClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
         :param filter_handler: A ew_lib.filter.FilterHandler object.
         :param filter_topic: Kafka topic from which filters are to be consumed.
