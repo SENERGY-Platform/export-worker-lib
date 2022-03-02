@@ -108,7 +108,7 @@ class KafkaFilterClient:
                                 last_item_time = time.time()
                                 self.__handle_sync(timestamp, start_time)
                             logger.debug(
-                                f"{KafkaFilterClient.__log_msg_prefix}: method={method} payload={msg_obj[Message.payload]}"
+                                f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_obj[Message.payload]}"
                             )
                         except Exception as ex:
                             logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
