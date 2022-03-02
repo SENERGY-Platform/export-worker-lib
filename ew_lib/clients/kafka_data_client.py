@@ -28,10 +28,20 @@ import time
 
 
 class KafkaDataClient:
+    """
+    Consumes messages from any number of kafka topics and passes them to a FilterHandler object to get exports, and provides them to the user.
+    """
     __log_msg_prefix = "kafka data client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
     def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, builder=builders.dict_builder, subscribe_interval: int = 5):
+        """
+        Creates a KafkaDataClient object.
+        :param kafka_consumer: A confluent_kafka.Consumer object.
+        :param filter_handler: A ew_lib.filter.FilterHandler object.
+        :param builder: Builder function for custom export data structures. Default is ew_lib.builders.dict_builder.
+        :param subscribe_interval: Specifies in seconds how often to check if new sources are available and subscriptions have to be made.
+        """
         validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
         validate(filter_handler, FilterHandler, "filter_handler")
         self.__consumer = kafka_consumer
@@ -80,6 +90,11 @@ class KafkaDataClient:
         log_kafka_sub_action("lost", p, KafkaDataClient.__log_msg_prefix)
 
     def get_exports(self, timeout: float) -> typing.Optional[typing.Dict[str, typing.Any]]:
+        """
+        Consumes one message and passes it to a FilterHandler object for processing.
+        :param timeout: Maximum time in seconds to block waiting for message.
+        :return: Dictionary containing exports {"<export id>": <data object>, ...} or None.
+        """
         with self.__lock:
             msg_obj = self.__consumer.poll(timeout=timeout)
             if msg_obj:
@@ -106,6 +121,12 @@ class KafkaDataClient:
                     )
 
     def get_exports_batch(self, timeout: float, limit: int) -> typing.Optional[typing.Dict[str, typing.List[typing.Any]]]:
+        """
+        Consumes many messages and passes them to a FilterHandler object for processing.
+        :param timeout: Maximum time in seconds to block waiting for messages.
+        :param limit: Defines the maximum number of messages that can be consumed.
+        :return: Dictionary containing exports {"<export id>": [<data object>, ...], ...} or None.
+        """
         with self.__lock:
             msg_obj_list = self.__consumer.consume(num_messages=limit, timeout=timeout)
             if msg_obj_list:
@@ -138,8 +159,16 @@ class KafkaDataClient:
                     return exports_batch
 
     def start(self):
+        """
+        Starts the background thread.
+        :return: None
+        """
         self.__thread.start()
 
     def stop(self):
+        """
+        Stops and joins the background thread.
+        :return: None
+        """
         self.__stop = True
         self.__thread.join()
