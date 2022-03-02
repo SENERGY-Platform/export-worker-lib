@@ -326,11 +326,11 @@ class FilterHandler:
             except KeyError as ex:
                 raise exceptions.NoFilterError(ex)
 
-    def get_sources(self) -> list:
+    def get_sources(self) -> typing.List:
         with self.__lock:
             return list(self.__sources)
 
-    def get_sources_timestamp(self) -> str:
+    def get_sources_timestamp(self) -> typing.Optional[int]:
         with self.__lock:
             return self.__sources_timestamp
 
