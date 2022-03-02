@@ -43,6 +43,15 @@ class KafkaFilterClient:
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
     def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True):
+        """
+        Consumes messages which contain instructions to create or delete filters.
+        :param kafka_consumer: A confluent_kafka.Consumer object.
+        :param filter_handler: A ew_lib.filter.FilterHandler object.
+        :param filter_topic: Kafka topic from which filters are to be consumed.
+        :param poll_timeout: Maximum time in seconds to block waiting for message.
+        :param time_format: Timestamp format (https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes). Only required if timestamps are provided as strings.
+        :param utc: Set if timestamps are in UTC. Default is true.
+        """
         validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
         validate(filter_handler, FilterHandler, "filter_handler")
         validate(filter_topic, str, "filter_topic")
@@ -147,14 +156,28 @@ class KafkaFilterClient:
         log_kafka_sub_action("lost", p, KafkaFilterClient.__log_msg_prefix)
 
     def set_on_sync(self, callable: typing.Optional[typing.Callable], sync_delay: int = 30):
+        """
+        Set a callback for when filters have been synchronised.
+        :param callable: Function to be executed. Must not block.
+        :param sync_delay: Defines how long in seconds the client will wait for new messages if the previously consumed messages are too old to determine a synchronised state.
+        :return: None
+        """
         if self.__thread.is_alive():
             raise exceptions.SetCallbackError(callable)
         self.__on_sync_callable = callable
         self.__sync_delay = sync_delay
 
     def start(self):
+        """
+        Starts the background thread.
+        :return: None
+        """
         self.__thread.start()
 
     def stop(self):
+        """
+        Stops and joins the background thread.
+        :return: None
+        """
         self.__stop = True
         self.__thread.join()
