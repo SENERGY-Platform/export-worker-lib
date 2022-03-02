@@ -179,7 +179,7 @@ Raises DeleteExportError, DeleteMessageIdentifierError, DeleteMappingError, Dele
 
 `get_sources()`: Returns a list of strings containing all sources added by filters.
 
-`get_sources_timestamp()`: Returns a timestamp as a string that indicates the last time a filter was added or removed.
+`get_sources_timestamp()`: Returns a timestamp that indicates the last time a filter was added or removed.
 
 `get_export_metadata(export_id)`: Returns a dictionary with the source and the identifiers of a filter that corresponds to the export ID provided as a string to the _export_id_ argument.
 Raises NoFilterError.
