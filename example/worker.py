@@ -3,6 +3,7 @@ import confluent_kafka
 import signal
 import os
 import logging
+import threading
 
 # Environment variables for configuration. See 'docker-compose.yml' for more information.
 METADATA_BROKER_LIST = os.getenv("METADATA_BROKER_LIST")
@@ -20,8 +21,9 @@ class Worker:
     """
     Basic example worker that outputs exports to the console.
     """
-    def __init__(self, kafka_data_client: ew_lib.clients.KafkaDataClient):
+    def __init__(self, kafka_data_client: ew_lib.clients.KafkaDataClient, event: threading.Event):
         self.__kafka_data_client = kafka_data_client
+        self.__event = event
         self.__stop = False
 
     def stop(self):
@@ -36,6 +38,7 @@ class Worker:
         Will get and print exports indefinitely.
         :return: None
         """
+        self.__event.wait()
         while not self.__stop:
             exports = self.__kafka_data_client.get_exports(timeout=1.0)
             if exports:
@@ -71,8 +74,14 @@ kafka_data_client = ew_lib.clients.KafkaDataClient(
     filter_handler=filter_handler
 )
 
-# Initialize the example Worker by providing a KafkaDataClient.
-worker = Worker(kafka_data_client=kafka_data_client)
+# Create an event object.
+event = threading.Event()
+
+# Initialize the example Worker by providing a KafkaDataClient and event object.
+worker = Worker(kafka_data_client=kafka_data_client, event=event)
+
+# Set the event.set method as a callback.
+kafka_filter_client.set_on_sync(event.set)
 
 
 def handle_shutdown(signo, stack_frame):
