@@ -204,10 +204,13 @@ This is handled by a background thread that consumes and processes messages that
 
 ```json
 {
-  "method": "",
-  "payload": {}
+  "method": null,
+  "payload": null,
+  "timestamp": null
 }
 ```
+
+The _method_ is specified as a string, the _payload_ as a dictionary, and the _timestamp_ as either an integer, float, or string.
 
 #### Methods
 
@@ -234,7 +237,8 @@ If the **put** method is used, the payload corresponds to the structure defined 
         "key": "<message key name>"
       }
     ]
-  }
+  },
+  "timestamp": "2022-03-02T08:52:24Z"
 }
 ```
 
@@ -245,7 +249,8 @@ If the **delete** method is used, only an export ID must be specified:
   "method": "delete",
   "payload": {
     "export_id": "<export id>"
-  }
+  },
+  "timestamp": "2022-03-02T08:52:25Z"
 }
 ```
 
@@ -254,10 +259,13 @@ If the **delete** method is used, only an export ID must be specified:
 Create a KafkaFilterClient object by providing a confluent kafka [Consumer](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#pythonclient-consumer) object, a FilterHandler object and the topic from which filters are to be consumed:
 
 ```python
-ew_lib.clients.KafkaFilterClient(kafka_consumer, filter_handler, filter_topic, poll_timeout=1.0)
+ew_lib.clients.KafkaFilterClient(kafka_consumer, filter_handler, filter_topic, poll_timeout=1.0, time_format=None, utc=True)
 ```
 
 KafkaFilterClient objects provide the following methods:
+
+`set_on_sync(callable, sync_delay=30)`: Set a callback for when filters have been synchronised. 
+The _callable_ argument requires a function and the _sync_delay_ argument defines how long the client will wait for new messages if the previously consumed messages are too old to determine a synchronised state.
 
 `start()`: Starts the background thread.
 
