@@ -24,7 +24,6 @@ import uuid
 import confluent_kafka
 import threading
 import json
-import time
 import datetime
 
 
