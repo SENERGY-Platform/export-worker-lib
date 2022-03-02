@@ -97,6 +97,9 @@ def validate_identifier(key: str, value: typing.Optional[typing.Union[str, int, 
 
 
 class FilterHandler:
+    """
+    Provides functionality for adding and removing filters as well as applying filters to messages and extracting data.
+    """
     __log_msg_prefix = "filter handler"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
@@ -276,6 +279,13 @@ class FilterHandler:
             raise exceptions.MessageIdentificationError(ex)
 
     def process_message(self, message: typing.Dict, source: typing.Optional[str] = None, builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = builders.dict_builder):
+        """
+        Applies filters to a message and extracts data.
+        :param message: Dictionary containing message data.
+        :param source: Message source.
+        :param builder: Builder function for custom data structures. Default is ew_lib.builders.dict_builder.
+        :return: List of tuples, which in turn contain the extracted data and the corresponding export IDs: `[(<data object>, ("<export id>", ...)), ...]`.
+        """
         with self.__lock:
             i_str = self.__identify_msg(msg=message) or source
             data_sets = list()
@@ -295,10 +305,20 @@ class FilterHandler:
             return data_sets
 
     def add_filter(self, filter: typing.Dict):
+        """
+        Add a filter.
+        :param filter: Dictionary containing filter data.
+        :return: None
+        """
         validate(filter, dict, "filter")
         self.__add(**filter)
 
     def delete_filter(self, export_id: str):
+        """
+        Delete a filter.
+        :param export_id: ID of an export of which the filter is to be deleted.
+        :return: None
+        """
         validate(export_id, str, "export_id")
         with self.__lock:
             if export_id in self.__exports:
@@ -315,6 +335,11 @@ class FilterHandler:
                 )
 
     def get_export_metadata(self, export_id: str) -> typing.Dict:
+        """
+        Get export metadata.
+        :param export_id: ID of an export.
+        :return: Dictionary containing source and the identifiers of a filter associated with the export ID.
+        """
         validate(export_id, str, "export_id")
         with self.__lock:
             try:
@@ -327,10 +352,17 @@ class FilterHandler:
                 raise exceptions.NoFilterError(ex)
 
     def get_sources(self) -> typing.List:
+        """
+        Get all sources added by filters.
+        :return: List containing sources.
+        """
         with self.__lock:
             return list(self.__sources)
 
     def get_sources_timestamp(self) -> typing.Optional[int]:
+        """
+        Get timestamp that indicates the last time a filter was added or removed.
+        :return: Timestamp or None.
+        """
         with self.__lock:
             return self.__sources_timestamp
-
