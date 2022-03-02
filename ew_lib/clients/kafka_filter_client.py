@@ -96,7 +96,7 @@ class KafkaFilterClient:
                                 timestamp = datetime.datetime.strptime(
                                     date_string=msg_obj[Message.timestamp],
                                     format=self.__time_format
-                                )
+                                ).timestamp()
                             else:
                                 timestamp = msg_obj[Message.timestamp]
                                 validate(timestamp, (float, int), "timestamp")
