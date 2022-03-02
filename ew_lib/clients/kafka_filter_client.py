@@ -43,7 +43,7 @@ class KafkaFilterClient:
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True):
         validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
         validate(filter_handler, FilterHandler, "filter_handler")
         validate(filter_topic, str, "filter_topic")
@@ -62,11 +62,15 @@ class KafkaFilterClient:
         )
         self.__poll_timeout = poll_timeout
         self.__time_format = time_format
+        self.__utc = utc
         self.__on_sync_callable = None
         self.__sync_delay = None
         self.__reset = True
         self.__stop = False
         self.__sync = False
+
+    def __get_time(self):
+        return datetime.datetime.utcnow().timestamp() if self.__utc else datetime.datetime.now().timestamp()
 
     def __handle_sync(self, time_a, time_b):
         if time_a >= time_b:
@@ -104,8 +108,8 @@ class KafkaFilterClient:
                                 raise exceptions.MethodError(method)
                             if self.__on_sync_callable and not self.__sync:
                                 if not start_time:
-                                    start_time = time.time()
-                                last_item_time = time.time()
+                                    start_time = self.__get_time()
+                                last_item_time = self.__get_time()
                                 self.__handle_sync(timestamp, start_time)
                             logger.debug(
                                 f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_obj[Message.payload]}"
@@ -120,7 +124,7 @@ class KafkaFilterClient:
                 else:
                     if self.__on_sync_callable and not self.__sync:
                         if start_time:
-                            self.__handle_sync(time.time() - last_item_time, self.__sync_delay)
+                            self.__handle_sync(self.__get_time() - last_item_time, self.__sync_delay)
             except Exception as ex:
                 start_time = None
                 last_item_time = 0
