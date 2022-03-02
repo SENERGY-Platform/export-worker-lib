@@ -46,10 +46,9 @@ class TestKafkaFilterClientSyncCallback(unittest.TestCase, TestFilterHandlerBase
         kafka_filter_client = ew_lib.clients.KafkaFilterClient(
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler,
-            filter_topic="filters",
-            on_sync=self._event.set,
-            sync_delay=5
+            filter_topic="filters"
         )
+        kafka_filter_client.set_on_sync(callable=self._event.set, sync_delay=5)
         self.assertFalse(self._event.is_set())
         kafka_filter_client.start()
         if timeout:
