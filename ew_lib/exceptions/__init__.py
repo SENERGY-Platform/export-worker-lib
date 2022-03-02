@@ -120,3 +120,8 @@ class KafkaFilterClientError(Exception):
 class MethodError(KafkaFilterClientError):
     def __init__(self, arg):
         super().__init__(f"unknown method: {arg}")
+
+
+class SetCallbackError(KafkaFilterClientError):
+    def __init__(self, arg):
+        super().__init__(f"can't set callback for running client: {arg}")
