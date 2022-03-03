@@ -42,7 +42,7 @@ class Filter:
 class Mapping:
     src_path = "src_path"
     dst_path = "dst_path"
-    type = "type"
+    dst_type = "dst_type"
 
 
 class Export:
@@ -65,14 +65,14 @@ def parse_mapping(mapping: typing.Dict) -> typing.List[typing.Dict]:
         parsed_mapping = list()
         for key, value in mapping.items():
             validate(value, str, "source path")
-            dst_path, val_type = key.split(":")
+            dst_path, dst_type = key.split(":")
             validate(dst_path, str, "destination path")
-            validate(val_type, str, "destination type")
+            validate(dst_type, str, "destination type")
             parsed_mapping.append(
                 {
                     Mapping.src_path: value,
                     Mapping.dst_path: dst_path,
-                    Mapping.type: val_type
+                    Mapping.dst_type: dst_type
                 }
             )
         return parsed_mapping
@@ -84,7 +84,7 @@ def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
     for mapping in mappings:
         try:
             src_path = mapping[Mapping.src_path].split(".")
-            yield mapping[Mapping.dst_path], type_map[mapping[Mapping.type]](get_value(src_path, msg, len(src_path) - 1))
+            yield mapping[Mapping.dst_path], type_map[mapping[Mapping.dst_type]](get_value(src_path, msg, len(src_path) - 1))
         except Exception as ex:
             raise exceptions.MappingError(ex)
 
