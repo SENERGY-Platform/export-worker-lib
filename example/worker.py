@@ -7,7 +7,7 @@ import threading
 
 # Environment variables for configuration. See 'docker-compose.yml' for more information.
 METADATA_BROKER_LIST = os.getenv("METADATA_BROKER_LIST")
-KAFKA_CONSUMER_GROUP_ID = os.getenv("KAFKA_CONSUMER_GROUP_ID")
+DATA_CONSUMER_GROUP_ID = os.getenv("DATA_CONSUMER_GROUP_ID")
 FILTER_CONSUMER_GROUP_ID = os.getenv("FILTER_CONSUMER_GROUP_ID")
 FILTER_TOPIC = os.getenv("FILTER_TOPIC")
 
@@ -66,7 +66,7 @@ kafka_data_client = ew_lib.clients.KafkaDataClient(
     kafka_consumer=confluent_kafka.Consumer(
         {
             "metadata.broker.list": METADATA_BROKER_LIST,
-            "group.id": KAFKA_CONSUMER_GROUP_ID,
+            "group.id": DATA_CONSUMER_GROUP_ID,
             "auto.offset.reset": "earliest",
             "partition.assignment.strategy": "cooperative-sticky"
         }
