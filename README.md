@@ -85,37 +85,41 @@ Replace 'X.X.X' with the desired version.
 ## Filters
 
 Filters are used to identify messages and extract data to be provided as exports.
-A filter is composed of an export ID, a source from which the messages originate, a mapping for data extraction as well as type conversion, and optional message identifiers.
+A filter is composed of an export ID, a source from which the messages originate, mappings for data extraction as well as type conversion, optional message identifiers and export arguments.
+The latter can be any information that is necessary for the handling of an export.
 
 The structure of a filter is shown below:
 
 ```python
 {
-  "export_id": "<export id>",
-  "source": "<message source>",
-  "mapping": {
-    "<target path>:<target type>": "<source path>"
-  },
-  "identifiers": [
-    {
-      "key": "<message key name>",
-      "value": "<message key value>"
+    "source": "<message source>",
+    "mappings": {
+        "<target path>:<value type>:<mapping type>": "<source path>"
     },
-    {
-      "key": "<message key name>"
-    }
-  ]
+    "identifiers": [
+        {
+            "key": "<message key name>",
+            "value": "<message key value>"
+        },
+        {
+            "key": "<message key name>"
+        }
+    ],
+    "export_id": "<export id>",
+    "export_args": {}
 }
 ```
 
-### Mapping
+### Mappings
 
-A mapping is specified as dictionary. A key consists of a target path under which data is stored in the export and a target type to which the data is to be converted. 
+A mappings are specified as a dictionary. A key consists of a target path under which data is stored in the export, a value type to which the data is to be converted and a mapping type.
+The mapping types _data_ and _extra_ are available. The _data_ type defines which data will be extracted for an export. 
+Additional data that is relevant for handling an export, such as a timestamp, is extracted by the _extra_ type.
 The source path to the message data to be extracted is specified as the value:
 
 ```python
 {
-  "<target path>:<target type>": "<source path>"
+    "<target path>:<value type>:<mapping type>": "<source path>"
 }
 ```
 
@@ -129,13 +133,13 @@ Identifiers are specified as a list of dictionaries. An identifier must have a "
 
 ```python
 [
-  {
-    "key": "<message key name>",
-    "value": "<message key value>"
-  },
-  {
-    "key": "<message key name>"
-  }
+    {
+        "key": "<message key name>",
+        "value": "<message key value>"
+    },
+    {
+        "key": "<message key name>"
+    }
 ]
 ```
 
