@@ -35,7 +35,7 @@ type_map = {
 class Filter:
     source = "source"
     identifiers = "identifiers"
-    mapping = "mapping"
+    mappings = "mappings"
     export_id = "export_id"
 
 
@@ -59,31 +59,31 @@ class Export:
     identifiers = "identifiers"
 
 
-def hash_mapping(mapping: typing.Dict):
+def hash_mappings(mappings: typing.Dict):
     try:
-        return hash_dict(mapping)
+        return hash_dict(mappings)
     except Exception as ex:
-        raise exceptions.HashMappingError(f"{ex} - {mapping}")
+        raise exceptions.HashMappingError(f"{ex} - {mappings}")
 
 
-def parse_mapping(mapping: typing.Dict) -> typing.List[typing.Dict]:
+def parse_mappings(mappings: typing.Dict) -> typing.List[typing.Dict]:
     try:
-        parsed_mapping = list()
-        for key, value in mapping.items():
+        parsed_mappings = list()
+        for key, value in mappings.items():
             validate(value, str, "source path")
             dst_path, dst_type = key.split(":")
             validate(dst_path, str, "destination path")
             validate(dst_type, str, "destination type")
-            parsed_mapping.append(
+            parsed_mappings.append(
                 {
                     Mapping.src_path: value,
                     Mapping.dst_path: dst_path,
                     Mapping.value_type: dst_type
                 }
             )
-        return parsed_mapping
+        return parsed_mappings
     except Exception as ex:
-        raise exceptions.ParseMappingError(f"{ex} - {mapping}")
+        raise exceptions.ParseMappingError(f"{ex} - {mappings}")
 
 
 def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
@@ -116,7 +116,7 @@ class FilterHandler:
         self.__mappings = dict()
         self.__sources = set()
         self.__exports = dict()
-        self.__mapping_export_map = dict()
+        self.__mappings_export_map = dict()
         self.__msg_identifiers_export_map = dict()
         self.__sources_export_map = dict()
         self.__sources_timestamp = None
@@ -143,23 +143,23 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.DeleteFilterError(ex)
 
-    def __add_mapping(self, mapping: typing.Dict, m_hash: str, export_id: str):
+    def __add_mappings(self, mappings: typing.Dict, m_hash: str, export_id: str):
         try:
             if m_hash not in self.__mappings:
-                self.__mappings[m_hash] = parse_mapping(mapping=mapping)
-            if m_hash not in self.__mapping_export_map:
-                self.__mapping_export_map[m_hash] = {export_id}
+                self.__mappings[m_hash] = parse_mappings(mappings=mappings)
+            if m_hash not in self.__mappings_export_map:
+                self.__mappings_export_map[m_hash] = {export_id}
             else:
-                self.__mapping_export_map[m_hash].add(export_id)
+                self.__mappings_export_map[m_hash].add(export_id)
         except Exception as ex:
             raise exceptions.AddMappingError(ex)
 
-    def __del_mapping(self, m_hash: str, export_id: str):
+    def __del_mappings(self, m_hash: str, export_id: str):
         try:
-            self.__mapping_export_map[m_hash].discard(export_id)
-            if not self.__mapping_export_map[m_hash]:
+            self.__mappings_export_map[m_hash].discard(export_id)
+            if not self.__mappings_export_map[m_hash]:
                 del self.__mappings[m_hash]
-                del self.__mapping_export_map[m_hash]
+                del self.__mappings_export_map[m_hash]
         except Exception as ex:
             raise exceptions.DeleteMappingError(ex)
 
@@ -238,14 +238,14 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.DeleteExportError(ex)
 
-    def __add(self, source: str, mapping: typing.Dict, export_id: str, identifiers: typing.Optional[list] = None):
+    def __add(self, source: str, mappings: typing.Dict, export_id: str, identifiers: typing.Optional[list] = None):
         validate(source, str, Filter.source)
-        validate(mapping, dict, Filter.mapping)
+        validate(mappings, dict, Filter.mappings)
         validate(export_id, str, Filter.export_id)
         if identifiers:
             validate(identifiers, list, Filter.identifiers)
         with self.__lock:
-            m_hash = hash_mapping(mapping=mapping)
+            m_hash = hash_mappings(mappings=mappings)
             if identifiers:
                 i_hash, i_str = self.__add_msg_identifier(identifiers=identifiers, export_id=export_id)
             else:
@@ -259,7 +259,7 @@ class FilterHandler:
                 i_str=i_str,
                 identifiers=identifiers
             )
-            self.__add_mapping(mapping=mapping, m_hash=m_hash, export_id=export_id)
+            self.__add_mappings(mappings=mappings, m_hash=m_hash, export_id=export_id)
             self.__add_source(source=source, export_id=export_id)
             self.__add_filter(
                 i_str=i_str,
@@ -297,11 +297,11 @@ class FilterHandler:
             data_sets = list()
             if i_str in self.__msg_filters:
                 try:
-                    for mapping_id in self.__msg_filters[i_str]:
+                    for m_hash in self.__msg_filters[i_str]:
                         data_sets.append(
                             (
-                                builder(mapper(self.__mappings[mapping_id], message)),
-                                tuple(self.__msg_filters[i_str][mapping_id])
+                                builder(mapper(self.__mappings[m_hash], message)),
+                                tuple(self.__msg_filters[i_str][m_hash])
                             )
                         )
                 except Exception as ex:
@@ -332,7 +332,7 @@ class FilterHandler:
                 self.__del_export(export_id=export_id)
                 if export[Export.i_hash]:
                     self.__del_msg_identifier(i_hash=export[Export.i_hash], export_id=export_id)
-                self.__del_mapping(m_hash=export[Export.m_hash], export_id=export_id)
+                self.__del_mappings(m_hash=export[Export.m_hash], export_id=export_id)
                 self.__del_source(source=export[Export.source], export_id=export_id)
                 self.__del_filter(
                     i_str=export[Export.i_str],
