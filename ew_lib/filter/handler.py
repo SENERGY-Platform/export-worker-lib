@@ -248,7 +248,7 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.DeleteExportError(ex)
 
-    def __add(self, source: str, mappings: typing.Dict, export_id: str, identifiers: typing.Optional[list] = None):
+    def __add(self, source: str, mappings: typing.Dict, export_id: str, identifiers: typing.Optional[list] = None, export_args: typing.Optional[typing.Dict] = None):
         validate(source, str, Filter.source)
         validate(mappings, dict, Filter.mappings)
         validate(export_id, str, Filter.export_id)
