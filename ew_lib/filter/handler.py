@@ -329,7 +329,6 @@ class FilterHandler:
         :param filter: Dictionary containing filter data.
         :return: None
         """
-        validate(filter, dict, "filter")
         self.__add(**filter)
 
     def delete_filter(self, export_id: str):
@@ -338,7 +337,6 @@ class FilterHandler:
         :param export_id: ID of an export of which the filter is to be deleted.
         :return: None
         """
-        validate(export_id, str, "export_id")
         with self.__lock:
             if export_id in self.__exports:
                 export = self.__exports[export_id]
