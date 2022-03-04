@@ -16,7 +16,7 @@
           "value": "a-1"
         }
       ],
-      "mapping": {
+      "mappings": {
         "val:int": "val"
       },
       "export_id": "export-1"
@@ -37,7 +37,7 @@
           "value": "b-1"
         }
       ],
-      "mapping": {
+      "mappings": {
         "val:int": "val"
       },
       "export_id": "export-2"
@@ -58,7 +58,7 @@
           "value": "b-1"
         }
       ],
-      "mapping": {
+      "mappings": {
         "val:int": "val"
       },
       "export_id": "export-3"
@@ -79,7 +79,7 @@
           "value": "b-2"
         }
       ],
-      "mapping": {
+      "mappings": {
         "val:int": "val"
       },
       "export_id": "export-4"
@@ -111,7 +111,7 @@
           "value": "c-1"
         }
       ],
-      "mapping": {
+      "mappings": {
         "val:int": "val"
       },
       "export_id": "export-4"
@@ -136,7 +136,7 @@
           "value": "c-1"
         }
       ],
-      "mapping": {
+      "mappings": {
         "value:int": "val"
       },
       "export_id": "export-5"
@@ -153,7 +153,7 @@
           "value": "d-1"
         }
       ],
-      "mapping": {
+      "mappings": {
         "val:int": "val"
       },
       "export_id": "export-6"
@@ -170,7 +170,7 @@
           "value": "g-1"
         }
       ],
-      "mapping": {
+      "mappings": {
         "val_a:int": "data.val",
         "val_b:int": "data.sub.val"
       },
@@ -188,7 +188,7 @@
           "value": "h-1"
         }
       ],
-      "mapping": {
+      "mappings": {
         "val_int:int": "val_int",
         "val_float:float": "val_float",
         "val_str:string": "val_str",
@@ -212,7 +212,7 @@
           "key": "data"
         }
       ],
-      "mapping": {
+      "mappings": {
         "val:int": "data.val"
       },
       "export_id": "export-9"
@@ -224,7 +224,7 @@
     "payload": {
       "source": "src_2",
       "identifiers": null,
-      "mapping": {
+      "mappings": {
         "val:int": "val"
       },
       "export_id": "export-10"
