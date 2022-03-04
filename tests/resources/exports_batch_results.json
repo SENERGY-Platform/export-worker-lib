@@ -1,7 +1,7 @@
 [
-  {"export-1": [{"val": 1}], "export-3": [{"val": 2}], "export-2": [{"val": 2}]},
-  {"export-4": [{"val": 4}], "export-5": [{"value": 4}]},
-  {"export-6": [{"val": 5}, {"val": 6}]},
-  {"export-7": [{"val_a": 7, "val_b": 7}], "export-8": [{"val_int": 8, "val_float": 8.0, "val_str": "eight", "val_bool": true, "val_json": "{\"key\":\"val\"}"}]},
-  {"export-9": [{"val": 9}], "export-10": [{"val": 10}]}
+  {"export-1": [{"data": {"val": 1}, "extra": {}}], "export-3": [{"data": {"val": 2}, "extra": {}}], "export-2": [{"data": {"val": 2}, "extra": {}}]},
+  {"export-4": [{"data": {"val": 4}, "extra": {}}], "export-5": [{"data": {"value": 4}, "extra": {}}]},
+  {"export-6": [{"data": {"val": 5}, "extra": {}}, {"data": {"val": 6}, "extra": {}}]},
+  {"export-7": [{"data": {"val_a": 7, "val_b": 7}, "extra": {}}], "export-8": [{"data": {"val_int": 8, "val_float": 8.0, "val_str": "eight", "val_bool": true, "val_json": "{\"key\":\"val\"}"}, "extra": {}}]},
+  {"export-9": [{"data": {"val": 9}, "extra": {}}], "export-10": [{"data": {"val": 9}, "extra": {"val": 9}}], "export-11": [{"data": {"val": 10}, "extra": {}}]}
 ]
