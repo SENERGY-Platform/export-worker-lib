@@ -18,7 +18,7 @@ __all__ = ("KafkaDataClient", )
 
 from .. import exceptions, builders
 from .._util import logger, handle_kafka_error, log_kafka_sub_action, validate
-from ..filter import FilterHandler
+from ..filter import FilterHandler, MappingType
 import uuid
 import typing
 import confluent_kafka
@@ -107,8 +107,11 @@ class KafkaDataClient:
                         )
                         exports = dict()
                         for data in filtered_data:
-                            for export_id in data[1]:
-                                exports[export_id] = data[0]
+                            for export_id in data[2]:
+                                exports[export_id] = {
+                                    MappingType.data: data[0],
+                                    MappingType.extra: data[1]
+                                }
                         return exports
                     except (exceptions.MessageIdentificationError, exceptions.NoFilterError):
                         pass
@@ -140,11 +143,21 @@ class KafkaDataClient:
                                 builder=self.__builder
                             )
                             for data in filtered_data:
-                                for export_id in data[1]:
+                                for export_id in data[2]:
                                     if export_id not in exports_batch:
-                                        exports_batch[export_id] = [data[0]]
+                                        exports_batch[export_id] = [
+                                            {
+                                                MappingType.data: data[0],
+                                                MappingType.extra: data[1]
+                                            }
+                                        ]
                                     else:
-                                        exports_batch[export_id].append(data[0])
+                                        exports_batch[export_id].append(
+                                            {
+                                                MappingType.data: data[0],
+                                                MappingType.extra: data[1]
+                                            }
+                                        )
                         except (exceptions.MessageIdentificationError, exceptions.NoFilterError):
                             pass
                         except exceptions.FilterMessageError as ex:
