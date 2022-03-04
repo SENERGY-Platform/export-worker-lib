@@ -42,7 +42,7 @@ class Filter:
 class Mapping:
     src_path = "src_path"
     dst_path = "dst_path"
-    value_type = "dst_type"
+    value_type = "value_type"
 
 
 class Export:
