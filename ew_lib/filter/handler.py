@@ -351,22 +351,17 @@ class FilterHandler:
                     export_id=export_id
                 )
 
-    def get_export_metadata(self, export_id: str) -> typing.Dict:
+    def get_export(self, export_id: str) -> typing.Dict:
         """
-        Get export metadata.
+        Get export information.
         :param export_id: ID of an export.
-        :return: Dictionary containing source and the identifiers of a filter associated with the export ID.
+        :return: Dictionary containing source and args of an export.
         """
-        validate(export_id, str, "export_id")
         with self.__lock:
-            try:
-                return {
-                    "export_id": export_id,
-                    Export.source: self.__exports[export_id][Export.source],
-                    Export.identifiers: self.__exports[export_id][Export.identifiers]
-                }
-            except KeyError as ex:
-                raise exceptions.NoFilterError(ex)
+            return {
+                Export.source: self.__exports[export_id][Export.source],
+                Export.args: self.__exports[export_id][Export.args]
+            }
 
     def get_sources(self) -> typing.List:
         """
