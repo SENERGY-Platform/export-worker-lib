@@ -71,14 +71,14 @@ def parse_mappings(mappings: typing.Dict) -> typing.List[typing.Dict]:
         parsed_mappings = list()
         for key, value in mappings.items():
             validate(value, str, "source path")
-            dst_path, dst_type = key.split(":")
+            dst_path, value_type = key.split(":")
             validate(dst_path, str, "destination path")
-            validate(dst_type, str, "destination type")
+            validate(value_type, str, "value type")
             parsed_mappings.append(
                 {
                     Mapping.src_path: value,
                     Mapping.dst_path: dst_path,
-                    Mapping.value_type: dst_type
+                    Mapping.value_type: value_type
                 }
             )
         return parsed_mappings
