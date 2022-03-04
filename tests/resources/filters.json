@@ -19,7 +19,10 @@
       "mappings": {
         "val:int:data": "val"
       },
-      "export_id": "export-1"
+      "export_id": "export-1",
+      "export_args": {
+        "arg": "test"
+      }
     },
     "timestamp": 1646145514
   },
