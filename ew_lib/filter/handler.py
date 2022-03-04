@@ -37,6 +37,7 @@ class Filter:
     identifiers = "identifiers"
     mappings = "mappings"
     export_id = "export_id"
+    export_args = "export_args"
 
 
 class Identifier:
@@ -60,7 +61,7 @@ class Export:
     m_hash = "m_hash"
     i_hash = "i_hash"
     i_str = "i_str"
-    identifiers = "identifiers"
+    args = "args"
 
 
 def hash_mappings(mappings: typing.Dict):
@@ -229,14 +230,14 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.DeleteSourceError(ex)
 
-    def __add_export(self, export_id: str, source: str, m_hash: str, i_hash: str, i_str: str, identifiers: typing.Optional[typing.List] = None):
+    def __add_export(self, export_id: str, source: str, m_hash: str, i_hash: str, i_str: str, export_args: typing.Optional[typing.Dict] = None):
         try:
             self.__exports[export_id] = {
                 Export.source: source,
                 Export.m_hash: m_hash,
                 Export.i_hash: i_hash,
                 Export.i_str: i_str,
-                Export.identifiers: identifiers
+                Export.args: export_args
             }
         except Exception as ex:
             raise exceptions.AddExportError(ex)
@@ -266,7 +267,7 @@ class FilterHandler:
                 m_hash=m_hash,
                 i_hash=i_hash,
                 i_str=i_str,
-                identifiers=identifiers
+                export_args=export_args
             )
             self.__add_mappings(mappings=mappings, m_hash=m_hash, export_id=export_id)
             self.__add_source(source=source, export_id=export_id)
