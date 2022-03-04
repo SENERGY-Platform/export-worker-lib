@@ -106,9 +106,9 @@ def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
 
 
 def validate_identifier(key: str, value: typing.Optional[typing.Union[str, int, float]] = None):
-    validate(key, str, "identifier key")
+    validate(key, str, f"identifier {Identifier.key}")
     if value:
-        validate(value, (str, int, float), "identifier value")
+        validate(value, (str, int, float), f"identifier {Identifier.value}")
     return key, value
 
 
@@ -249,11 +249,13 @@ class FilterHandler:
             raise exceptions.DeleteExportError(ex)
 
     def __add(self, source: str, mappings: typing.Dict, export_id: str, identifiers: typing.Optional[list] = None, export_args: typing.Optional[typing.Dict] = None):
-        validate(source, str, Filter.source)
-        validate(mappings, dict, Filter.mappings)
-        validate(export_id, str, Filter.export_id)
+        validate(source, str, f"filter {Filter.source}")
+        validate(mappings, dict, f"filter {Filter.mappings}")
+        validate(export_id, str, f"filter {Filter.export_id}")
         if identifiers:
-            validate(identifiers, list, Filter.identifiers)
+            validate(identifiers, list, f"filter {Filter.identifiers}")
+        if export_args:
+            validate(export_args, dict, f"filter {Filter.export_args}")
         with self.__lock:
             m_hash = hash_mappings(mappings=mappings)
             if identifiers:
