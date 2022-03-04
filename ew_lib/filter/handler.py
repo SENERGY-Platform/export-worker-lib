@@ -43,7 +43,6 @@ class Mapping:
     src_path = "src_path"
     dst_path = "dst_path"
     value_type = "value_type"
-    type = "type"
 
 
 class MappingType:
