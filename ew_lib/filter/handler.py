@@ -65,19 +65,24 @@ def hash_mappings(mappings: typing.Dict):
         raise exceptions.HashMappingError(f"{ex} - {mappings}")
 
 
-def parse_mappings(mappings: typing.Dict) -> typing.List[typing.Dict]:
+def parse_mappings(mappings: typing.Dict) -> typing.Dict:
     try:
-        parsed_mappings = list()
+        parsed_mappings = {
+            MappingType.data: list(),
+            MappingType.extra: list()
+        }
         for key, value in mappings.items():
             validate(value, str, "source path")
-            dst_path, value_type = key.split(":")
+            dst_path, val_type, m_type = key.split(":")
             validate(dst_path, str, "destination path")
-            validate(value_type, str, "value type")
-            parsed_mappings.append(
+            validate(val_type, str, "value type")
+            validate(m_type, str, "mapping type")
+            assert m_type in MappingType.__dict__.values()
+            parsed_mappings[m_type].append(
                 {
                     Mapping.src_path: value,
                     Mapping.dst_path: dst_path,
-                    Mapping.value_type: value_type
+                    Mapping.value_type: val_type
                 }
             )
         return parsed_mappings
@@ -299,7 +304,8 @@ class FilterHandler:
                     for m_hash in self.__msg_filters[i_str]:
                         data_sets.append(
                             (
-                                builder(mapper(self.__mappings[m_hash], message)),
+                                builder(mapper(self.__mappings[m_hash][MappingType.data], message)),
+                                builder(mapper(self.__mappings[m_hash][MappingType.extra], message)),
                                 tuple(self.__msg_filters[i_str][m_hash])
                             )
                         )
