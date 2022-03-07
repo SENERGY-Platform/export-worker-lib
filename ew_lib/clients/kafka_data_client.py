@@ -100,19 +100,11 @@ class KafkaDataClient:
             if msg_obj:
                 if not msg_obj.error():
                     try:
-                        filtered_data = self.__filter_handler.process_message(
+                        return self.__filter_handler.process_message(
                             message=json.loads(msg_obj.value()),
                             source=msg_obj.topic(),
                             builder=self.__builder
                         )
-                        exports = dict()
-                        for data in filtered_data:
-                            for export_id in data[2]:
-                                exports[export_id] = {
-                                    MappingType.data: data[0],
-                                    MappingType.extra: data[1]
-                                }
-                        return exports
                     except (exceptions.MessageIdentificationError, exceptions.NoFilterError):
                         pass
                     except exceptions.FilterMessageError as ex:
