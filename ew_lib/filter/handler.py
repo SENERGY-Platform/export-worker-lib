@@ -302,7 +302,7 @@ class FilterHandler:
         :param message: Dictionary containing message data.
         :param source: Message source.
         :param builder: Builder function for custom data structures. Default is ew_lib.builders.dict_builder.
-        :return: List of tuples, which in turn contain the extracted data and the corresponding export IDs: `[(<data object>, ("<export id>", ...)), ...]`.
+        :return: List of tuples, which in turn contain the extracted data and the corresponding export IDs: `[(<data object>, <extra object>, ("<export id>", ...)), ...]`.
         """
         with self.__lock:
             i_str = self.__identify_msg(msg=message) or source
