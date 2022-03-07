@@ -188,10 +188,10 @@ Raises DeleteExportError, DeleteMessageIdentifierError, DeleteMappingError, Dele
 `get_export_metadata(export_id)`: Returns a dictionary with the source and the identifiers of a filter that corresponds to the export ID provided as a string to the _export_id_ argument.
 Raises NoFilterError.
 
-`process_message(message, source, builder)`: This method is used to apply filters by passing a message as a dictionary to the _message_ argument. 
+`process_message(message, source, builder)`: ~~This method is used to apply filters by passing a message as a dictionary to the _message_ argument. 
 Optionally, the source of the message can be passed as a string to the _source_ argument and a custom [builder](#builders) to the _builder_ argument.
 The method returns a list of tuples, which in turn contain the extracted data and the corresponding export IDs: `[(<data object>, ("<export id>", ...)), ...]`.
-Raises FilterMessageError, NoFilterError, MessageIdentificationError and MappingError.
+Raises FilterMessageError, NoFilterError, MessageIdentificationError and MappingError.~~
 
 ## Clients
 
@@ -230,7 +230,7 @@ If the **put** method is used, the payload corresponds to the structure defined 
     "export_id": "<export id>",
     "source": "<message source>",
     "mapping": {
-      "<target path>:<target type>": "<source path>"
+      "<target path>:<value type>:<mapping type>": "<source path>"
     },
     "identifiers": [
       {
@@ -290,12 +290,12 @@ ew_lib.clients.KafkaDataClient(kafka_consumer, filter_handler, builder=builders.
 
 KafkaDataClient objects provide the following methods:
 
-`get_exports(timeout)`: Consumes one message and passes it to a FilterHandler object for processing.
-Returns a dictionary containing exports for the consumed message `{"<export id>": <data object>, ...}` or `None` if no matching filters are present or if the _timeout_ period as been exceeded and no message has been consumed.
+`get_exports(timeout)`: ~~Consumes one message and passes it to a FilterHandler object for processing.
+Returns a dictionary containing exports for the consumed message `{"<export id>": <data object>, ...}` or `None` if no matching filters are present or if the _timeout_ period as been exceeded and no message has been consumed.~~
 
-`get_exports_batch(timeout, limit)`: Consumes many messages and passes them to a FilterHandler object for processing. 
+`get_exports_batch(timeout, limit)`: ~~Consumes many messages and passes them to a FilterHandler object for processing. 
 The _limit_ argument defines the maximum number of messages that can be consumed.
-Returns a dictionary containing exports for the consumed messages `{"<export id>": [<data object>, ...], ...}` or `None` if no matching filters are present or if the _timeout_ period as been exceeded and no messages have been consumed.
+Returns a dictionary containing exports for the consumed messages `{"<export id>": [<data object>, ...], ...}` or `None` if no matching filters are present or if the _timeout_ period as been exceeded and no messages have been consumed.~~
 
 `start()`: Starts the background thread.
 
