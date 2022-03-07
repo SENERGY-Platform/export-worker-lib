@@ -296,7 +296,7 @@ class FilterHandler:
         except Exception as ex:
             raise exceptions.MessageIdentificationError(ex)
 
-    def process_message(self, message: typing.Dict, source: typing.Optional[str] = None, builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = builders.dict_builder):
+    def process_message(self, message: typing.Dict, source: typing.Optional[str] = None, builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = builders.dict_builder) -> typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple]]:
         """
         Applies filters to a message and extracts data.
         :param message: Dictionary containing message data.
