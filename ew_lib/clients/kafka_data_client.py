@@ -93,7 +93,7 @@ class KafkaDataClient:
         """
         Consumes one message and passes it to a FilterHandler object for processing.
         :param timeout: Maximum time in seconds to block waiting for message.
-        :return: Dictionary containing exports {"<export id>": <data object>, ...} or None.
+        :return: List containing exports [(<data object>, <extra object>, ("<export id>", ...)), ...] or None.
         """
         with self.__lock:
             msg_obj = self.__consumer.poll(timeout=timeout)
@@ -120,7 +120,7 @@ class KafkaDataClient:
         Consumes many messages and passes them to a FilterHandler object for processing.
         :param timeout: Maximum time in seconds to block waiting for messages.
         :param limit: Defines the maximum number of messages that can be consumed.
-        :return: Dictionary containing exports {"<export id>": [<data object>, ...], ...} or None.
+        :return: List containing exports [(<data object>, <extra object>, ("<export id>", ...)), ...] or None.
         """
         with self.__lock:
             msg_obj_list = self.__consumer.consume(num_messages=limit, timeout=timeout)
