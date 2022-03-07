@@ -125,31 +125,15 @@ class KafkaDataClient:
         with self.__lock:
             msg_obj_list = self.__consumer.consume(num_messages=limit, timeout=timeout)
             if msg_obj_list:
-                exports_batch = dict()
+                exports_batch = list()
                 for msg_obj in msg_obj_list:
                     if not msg_obj.error():
                         try:
-                            filtered_data = self.__filter_handler.process_message(
+                            exports_batch += self.__filter_handler.process_message(
                                 message=json.loads(msg_obj.value()),
                                 source=msg_obj.topic(),
                                 builder=self.__builder
                             )
-                            for data in filtered_data:
-                                for export_id in data[2]:
-                                    if export_id not in exports_batch:
-                                        exports_batch[export_id] = [
-                                            {
-                                                MappingType.data: data[0],
-                                                MappingType.extra: data[1]
-                                            }
-                                        ]
-                                    else:
-                                        exports_batch[export_id].append(
-                                            {
-                                                MappingType.data: data[0],
-                                                MappingType.extra: data[1]
-                                            }
-                                        )
                         except (exceptions.MessageIdentificationError, exceptions.NoFilterError):
                             pass
                         except exceptions.FilterMessageError as ex:
