@@ -43,6 +43,15 @@ with open("tests/resources/filters.json") as file:
 with open("tests/resources/filters_bad.json") as file:
     filters_bad: list = json.load(file)
 
+with open("tests/resources/exports_results.json") as file:
+    results: list = json.load(file)
+
+with open("tests/resources/exports_batch_results_l2.json") as file:
+    batch_results_l2: list = json.load(file)
+
+with open("tests/resources/exports_batch_results_l3.json") as file:
+    batch_results_l3: list = json.load(file)
+
 
 def test_filter_ingestion(test_obj, filters):
     filter_handler = ew_lib.filter.FilterHandler()
