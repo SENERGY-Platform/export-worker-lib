@@ -17,15 +17,6 @@
 from ._util import *
 import unittest
 import ew_lib
-import json
-import time
-
-
-with open("tests/resources/exports_results.json") as file:
-    results: list = json.load(file)
-
-with open("tests/resources/exports_batch_results.json") as file:
-    batch_results: list = json.load(file)
 
 
 class TestKafkaDataClient(unittest.TestCase):
