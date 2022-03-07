@@ -17,11 +17,6 @@
 from ._util import *
 import unittest
 import ew_lib
-import json
-
-
-with open("tests/resources/filter_message_results.json") as file:
-    results: list = json.load(file)
 
 
 class TestFilterHandlerBase:
