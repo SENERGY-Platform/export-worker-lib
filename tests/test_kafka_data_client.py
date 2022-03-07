@@ -37,9 +37,9 @@ class TestKafkaDataClient(unittest.TestCase):
         while not test_kafka_consumer.empty():
             exports = kafka_data_client.get_exports(timeout=1.0)
             if exports:
-                self.assertIn(exports, results)
+                self.assertIn(str(exports), results)
                 count += 1
-        self.assertEqual(count, len(results))
+        self.assertEqual(count, len(results) - 1)
         kafka_data_client.stop()
 
     def test_get_exports_batch_good_filters(self):
