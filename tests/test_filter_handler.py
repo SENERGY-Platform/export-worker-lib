@@ -68,12 +68,11 @@ class TestFilterHandlerBase:
                     pass
         self.assertEqual(count, 0)
 
-    def test_get_export(self):
+    def test_get_export_args(self):
         filter_handler = self._init_filter_handler(filters=filters)
         self.assertIsNotNone(filter_handler.get_sources_timestamp())
-        export = filter_handler.get_export(export_id="export-1")
-        self.assertIn(export["source"], sources)
-        self.assertEqual(export["args"]["arg"], "test")
+        export_args = filter_handler.get_export_args(export_id="export-1")
+        self.assertEqual(export_args["arg"], "test")
 
 
 class TestFilterHandler(unittest.TestCase, TestFilterHandlerBase):
