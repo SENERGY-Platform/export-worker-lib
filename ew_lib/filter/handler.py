@@ -351,17 +351,14 @@ class FilterHandler:
                     export_id=export_id
                 )
 
-    def get_export(self, export_id: str) -> typing.Dict:
+    def get_export_args(self, export_id: str) -> typing.Dict:
         """
-        Get export information.
+        Get export arguments.
         :param export_id: ID of an export.
-        :return: Dictionary containing source and args of an export.
+        :return: Dictionary containing args of an export.
         """
         with self.__lock:
-            return {
-                Export.source: self.__exports[export_id][Export.source],
-                Export.args: self.__exports[export_id][Export.args]
-            }
+            return self.__exports[export_id][Export.args]
 
     def get_sources(self) -> typing.List:
         """
