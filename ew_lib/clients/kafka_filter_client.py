@@ -105,8 +105,8 @@ class KafkaFilterClient:
                             method = msg_obj[Message.method]
                             if self.__time_format:
                                 timestamp = datetime.datetime.strptime(
-                                    date_string=msg_obj[Message.timestamp],
-                                    format=self.__time_format
+                                    msg_obj[Message.timestamp],
+                                    self.__time_format
                                 ).timestamp()
                             else:
                                 timestamp = msg_obj[Message.timestamp]
