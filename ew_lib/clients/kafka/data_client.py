@@ -158,14 +158,14 @@ class KafkaDataClient:
                         except ew_lib.filter.exceptions.FilterMessageError as ex:
                             ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                     else:
-                        msg_exceptions.append(
-                            KafkaMessageError(
+                        ex = KafkaMessageError(
                                 msg=msg_obj.error().str(),
                                 code=msg_obj.error().code(),
                                 retry=msg_obj.error().retriable(),
                                 fatal=msg_obj.error().fatal()
                             )
-                        )
+                        msg_exceptions.append(ex)
+                        ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                 return exports_batch, msg_exceptions
 
     def store_offsets(self):
