@@ -16,9 +16,11 @@
 
 
 class KafkaMessageError(Exception):
-    def __init__(self, msg, code):
+    def __init__(self, msg, code, retry, fatal):
         self.code = code
-        super().__init__(f"kafka message error: {msg}")
+        self.fatal = fatal
+        self.retry = retry
+        super().__init__(f"kafka message error: code={code} text={msg}")
 
 
 class KafkaFilterClientError(Exception):
