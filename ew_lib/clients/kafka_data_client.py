@@ -112,7 +112,7 @@ class KafkaDataClient:
                 else:
                     raise exceptions.KafkaMessageError(msg_obj.error().str(), msg_obj.error().code())
 
-    def get_exports_batch(self, timeout: float, limit: int) -> typing.Optional[typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple]]]:
+    def get_exports_batch(self, timeout: float, limit: int) -> typing.Optional[typing.Tuple[typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple]], typing.List[exceptions.KafkaMessageError]]]:
         """
         Consumes many messages and passes them to a FilterHandler object for processing.
         :param timeout: Maximum time in seconds to block waiting for messages.
@@ -123,6 +123,7 @@ class KafkaDataClient:
             msg_obj_list = self.__consumer.consume(num_messages=limit, timeout=timeout)
             if msg_obj_list:
                 exports_batch = list()
+                msg_exceptions = list()
                 for msg_obj in msg_obj_list:
                     if not msg_obj.error():
                         try:
@@ -136,13 +137,8 @@ class KafkaDataClient:
                         except exceptions.FilterMessageError as ex:
                             logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                     else:
-                        handle_kafka_error(
-                            msg_obj=msg_obj,
-                            text=KafkaDataClient.__log_err_msg_prefix,
-                            raise_error=False
-                        )
-                if exports_batch:
-                    return exports_batch
+                        msg_exceptions.append(exceptions.KafkaMessageError(msg_obj.error().str(), msg_obj.error().code()))
+                return exports_batch, msg_exceptions
 
     def start(self):
         """
