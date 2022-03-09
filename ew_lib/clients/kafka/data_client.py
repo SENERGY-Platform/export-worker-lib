@@ -119,7 +119,12 @@ class KafkaDataClient:
                     except ew_lib.filter.exceptions.FilterMessageError as ex:
                         ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                 else:
-                    raise KafkaMessageError(msg_obj.error().str(), msg_obj.error().code())
+                    raise KafkaMessageError(
+                        msg=msg_obj.error().str(),
+                        code=msg_obj.error().code(),
+                        retry=msg_obj.error().retriable(),
+                        fatal=msg_obj.error().fatal()
+                    )
 
     def get_exports_batch(self, timeout: float, limit: int) -> typing.Optional[typing.Tuple[typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple]], typing.List[KafkaMessageError]]]:
         """
@@ -152,7 +157,14 @@ class KafkaDataClient:
                         except ew_lib.filter.exceptions.FilterMessageError as ex:
                             ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                     else:
-                        msg_exceptions.append(KafkaMessageError(msg_obj.error().str(), msg_obj.error().code()))
+                        msg_exceptions.append(
+                            KafkaMessageError(
+                                msg=msg_obj.error().str(),
+                                code=msg_obj.error().code(),
+                                retry=msg_obj.error().retriable(),
+                                fatal=msg_obj.error().fatal()
+                            )
+                        )
                 return exports_batch, msg_exceptions
 
     def store_offsets(self):

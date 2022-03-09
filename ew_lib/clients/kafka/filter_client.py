@@ -129,7 +129,12 @@ class KafkaFilterClient:
                         except Exception as ex:
                             ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
                     else:
-                        raise KafkaMessageError(msg_obj.error().str(), msg_obj.error().code())
+                        raise KafkaMessageError(
+                            msg=msg_obj.error().str(),
+                            code=msg_obj.error().code(),
+                            retry=msg_obj.error().retriable(),
+                            fatal=msg_obj.error().fatal()
+                        )
                 else:
                     if self.__on_sync_callable and not self.__sync:
                         if start_time:
