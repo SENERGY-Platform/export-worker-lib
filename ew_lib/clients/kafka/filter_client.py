@@ -140,9 +140,8 @@ class KafkaFilterClient:
                         if start_time:
                             self.__handle_sync(self.__get_time() - last_item_time, self.__sync_delay)
             except Exception as ex:
-                start_time = None
-                last_item_time = 0
-                ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
+                ew_lib._util.logger.critical(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
+                self.stop()
         self.__consumer.close()
 
     def __on_assign(self, consumer: confluent_kafka.Consumer, partitions: typing.List[confluent_kafka.TopicPartition]):
