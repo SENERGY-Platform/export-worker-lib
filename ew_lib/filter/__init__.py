@@ -15,3 +15,4 @@
 """
 
 from .handler import *
+import ew_lib.filter.exceptions

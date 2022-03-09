@@ -21,7 +21,7 @@ class Worker:
     """
     Basic example worker that outputs exports to the console.
     """
-    def __init__(self, kafka_data_client: ew_lib.clients.KafkaDataClient, event: threading.Event):
+    def __init__(self, kafka_data_client: ew_lib.clients.kafka.KafkaDataClient, event: threading.Event):
         self.__kafka_data_client = kafka_data_client
         self.__event = event
         self.__stop = False
@@ -49,7 +49,7 @@ class Worker:
 filter_handler = ew_lib.filter.FilterHandler()
 
 # Initialize a KafkaFilterClient to consume filters from a kafka topic.
-kafka_filter_client = ew_lib.clients.KafkaFilterClient(
+kafka_filter_client = ew_lib.clients.kafka.KafkaFilterClient(
     kafka_consumer=confluent_kafka.Consumer(
         {
             "metadata.broker.list": METADATA_BROKER_LIST,
@@ -62,7 +62,7 @@ kafka_filter_client = ew_lib.clients.KafkaFilterClient(
 )
 
 # Initialize a KafkaDataClient by providing a kafka consumer and FilterHandler.
-kafka_data_client = ew_lib.clients.KafkaDataClient(
+kafka_data_client = ew_lib.clients.kafka.KafkaDataClient(
     kafka_consumer=confluent_kafka.Consumer(
         {
             "metadata.broker.list": METADATA_BROKER_LIST,

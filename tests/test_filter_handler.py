@@ -38,7 +38,7 @@ class TestFilterHandlerBase:
                     result = filter_handler.process_message(message=message, source=source)
                     self.assertIn(str(result), results)
                     count += 1
-                except ew_lib.exceptions.NoFilterError:
+                except ew_lib.filter.exceptions.NoFilterError:
                     pass
         self.assertEqual(count, len(results) - 1)
 
@@ -51,7 +51,7 @@ class TestFilterHandlerBase:
                 count += 1
                 try:
                     filter_handler.process_message(message=message, source=source)
-                except ew_lib.exceptions.NoFilterError:
+                except ew_lib.filter.exceptions.NoFilterError:
                     count -= 1
         self.assertEqual(count, 0)
 
@@ -64,7 +64,7 @@ class TestFilterHandlerBase:
                 try:
                     filter_handler.process_message(message=message, source=source)
                     count += 1
-                except ew_lib.exceptions.MessageIdentificationError:
+                except ew_lib.filter.exceptions.MessageIdentificationError:
                     pass
         self.assertEqual(count, 0)
 

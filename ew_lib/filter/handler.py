@@ -17,8 +17,8 @@
 __all__ = ("FilterHandler", )
 
 from .._util import hash_dict, hash_list, get_value, json_to_str, validate
-from .. import exceptions
 from .. import builders
+from .exceptions import *
 import typing
 import threading
 import time
@@ -68,7 +68,7 @@ def hash_mappings(mappings: typing.Dict):
     try:
         return hash_dict(mappings)
     except Exception as ex:
-        raise exceptions.HashMappingError(f"{ex} - {mappings}")
+        raise HashMappingError(f"{ex} - {mappings}")
 
 
 def parse_mappings(mappings: typing.Dict) -> typing.Dict:
@@ -93,7 +93,7 @@ def parse_mappings(mappings: typing.Dict) -> typing.Dict:
             )
         return parsed_mappings
     except Exception as ex:
-        raise exceptions.ParseMappingError(f"{ex} - {mappings}")
+        raise ParseMappingError(f"{ex} - {mappings}")
 
 
 def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
@@ -102,7 +102,7 @@ def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
             src_path = mapping[Mapping.src_path].split(".")
             yield mapping[Mapping.dst_path], type_map[mapping[Mapping.value_type]](get_value(src_path, msg, len(src_path) - 1))
         except Exception as ex:
-            raise exceptions.MappingError(ex)
+            raise MappingError(ex)
 
 
 def validate_identifier(key: str, value: typing.Optional[typing.Union[str, int, float]] = None):
@@ -141,7 +141,7 @@ class FilterHandler:
                 if m_hash not in self.__msg_filters[i_str]:
                     self.__msg_filters[i_str][m_hash] = {export_id}
         except Exception as ex:
-            raise exceptions.AddFilterError(ex)
+            raise AddFilterError(ex)
 
     def __del_filter(self, i_str, m_hash, export_id):
         try:
@@ -151,7 +151,7 @@ class FilterHandler:
                 if not self.__msg_filters[i_str]:
                     del self.__msg_filters[i_str]
         except Exception as ex:
-            raise exceptions.DeleteFilterError(ex)
+            raise DeleteFilterError(ex)
 
     def __add_mappings(self, mappings: typing.Dict, m_hash: str, export_id: str):
         try:
@@ -162,7 +162,7 @@ class FilterHandler:
             else:
                 self.__mappings_export_map[m_hash].add(export_id)
         except Exception as ex:
-            raise exceptions.AddMappingError(ex)
+            raise AddMappingError(ex)
 
     def __del_mappings(self, m_hash: str, export_id: str):
         try:
@@ -171,7 +171,7 @@ class FilterHandler:
                 del self.__mappings[m_hash]
                 del self.__mappings_export_map[m_hash]
         except Exception as ex:
-            raise exceptions.DeleteMappingError(ex)
+            raise DeleteMappingError(ex)
 
     def __add_msg_identifier(self, identifiers: list, export_id: str):
         try:
@@ -198,7 +198,7 @@ class FilterHandler:
                 self.__msg_identifiers_export_map[i_hash].add(export_id)
             return i_hash, "".join(i_values) + self.__msg_identifiers[i_hash][2]
         except Exception as ex:
-            raise exceptions.AddMessageIdentifierError(ex)
+            raise AddMessageIdentifierError(ex)
 
     def __del_msg_identifier(self, i_hash: str, export_id: str):
         try:
@@ -207,7 +207,7 @@ class FilterHandler:
                 del self.__msg_identifiers[i_hash]
                 del self.__msg_identifiers_export_map[i_hash]
         except Exception as ex:
-            raise exceptions.DeleteMessageIdentifierError(ex)
+            raise DeleteMessageIdentifierError(ex)
 
     def __add_source(self, source: str, export_id: str):
         try:
@@ -218,7 +218,7 @@ class FilterHandler:
                 self.__sources_export_map[source].add(export_id)
             self.__sources_timestamp = time.time_ns()
         except Exception as ex:
-            raise exceptions.AddSourceError(ex)
+            raise AddSourceError(ex)
 
     def __del_source(self, source: str, export_id: str):
         try:
@@ -228,7 +228,7 @@ class FilterHandler:
                 del self.__sources_export_map[source]
                 self.__sources_timestamp = time.time_ns()
         except Exception as ex:
-            raise exceptions.DeleteSourceError(ex)
+            raise DeleteSourceError(ex)
 
     def __add_export(self, export_id: str, source: str, m_hash: str, i_hash: str, i_str: str, export_args: typing.Optional[typing.Dict] = None):
         try:
@@ -240,13 +240,13 @@ class FilterHandler:
                 Export.args: export_args
             }
         except Exception as ex:
-            raise exceptions.AddExportError(ex)
+            raise AddExportError(ex)
 
     def __del_export(self, export_id: str):
         try:
             del self.__exports[export_id]
         except Exception as ex:
-            raise exceptions.DeleteExportError(ex)
+            raise DeleteExportError(ex)
 
     def __add(self, source: str, mappings: typing.Dict, export_id: str, identifiers: typing.Optional[list] = None, export_args: typing.Optional[typing.Dict] = None):
         validate(source, str, f"filter {Filter.source}")
@@ -294,7 +294,7 @@ class FilterHandler:
             if identifier:
                 return "".join([str(msg[key]) for key in identifier[1]]) + identifier[2]
         except Exception as ex:
-            raise exceptions.MessageIdentificationError(ex)
+            raise MessageIdentificationError(ex)
 
     def process_message(self, message: typing.Dict, source: typing.Optional[str] = None, builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = builders.dict_builder) -> typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple]]:
         """
@@ -318,9 +318,9 @@ class FilterHandler:
                             )
                         )
                 except Exception as ex:
-                    raise exceptions.FilterMessageError(ex)
+                    raise FilterMessageError(ex)
             else:
-                raise exceptions.NoFilterError(message)
+                raise NoFilterError(message)
             return data_sets
 
     def add_filter(self, filter: typing.Dict):

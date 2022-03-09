@@ -106,9 +106,9 @@ class KafkaDataClient:
                             source=msg_obj.topic(),
                             builder=self.__builder
                         )
-                    except (ew_lib.exceptions.MessageIdentificationError, ew_lib.exceptions.NoFilterError):
+                    except (ew_lib.filter.exceptions.MessageIdentificationError, ew_lib.filter.exceptions.NoFilterError):
                         pass
-                    except ew_lib.exceptions.FilterMessageError as ex:
+                    except ew_lib.filter.exceptions.FilterMessageError as ex:
                         ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                 else:
                     raise KafkaMessageError(msg_obj.error().str(), msg_obj.error().code())
@@ -133,9 +133,9 @@ class KafkaDataClient:
                                 source=msg_obj.topic(),
                                 builder=self.__builder
                             )
-                        except (ew_lib.exceptions.MessageIdentificationError, ew_lib.exceptions.NoFilterError):
+                        except (ew_lib.filter.exceptions.MessageIdentificationError, ew_lib.filter.exceptions.NoFilterError):
                             pass
-                        except ew_lib.exceptions.FilterMessageError as ex:
+                        except ew_lib.filter.exceptions.FilterMessageError as ex:
                             ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                     else:
                         msg_exceptions.append(KafkaMessageError(msg_obj.error().str(), msg_obj.error().code()))
