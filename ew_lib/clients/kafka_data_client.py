@@ -17,7 +17,7 @@
 __all__ = ("KafkaDataClient", )
 
 from .. import exceptions, builders
-from .._util import logger, handle_kafka_error, log_kafka_sub_action, validate
+from .._util import logger, log_kafka_sub_action, validate
 from ..filter import FilterHandler
 import uuid
 import typing
