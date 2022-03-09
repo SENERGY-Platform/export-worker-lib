@@ -126,7 +126,7 @@ class KafkaDataClient:
         Consumes many messages and passes them to a FilterHandler object for processing.
         :param timeout: Maximum time in seconds to block waiting for messages.
         :param limit: Defines the maximum number of messages that can be consumed.
-        :return: List containing exports [(<data object>, <extra object>, ("<export id>", ...)), ...] or None.
+        :return: Tuple with a list of exports [(<data object>, <extra object>, ("<export id>", ...)), ...] and a list of potential message exceptions.
         """
         with self.__lock:
             msg_obj_list = self.__consumer.consume(num_messages=limit, timeout=timeout)
