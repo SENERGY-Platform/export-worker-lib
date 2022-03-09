@@ -100,17 +100,9 @@ class DeleteExportError(FilterHandlerError):
 
 
 class KafkaMessageError(Exception):
-    __text = "kafka message error"
-
-    def __init__(self, arg, prefix=None):
-        super().__init__(self.gen_text(arg=arg, prefix=prefix))
-
-    @staticmethod
-    def gen_text(arg, prefix=None):
-        if prefix:
-            return f"{prefix}: {KafkaMessageError.__text}: {arg}"
-        else:
-            return f"{KafkaMessageError.__text}: {arg}"
+    def __init__(self, msg, code):
+        self.code = code
+        super().__init__(f"kafka message error: {msg}")
 
 
 class KafkaFilterClientError(Exception):
