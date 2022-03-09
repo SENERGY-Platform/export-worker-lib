@@ -97,23 +97,3 @@ class AddExportError(FilterHandlerError):
 class DeleteExportError(FilterHandlerError):
     def __init__(self, arg):
         super().__init__(f"deleting export failed: {arg}")
-
-
-class KafkaMessageError(Exception):
-    def __init__(self, msg, code):
-        self.code = code
-        super().__init__(f"kafka message error: {msg}")
-
-
-class KafkaFilterClientError(Exception):
-    pass
-
-
-class MethodError(KafkaFilterClientError):
-    def __init__(self, arg):
-        super().__init__(f"unknown method: {arg}")
-
-
-class SetCallbackError(KafkaFilterClientError):
-    def __init__(self, arg):
-        super().__init__(f"can't set callback for running client: {arg}")

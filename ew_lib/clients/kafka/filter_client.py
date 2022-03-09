@@ -16,9 +16,10 @@
 
 __all__ = ("KafkaFilterClient", )
 
-from .. import exceptions
-from .._util import logger, log_kafka_sub_action, validate
-from ..filter import FilterHandler
+from ._util import *
+from .exceptions import *
+import ew_lib
+import ew_lib._util
 import typing
 import uuid
 import confluent_kafka
@@ -45,7 +46,7 @@ class KafkaFilterClient:
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True):
         """
         Creates a KafkaFilterClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
@@ -55,9 +56,9 @@ class KafkaFilterClient:
         :param time_format: Timestamp format (https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes). Only required if timestamps are provided as strings.
         :param utc: Set if timestamps are in UTC. Default is true.
         """
-        validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
-        validate(filter_handler, FilterHandler, "filter_handler")
-        validate(filter_topic, str, "filter_topic")
+        ew_lib._util.validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
+        ew_lib._util.validate(filter_handler, ew_lib.filter.FilterHandler, "filter_handler")
+        ew_lib._util.validate(filter_topic, str, "filter_topic")
         self.__consumer = kafka_consumer
         self.__filter_handler = filter_handler
         self.__thread = threading.Thread(
@@ -86,11 +87,11 @@ class KafkaFilterClient:
     def __handle_sync(self, time_a, time_b):
         if time_a >= time_b:
             self.__sync = True
-            logger.debug(f"{KafkaFilterClient.__log_msg_prefix}: filters synchronized")
+            ew_lib._util.logger.debug(f"{KafkaFilterClient.__log_msg_prefix}: filters synchronized")
             try:
                 self.__on_sync_callable()
             except Exception as ex:
-                logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: {ex}")
+                ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: {ex}")
 
     def __consume_filters(self) -> None:
         start_time = None
@@ -110,25 +111,25 @@ class KafkaFilterClient:
                                 ).timestamp()
                             else:
                                 timestamp = msg_obj[Message.timestamp]
-                                validate(timestamp, (float, int), "timestamp")
+                                ew_lib._util.validate(timestamp, (float, int), "timestamp")
                             if method == Methods.put:
                                 self.__filter_handler.add_filter(msg_obj[Message.payload])
                             elif method == Methods.delete:
                                 self.__filter_handler.delete_filter(**msg_obj[Message.payload])
                             else:
-                                raise exceptions.MethodError(method)
+                                raise MethodError(method)
                             if self.__on_sync_callable and not self.__sync:
                                 if not start_time:
                                     start_time = self.__get_time()
                                 last_item_time = self.__get_time()
                                 self.__handle_sync(timestamp, start_time)
-                            logger.debug(
+                            ew_lib._util.logger.debug(
                                 f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_obj[Message.payload]}"
                             )
                         except Exception as ex:
-                            logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
+                            ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
                     else:
-                        raise exceptions.KafkaMessageError(msg_obj.error().str(), msg_obj.error().code())
+                        raise KafkaMessageError(msg_obj.error().str(), msg_obj.error().code())
                 else:
                     if self.__on_sync_callable and not self.__sync:
                         if start_time:
@@ -136,7 +137,7 @@ class KafkaFilterClient:
             except Exception as ex:
                 start_time = None
                 last_item_time = 0
-                logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
+                ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
         self.__consumer.close()
 
     def __on_assign(self, consumer: confluent_kafka.Consumer, partitions: typing.List[confluent_kafka.TopicPartition]):
@@ -163,7 +164,7 @@ class KafkaFilterClient:
         :return: None
         """
         if self.__thread.is_alive():
-            raise exceptions.SetCallbackError(callable)
+            raise SetCallbackError(callable)
         self.__on_sync_callable = callable
         self.__sync_delay = sync_delay
 

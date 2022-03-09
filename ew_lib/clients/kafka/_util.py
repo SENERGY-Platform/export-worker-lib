@@ -14,4 +14,12 @@
    limitations under the License.
 """
 
-import ew_lib.clients.kafka
+import ew_lib._util
+import typing
+
+
+def log_kafka_sub_action(action: str, partitions: typing.List, prefix: str):
+    for partition in partitions:
+        ew_lib._util.logger.info(
+            f"{prefix}: subscription event: action={action} topic={partition.topic} partition={partition.partition} offset={partition.offset}"
+        )
