@@ -14,7 +14,6 @@
    limitations under the License.
 """
 
-from .. import exceptions
 import logging
 import typing
 import hashlib
@@ -42,16 +41,6 @@ def get_value(path: typing.List, obj: typing.Dict, size: int, pos: typing.Option
     if pos < size:
         return get_value(path, obj[path[pos]], size, pos + 1)
     return obj[path[pos]]
-
-
-def handle_kafka_error(msg_obj, text: str, raise_error: bool = True):
-    if msg_obj.error().retriable():
-        logger.warning(exceptions.KafkaMessageError.gen_text(arg=msg_obj.error().str(), prefix=text))
-    elif msg_obj.error().fatal():
-        if raise_error:
-            raise exceptions.KafkaMessageError(arg=msg_obj.error().str(), prefix=text)
-        else:
-            logger.error(exceptions.KafkaMessageError.gen_text(arg=msg_obj.error().str(), prefix=text))
 
 
 def json_to_str(obj):
