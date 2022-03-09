@@ -182,3 +182,10 @@ class KafkaFilterClient:
         """
         self.__stop = True
         self.__thread.join()
+
+    def is_alive(self) -> bool:
+        """
+        Check if internal thread is alive.
+        :return:
+        """
+        return self.__thread.is_alive()
