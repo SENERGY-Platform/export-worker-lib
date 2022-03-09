@@ -17,7 +17,7 @@
 __all__ = ("KafkaFilterClient", )
 
 from .. import exceptions
-from .._util import logger, handle_kafka_error, log_kafka_sub_action, validate
+from .._util import logger, log_kafka_sub_action, validate
 from ..filter import FilterHandler
 import typing
 import uuid
@@ -128,10 +128,7 @@ class KafkaFilterClient:
                         except Exception as ex:
                             logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
                     else:
-                        handle_kafka_error(
-                            msg_obj=msg_obj,
-                            text=KafkaFilterClient.__log_err_msg_prefix
-                        )
+                        raise exceptions.KafkaMessageError(msg_obj.error().str(), msg_obj.error().code())
                 else:
                     if self.__on_sync_callable and not self.__sync:
                         if start_time:
