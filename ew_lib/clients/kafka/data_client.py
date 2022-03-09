@@ -35,13 +35,14 @@ class KafkaDataClient:
     __log_msg_prefix = "kafka data client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, builder=ew_lib.builders.dict_builder, subscribe_interval: int = 5):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, builder=ew_lib.builders.dict_builder, subscribe_interval: int = 5, handle_offsets: bool = False):
         """
         Creates a KafkaDataClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
         :param filter_handler: A ew_lib.filter.FilterHandler object.
         :param builder: Builder function for custom export data structures. Default is ew_lib.builders.dict_builder.
         :param subscribe_interval: Specifies in seconds how often to check if new sources are available and subscriptions have to be made.
+        :param handle_offsets: Set to true if enable.auto.offset.store is set to false.
         """
         ew_lib._util.validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
         ew_lib._util.validate(filter_handler, ew_lib.filter.FilterHandler, "filter_handler")
@@ -49,6 +50,7 @@ class KafkaDataClient:
         self.__filter_handler = filter_handler
         self.__builder = builder
         self.__subscribe_interval = subscribe_interval
+        self.__offsets_handler = ConsumerOffsetHandler(kafka_consumer=kafka_consumer) if handle_offsets else None
         self.__thread = threading.Thread(
             name=f"{self.__class__.__name__}-{uuid.uuid4()}",
             target=self.__handle_subscriptions,
@@ -100,6 +102,12 @@ class KafkaDataClient:
             msg_obj = self.__consumer.poll(timeout=timeout)
             if msg_obj:
                 if not msg_obj.error():
+                    if self.__offsets_handler:
+                        self.__offsets_handler.add_offset(
+                            topic=msg_obj.topic(),
+                            partition=msg_obj.partition(),
+                            offset=msg_obj.offset()
+                        )
                     try:
                         return self.__filter_handler.process_message(
                             message=json.loads(msg_obj.value()),
@@ -127,6 +135,12 @@ class KafkaDataClient:
                 msg_exceptions = list()
                 for msg_obj in msg_obj_list:
                     if not msg_obj.error():
+                        if self.__offsets_handler:
+                            self.__offsets_handler.add_offset(
+                                topic=msg_obj.topic(),
+                                partition=msg_obj.partition(),
+                                offset=msg_obj.offset()
+                            )
                         try:
                             exports_batch += self.__filter_handler.process_message(
                                 message=json.loads(msg_obj.value()),
@@ -140,6 +154,13 @@ class KafkaDataClient:
                     else:
                         msg_exceptions.append(KafkaMessageError(msg_obj.error().str(), msg_obj.error().code()))
                 return exports_batch, msg_exceptions
+
+    def store_offsets(self):
+        """
+        Store offsets of last consumed messages.
+        :return: None
+        """
+        self.__offsets_handler.store_offsets()
 
     def start(self):
         """
