@@ -40,7 +40,7 @@ class TestKafkaFilterClient(unittest.TestCase, TestFilterHandlerBase):
 
 class TestKafkaFilterClientSyncCallback(unittest.TestCase, TestFilterHandlerBase):
     def _init_filter_handler(self, filters, timeout=False):
-        self._event = threading.Event()
+        self._event = SyncEvent()
         test_kafka_consumer = TestKafkaConsumer(data=filters, sources=False)
         filter_handler = ew_lib.filter.FilterHandler()
         kafka_filter_client = ew_lib.clients.kafka.KafkaFilterClient(
