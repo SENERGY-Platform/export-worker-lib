@@ -84,14 +84,17 @@ class KafkaFilterClient:
     def __get_time(self):
         return datetime.datetime.utcnow().timestamp() if self.__utc else datetime.datetime.now().timestamp()
 
+    def __call_sync_callable(self, err):
+        try:
+            self.__on_sync_callable(err)
+        except Exception as ex:
+            ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: {ex}")
+
     def __handle_sync(self, time_a, time_b):
         if time_a >= time_b:
             self.__sync = True
             ew_lib._util.logger.debug(f"{KafkaFilterClient.__log_msg_prefix}: filters synchronized")
-            try:
-                self.__on_sync_callable()
-            except Exception as ex:
-                ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: {ex}")
+            self.__call_sync_callable(err=False)
 
     def __consume_filters(self) -> None:
         start_time = None
@@ -146,6 +149,7 @@ class KafkaFilterClient:
             self.__consumer.close()
         except Exception as ex:
             ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: closing consumer failed: {ex}")
+        self.__call_sync_callable(err=True)
 
     def __on_assign(self, consumer: confluent_kafka.Consumer, partitions: typing.List[confluent_kafka.TopicPartition]):
         if self.__reset:
