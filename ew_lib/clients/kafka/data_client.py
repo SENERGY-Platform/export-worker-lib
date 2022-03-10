@@ -79,7 +79,6 @@ class KafkaDataClient:
             except Exception as ex:
                 ew_lib._util.logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
                 self.__stop = True
-        self.__consumer.close()
 
     @staticmethod
     def __on_assign(_, p):
