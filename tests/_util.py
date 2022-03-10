@@ -21,6 +21,7 @@ import json
 import queue
 import typing
 import time
+import threading
 
 ew_lib_logger = logging.getLogger('ew-lib')
 ew_lib_logger.setLevel(logging.CRITICAL)
@@ -141,3 +142,22 @@ class TestKafkaConsumer(confluent_kafka.Consumer):
 
     def empty(self):
         return self.__queue.empty()
+
+
+class SyncEvent:
+    def __init__(self):
+        self.__event = threading.Event()
+        self.err = None
+
+    def set(self, err):
+        self.err = err
+        self.__event.set()
+
+    def wait(self, timeout=None):
+        return self.__event.wait(timeout=timeout)
+
+    def is_set(self):
+        return self.__event.is_set()
+
+    def clear(self):
+        self.__event.clear()
