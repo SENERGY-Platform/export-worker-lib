@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-__version__ = '0.15.2'
+__version__ = '0.15.3'
 __title__ = 'export-worker-lib'
 __description__ = 'Library for implementing export-workers to transfer data from the SENERGY streaming platform to data sinks.'
 __url__ = 'https://github.com/SENERGY-Platform/export-worker-lib'
