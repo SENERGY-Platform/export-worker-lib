@@ -78,7 +78,7 @@ class KafkaDataClient:
                 time.sleep(self.__subscribe_interval)
             except Exception as ex:
                 ew_lib._util.logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
-                self.stop()
+                self.__stop = True
         self.__consumer.close()
 
     @staticmethod

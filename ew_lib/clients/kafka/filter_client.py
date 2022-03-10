@@ -141,7 +141,7 @@ class KafkaFilterClient:
                             self.__handle_sync(self.__get_time() - last_item_time, self.__sync_delay)
             except Exception as ex:
                 ew_lib._util.logger.critical(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
-                self.stop()
+                self.__stop = True
         try:
             self.__consumer.close()
         except Exception as ex:
