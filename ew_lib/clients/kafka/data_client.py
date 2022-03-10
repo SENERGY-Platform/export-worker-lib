@@ -93,7 +93,7 @@ class KafkaDataClient:
     def __on_lost(_, p):
         log_kafka_sub_action("lost", p, KafkaDataClient.__log_msg_prefix)
 
-    def get_exports(self, timeout: float) -> typing.Optional[typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple]]]:
+    def get_exports(self, timeout: float) -> typing.Optional[typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple[str]]]]:
         """
         Consumes one message and passes it to a FilterHandler object for processing.
         :param timeout: Maximum time in seconds to block waiting for message.
@@ -127,7 +127,7 @@ class KafkaDataClient:
                         fatal=msg_obj.error().fatal()
                     )
 
-    def get_exports_batch(self, timeout: float, limit: int) -> typing.Optional[typing.Tuple[typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple]], typing.List[KafkaMessageError]]]:
+    def get_exports_batch(self, timeout: float, limit: int) -> typing.Optional[typing.Tuple[typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple[str]]], typing.List[KafkaMessageError]]]:
         """
         Consumes many messages and passes them to a FilterHandler object for processing.
         :param timeout: Maximum time in seconds to block waiting for messages.
