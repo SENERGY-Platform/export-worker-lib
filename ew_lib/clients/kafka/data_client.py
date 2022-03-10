@@ -25,7 +25,6 @@ import typing
 import confluent_kafka
 import threading
 import json
-import time
 
 
 class KafkaDataClient:
@@ -57,6 +56,7 @@ class KafkaDataClient:
             daemon=True
         )
         self.__lock = threading.Lock()
+        self.__sleeper = threading.Event()
         self.__sources_timestamp = None
         self.__stop = False
 
@@ -75,7 +75,7 @@ class KafkaDataClient:
                                 on_lost=KafkaDataClient.__on_lost
                             )
                     self.__sources_timestamp = timestamp
-                time.sleep(self.__subscribe_interval)
+                self.__sleeper.wait(self.__subscribe_interval)
             except Exception as ex:
                 ew_lib._util.logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
                 self.__stop = True
@@ -187,6 +187,7 @@ class KafkaDataClient:
         :return: None
         """
         self.__stop = True
+        self.__sleeper.set()
         self.__thread.join()
 
     def is_alive(self) -> bool:
