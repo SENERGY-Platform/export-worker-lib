@@ -142,7 +142,10 @@ class KafkaFilterClient:
             except Exception as ex:
                 ew_lib._util.logger.critical(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
                 self.stop()
-        self.__consumer.close()
+        try:
+            self.__consumer.close()
+        except Exception as ex:
+            ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: closing consumer failed: {ex}")
 
     def __on_assign(self, consumer: confluent_kafka.Consumer, partitions: typing.List[confluent_kafka.TopicPartition]):
         if self.__reset:
