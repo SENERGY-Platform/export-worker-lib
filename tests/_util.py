@@ -124,6 +124,7 @@ class TestKafkaConsumer(confluent_kafka.Consumer):
     def __init__(self, data: typing.Dict, sources: bool = True, msg_error: bool = False):
         self.__sources = sources
         self.__queue = queue.Queue()
+        self.__offsets = dict()
         err_objs = (
             TestKafkaError(code=1),
             TestKafkaError(fatal=True, code=2),
@@ -131,14 +132,18 @@ class TestKafkaConsumer(confluent_kafka.Consumer):
         )
         if self.__sources:
             for source in data:
+                offset = 0
                 for message in data[source]:
-                    self.__queue.put(TestKafkaMessage(value=json.dumps(message), topic=source))
+                    self.__queue.put(TestKafkaMessage(value=json.dumps(message), topic=source, offset=offset))
+                    offset += 1
                 if msg_error:
                     for err_obj in err_objs:
                         self.__queue.put(TestKafkaMessage(err_obj=err_obj, topic=source))
         else:
+            offset = 0
             for message in data:
-                self.__queue.put(TestKafkaMessage(value=json.dumps(message)))
+                self.__queue.put(TestKafkaMessage(value=json.dumps(message), offset=offset))
+                offset += 1
             if msg_error:
                 for err_obj in err_objs:
                     self.__queue.put(TestKafkaMessage(err_obj=err_obj))
@@ -165,6 +170,16 @@ class TestKafkaConsumer(confluent_kafka.Consumer):
 
     def empty(self):
         return self.__queue.empty()
+
+    def store_offsets(self, offsets):
+        for tp in offsets:
+            assert isinstance(tp, confluent_kafka.TopicPartition)
+            key = f"{tp.topic}{tp.partition}"
+            if key not in self.__offsets:
+                assert tp.offset == 1
+            else:
+                assert tp.offset == self.__offsets[key] + 1
+            self.__offsets[key] = tp.offset
 
 
 class SyncEvent:
