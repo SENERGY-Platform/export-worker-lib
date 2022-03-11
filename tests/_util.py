@@ -116,21 +116,24 @@ class TestKafkaConsumer(confluent_kafka.Consumer):
     def __init__(self, data: typing.Dict, sources: bool = True, msg_error: bool = False):
         self.__sources = sources
         self.__queue = queue.Queue()
+        err_objs = (
+            TestKafkaError(code=1),
+            TestKafkaError(fatal=True, code=2),
+            TestKafkaError(code=3)
+        )
         if self.__sources:
             for source in data:
                 for message in data[source]:
                     self.__queue.put(TestKafkaMessage(value=json.dumps(message), topic=source))
-        elif msg_error:
-            err_objs = (
-                TestKafkaError(code=1),
-                TestKafkaError(fatal=True, code=2),
-                TestKafkaError(code=3)
-            )
-            for err_obj in err_objs:
-                self.__queue.put(TestKafkaMessage(err_obj=err_obj))
+                if msg_error:
+                    for err_obj in err_objs:
+                        self.__queue.put(TestKafkaMessage(err_obj=err_obj, topic=source))
         else:
             for message in data:
                 self.__queue.put(TestKafkaMessage(value=json.dumps(message)))
+            if msg_error:
+                for err_obj in err_objs:
+                    self.__queue.put(TestKafkaMessage(err_obj=err_obj))
 
     def subscribe(self, topics, on_assign=None, *args, **kwargs):
         if self.__sources:
