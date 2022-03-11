@@ -43,3 +43,4 @@ class ConsumerOffsetHandler:
     def store_offsets(self):
         if self.__offsets:
             self.__kafka_consumer.store_offsets(offsets=list(self.__offsets.values()))
+            self.__offsets.clear()
