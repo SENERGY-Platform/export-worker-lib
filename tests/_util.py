@@ -24,7 +24,7 @@ import time
 import threading
 
 ew_lib_logger = logging.getLogger('ew-lib')
-ew_lib_logger.setLevel(logging.CRITICAL)
+ew_lib_logger.disabled = True
 
 
 with open("tests/resources/sources.json") as file:
