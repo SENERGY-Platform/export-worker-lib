@@ -96,7 +96,7 @@ def handle_shutdown(signo, stack_frame):
     """
     Ensure a clean shutdown by stopping active threads.
     """
-    print(f"got signal '{signo}': exiting ...")
+    print(f"got '{signal.Signals(signo).name}': exiting ...")
     worker.stop()
     kafka_data_client.stop()
     kafka_filter_client.stop()
