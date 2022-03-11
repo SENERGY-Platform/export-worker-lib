@@ -93,10 +93,12 @@ class TestKafkaError:
 
 
 class TestKafkaMessage:
-    def __init__(self, value=None, topic=None, err_obj=None):
+    def __init__(self, value=None, topic=None, err_obj=None, partition=0, offset=None):
         self.__value = value
         self.__err_obj = err_obj
         self.__topic = topic
+        self.__partition = partition
+        self.__offset = offset
         self.__timestamp = (confluent_kafka.TIMESTAMP_LOG_APPEND_TIME, time.time())
 
     def error(self) -> TestKafkaError:
