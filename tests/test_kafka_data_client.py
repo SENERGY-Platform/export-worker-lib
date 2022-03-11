@@ -68,6 +68,9 @@ class TestKafkaDataClient(unittest.TestCase):
     def test_get_exports_erroneous_filters(self):
         self._test_get_exports(filters=filters_bad, data=data)
 
+    def test_get_exports_bad_messages(self):
+        self._test_get_exports(filters=filters, data=data_bad)
+
     def _test_get_exports_batch(self, filters, data):
         kafka_data_client, _, test_kafka_consumer = self.__init_client(filters=filters, data=data)
         while not test_kafka_consumer.empty():
@@ -77,9 +80,6 @@ class TestKafkaDataClient(unittest.TestCase):
 
     def test_get_exports_batch_erroneous_filters(self):
         self._test_get_exports_batch(filters=filters_bad, data=data)
-
-    def test_get_exports_bad_messages(self):
-        self._test_get_exports(filters=filters, data=data_bad)
 
     def test_get_exports_batch_bad_messages(self):
         self._test_get_exports_batch(filters=filters, data=data_bad)
