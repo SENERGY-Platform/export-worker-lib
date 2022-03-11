@@ -113,6 +113,12 @@ class TestKafkaMessage:
     def timestamp(self):
         return self.__timestamp
 
+    def partition(self):
+        return self.__partition
+
+    def offset(self):
+        return self.__offset
+
 
 class TestKafkaConsumer(confluent_kafka.Consumer):
     def __init__(self, data: typing.Dict, sources: bool = True, msg_error: bool = False):
