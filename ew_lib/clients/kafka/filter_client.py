@@ -149,7 +149,8 @@ class KafkaFilterClient:
             self.__consumer.close()
         except Exception as ex:
             ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: closing consumer failed: {ex}")
-        self.__call_sync_callable(err=True)
+        if self.__on_sync_callable and not self.__sync:
+            self.__call_sync_callable(err=True)
 
     def __on_assign(self, consumer: confluent_kafka.Consumer, partitions: typing.List[confluent_kafka.TopicPartition]):
         if self.__reset:
