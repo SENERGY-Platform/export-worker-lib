@@ -20,13 +20,14 @@ import ew_lib
 
 
 class TestKafkaDataClient(unittest.TestCase):
-    def __init_client(self, filters, data, sources=True, msg_error=False):
+    def __init_client(self, filters, data, sources=True, msg_error=False, handle_offsets=False):
         test_kafka_consumer = TestKafkaConsumer(data=data, sources=sources, msg_error=msg_error)
         filter_handler = test_filter_ingestion(test_obj=self, filters=filters)
         kafka_data_client = ew_lib.clients.kafka.KafkaDataClient(
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler,
-            subscribe_interval=1
+            subscribe_interval=1,
+            handle_offsets=handle_offsets
         )
         kafka_data_client.start()
         return kafka_data_client, test_kafka_consumer
@@ -105,4 +106,11 @@ class TestKafkaDataClient(unittest.TestCase):
                 self.assertIsInstance(msg_ex, ew_lib.clients.kafka.exceptions.KafkaMessageError)
                 count += 1
         self.assertEqual(count, 6)
+        kafka_data_client.stop()
+
+    def test_get_exports_offsets(self):
+        kafka_data_client, test_kafka_consumer = self.__init_client(filters=filters, data=data, handle_offsets=True)
+        while not test_kafka_consumer.empty():
+            kafka_data_client.get_exports(timeout=1.0)
+            kafka_data_client.store_offsets()
         kafka_data_client.stop()
