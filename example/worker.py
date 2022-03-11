@@ -21,10 +21,20 @@ class Worker:
     """
     Basic example worker that outputs exports to the console.
     """
-    def __init__(self, kafka_data_client: ew_lib.clients.kafka.KafkaDataClient, event: threading.Event):
+    def __init__(self, kafka_data_client: ew_lib.clients.kafka.KafkaDataClient):
         self.__kafka_data_client = kafka_data_client
-        self.__event = event
+        self.__event = threading.Event()
         self.__stop = False
+        self.__err = False
+
+    def set_event(self, err):
+        """
+        Callback method for filter synchronisation event.
+        :param err: Bool indicating if synchronisation was successful.
+        :return: None
+        """
+        self.__err = err
+        self.__event.set()
 
     def stop(self):
         """
@@ -39,10 +49,11 @@ class Worker:
         :return: None
         """
         self.__event.wait()
-        while not self.__stop:
-            exports = self.__kafka_data_client.get_exports(timeout=1.0)
-            if exports:
-                print(exports)
+        if not self.__err:
+            while not self.__stop:
+                exports = self.__kafka_data_client.get_exports(timeout=1.0)
+                if exports:
+                    print(exports)
 
 
 # Initialize a FilterHandler.
@@ -74,14 +85,11 @@ kafka_data_client = ew_lib.clients.kafka.KafkaDataClient(
     filter_handler=filter_handler
 )
 
-# Create an event object.
-event = threading.Event()
-
 # Initialize the example Worker by providing a KafkaDataClient and event object.
-worker = Worker(kafka_data_client=kafka_data_client, event=event)
+worker = Worker(kafka_data_client=kafka_data_client)
 
 # Set the event.set method as a callback.
-kafka_filter_client.set_on_sync(event.set)
+kafka_filter_client.set_on_sync(worker.set_event)
 
 
 def handle_shutdown(signo, stack_frame):
