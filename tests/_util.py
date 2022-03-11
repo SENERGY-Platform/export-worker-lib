@@ -113,13 +113,21 @@ class TestKafkaMessage:
 
 
 class TestKafkaConsumer(confluent_kafka.Consumer):
-    def __init__(self, data: typing.Dict, sources: bool = True):
+    def __init__(self, data: typing.Dict, sources: bool = True, msg_error: bool = False):
         self.__sources = sources
         self.__queue = queue.Queue()
         if self.__sources:
             for source in data:
                 for message in data[source]:
                     self.__queue.put(TestKafkaMessage(value=json.dumps(message), topic=source))
+        elif msg_error:
+            err_objs = (
+                TestKafkaError(code=1),
+                TestKafkaError(fatal=True, code=2),
+                TestKafkaError(code=3)
+            )
+            for err_obj in err_objs:
+                self.__queue.put(TestKafkaMessage(err_obj=err_obj))
         else:
             for message in data:
                 self.__queue.put(TestKafkaMessage(value=json.dumps(message)))
