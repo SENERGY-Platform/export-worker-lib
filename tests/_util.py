@@ -75,8 +75,9 @@ def test_filter_ingestion(test_obj, filters):
 
 
 class TestKafkaError:
-    def __init__(self, fatal=False):
+    def __init__(self, fatal=False, code=None):
         self.__fatal = fatal
+        self.__code = code
 
     def fatal(self,):
         return self.__fatal
@@ -86,6 +87,9 @@ class TestKafkaError:
 
     def str(self):
         return "error text"
+
+    def code(self):
+        return self.__code
 
 
 class TestKafkaMessage:
