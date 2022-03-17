@@ -23,8 +23,8 @@ import typing
 import time
 import threading
 
-ew_lib_logger = logging.getLogger('ew-lib')
-ew_lib_logger.disabled = True
+test_logger = logging.getLogger('test')
+test_logger.disabled = True
 
 
 with open("tests/resources/sources.json") as file:
