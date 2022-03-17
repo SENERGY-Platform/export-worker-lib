@@ -14,14 +14,14 @@
    limitations under the License.
 """
 
-import ew_lib._util
 import confluent_kafka
 import typing
+import logging
 
 
-def log_kafka_sub_action(action: str, partitions: typing.List, prefix: str):
+def log_kafka_sub_action(action: str, partitions: typing.List, prefix: str, logger: logging.Logger):
     for partition in partitions:
-        ew_lib._util.logger.info(
+        logger.info(
             f"{prefix}: subscription event: action={action} topic={partition.topic} partition={partition.partition} offset={partition.offset}"
         )
 

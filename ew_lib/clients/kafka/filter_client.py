@@ -164,15 +164,13 @@ class KafkaFilterClient:
                 partition.offset = confluent_kafka.OFFSET_BEGINNING
             consumer.assign(partitions)
             self.__reset = False
-        log_kafka_sub_action("assign", partitions, KafkaFilterClient.__log_msg_prefix)
+        log_kafka_sub_action("assign", partitions, KafkaFilterClient.__log_msg_prefix, self.__logger)
 
-    @staticmethod
-    def __on_revoke(_, p):
-        log_kafka_sub_action("revoke", p, KafkaFilterClient.__log_msg_prefix)
+    def __on_revoke(self, _, p):
+        log_kafka_sub_action("revoke", p, KafkaFilterClient.__log_msg_prefix, self.__logger)
 
-    @staticmethod
-    def __on_lost(_, p):
-        log_kafka_sub_action("lost", p, KafkaFilterClient.__log_msg_prefix)
+    def __on_lost(self, _, p):
+        log_kafka_sub_action("lost", p, KafkaFilterClient.__log_msg_prefix, self.__logger)
 
     def set_on_sync(self, callable: typing.Optional[typing.Callable], sync_delay: int = 30):
         """

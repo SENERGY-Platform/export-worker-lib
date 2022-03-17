@@ -85,17 +85,14 @@ class KafkaDataClient:
                 self.__logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
                 self.__stop = True
 
-    @staticmethod
-    def __on_assign(_, p):
-        log_kafka_sub_action("assign", p, KafkaDataClient.__log_msg_prefix)
+    def __on_assign(self, _, p):
+        log_kafka_sub_action("assign", p, KafkaDataClient.__log_msg_prefix, self.__logger)
 
-    @staticmethod
-    def __on_revoke(_, p):
-        log_kafka_sub_action("revoke", p, KafkaDataClient.__log_msg_prefix)
+    def __on_revoke(self, _, p):
+        log_kafka_sub_action("revoke", p, KafkaDataClient.__log_msg_prefix, self.__logger)
 
-    @staticmethod
-    def __on_lost(_, p):
-        log_kafka_sub_action("lost", p, KafkaDataClient.__log_msg_prefix)
+    def __on_lost(self, _, p):
+        log_kafka_sub_action("lost", p, KafkaDataClient.__log_msg_prefix, self.__logger)
 
     def get_exports(self, timeout: float) -> typing.Optional[typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple[str]]]]:
         """
