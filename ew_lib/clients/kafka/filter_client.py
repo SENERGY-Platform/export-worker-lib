@@ -26,6 +26,7 @@ import confluent_kafka
 import threading
 import json
 import datetime
+import logging
 
 
 class Methods:
@@ -43,10 +44,11 @@ class KafkaFilterClient:
     """
     Consumes messages which contain instructions to create or delete filters.
     """
+    __logger = ew_lib._util.get_logger("ew-lib-kfc")
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True, kafka_msg_err_ignore: typing.Optional[typing.List] = None):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
         """
         Creates a KafkaFilterClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
@@ -76,6 +78,8 @@ class KafkaFilterClient:
         self.__time_format = time_format
         self.__utc = utc
         self.__kafka_error_ignore = kafka_msg_err_ignore or list()
+        if logger:
+            self.__logger = logger
         self.__on_sync_callable = None
         self.__sync_delay = None
         self.__reset = True
@@ -89,12 +93,12 @@ class KafkaFilterClient:
         try:
             self.__on_sync_callable(err)
         except Exception as ex:
-            ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: {ex}")
+            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: {ex}")
 
     def __handle_sync(self, time_a, time_b):
         if time_a >= time_b:
             self.__sync = True
-            ew_lib._util.logger.debug(f"{KafkaFilterClient.__log_msg_prefix}: filters synchronized")
+            self.__logger.debug(f"{KafkaFilterClient.__log_msg_prefix}: filters synchronized")
             self.__call_sync_callable(err=False)
 
     def __consume_filters(self) -> None:
@@ -127,11 +131,11 @@ class KafkaFilterClient:
                                     start_time = self.__get_time()
                                 last_item_time = self.__get_time()
                                 self.__handle_sync(timestamp, start_time)
-                            ew_lib._util.logger.debug(
+                            self.__logger.debug(
                                 f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_obj[Message.payload]}"
                             )
                         except Exception as ex:
-                            ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
+                            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
                     else:
                         if msg_obj.error().code() not in self.__kafka_error_ignore:
                             raise KafkaMessageError(
@@ -145,12 +149,12 @@ class KafkaFilterClient:
                         if start_time:
                             self.__handle_sync(self.__get_time() - last_item_time, self.__sync_delay)
             except Exception as ex:
-                ew_lib._util.logger.critical(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
+                self.__logger.critical(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
                 self.__stop = True
         try:
             self.__consumer.close()
         except Exception as ex:
-            ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: closing consumer failed: {ex}")
+            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: closing consumer failed: {ex}")
         if self.__on_sync_callable and not self.__sync:
             self.__call_sync_callable(err=True)
 
