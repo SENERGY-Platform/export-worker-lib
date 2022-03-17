@@ -19,8 +19,11 @@ import typing
 import hashlib
 import json
 
-logger = logging.getLogger("ew-lib")
-logger.propagate = False
+
+def get_logger(name: str) -> logging.Logger:
+    logger = logging.getLogger(name)
+    logger.propagate = False
+    return logger
 
 
 def hash_str(obj: str) -> str:
