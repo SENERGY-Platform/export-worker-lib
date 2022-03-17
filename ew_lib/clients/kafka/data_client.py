@@ -25,16 +25,18 @@ import typing
 import confluent_kafka
 import threading
 import json
+import logging
 
 
 class KafkaDataClient:
     """
     Consumes messages from any number of kafka topics and passes them to a FilterHandler object to get exports, and provides them to the user.
     """
+    __logger = ew_lib._util.get_logger("ew-lib-kdc")
     __log_msg_prefix = "kafka data client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, builder=ew_lib.builders.dict_builder, subscribe_interval: int = 5, handle_offsets: bool = False, kafka_msg_err_ignore: typing.Optional[typing.List] = None):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, builder=ew_lib.builders.dict_builder, subscribe_interval: int = 5, handle_offsets: bool = False, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
         """
         Creates a KafkaDataClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
@@ -51,6 +53,8 @@ class KafkaDataClient:
         self.__subscribe_interval = subscribe_interval
         self.__offsets_handler = ConsumerOffsetHandler(kafka_consumer=kafka_consumer) if handle_offsets else None
         self.__kafka_error_ignore = kafka_msg_err_ignore or list()
+        if logger:
+            self.__logger = logger
         self.__thread = threading.Thread(
             name=f"{self.__class__.__name__}-{uuid.uuid4()}",
             target=self.__handle_subscriptions,
@@ -78,7 +82,7 @@ class KafkaDataClient:
                     self.__sources_timestamp = timestamp
                 self.__sleeper.wait(self.__subscribe_interval)
             except Exception as ex:
-                ew_lib._util.logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
+                self.__logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
                 self.__stop = True
 
     @staticmethod
@@ -118,7 +122,7 @@ class KafkaDataClient:
                     except (ew_lib.filter.exceptions.MessageIdentificationError, ew_lib.filter.exceptions.NoFilterError):
                         pass
                     except ew_lib.filter.exceptions.FilterMessageError as ex:
-                        ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
+                        self.__logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                 else:
                     if msg_obj.error().code() not in self.__kafka_error_ignore:
                         raise KafkaMessageError(
@@ -157,7 +161,7 @@ class KafkaDataClient:
                         except (ew_lib.filter.exceptions.MessageIdentificationError, ew_lib.filter.exceptions.NoFilterError):
                             pass
                         except ew_lib.filter.exceptions.FilterMessageError as ex:
-                            ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
+                            self.__logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                     else:
                         if msg_obj.error().code() not in self.__kafka_error_ignore:
                             ex = KafkaMessageError(
@@ -167,7 +171,7 @@ class KafkaDataClient:
                                     fatal=msg_obj.error().fatal()
                                 )
                             msg_exceptions.append(ex)
-                            ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
+                            self.__logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                 return exports_batch, msg_exceptions
 
     def store_offsets(self):
