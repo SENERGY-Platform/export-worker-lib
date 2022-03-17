@@ -337,6 +337,7 @@ class FilterHandler:
         :param export_id: ID of an export of which the filter is to be deleted.
         :return: None
         """
+        validate(export_id, str, Filter.export_id)
         with self.__lock:
             if export_id in self.__exports:
                 export = self.__exports[export_id]
