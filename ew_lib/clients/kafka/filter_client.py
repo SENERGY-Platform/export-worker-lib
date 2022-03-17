@@ -71,8 +71,8 @@ class KafkaFilterClient:
         self.__consumer.subscribe(
             [filter_topic],
             on_assign=self.__on_assign,
-            on_revoke=KafkaFilterClient.__on_revoke,
-            on_lost=KafkaFilterClient.__on_lost
+            on_revoke=self.__on_revoke,
+            on_lost=self.__on_lost
         )
         self.__poll_timeout = poll_timeout
         self.__time_format = time_format

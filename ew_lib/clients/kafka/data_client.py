@@ -75,9 +75,9 @@ class KafkaDataClient:
                         if sources:
                             self.__consumer.subscribe(
                                 sources,
-                                on_assign=KafkaDataClient.__on_assign,
-                                on_revoke=KafkaDataClient.__on_revoke,
-                                on_lost=KafkaDataClient.__on_lost
+                                on_assign=self.__on_assign,
+                                on_revoke=self.__on_revoke,
+                                on_lost=self.__on_lost
                             )
                     self.__sources_timestamp = timestamp
                 self.__sleeper.wait(self.__subscribe_interval)
