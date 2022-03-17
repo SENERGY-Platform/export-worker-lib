@@ -34,7 +34,7 @@ class KafkaDataClient:
     __log_msg_prefix = "kafka data client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, builder=ew_lib.builders.dict_builder, subscribe_interval: int = 5, handle_offsets: bool = False):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, builder=ew_lib.builders.dict_builder, subscribe_interval: int = 5, handle_offsets: bool = False, kafka_msg_err_ignore: typing.Optional[typing.List] = None):
         """
         Creates a KafkaDataClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
@@ -50,6 +50,7 @@ class KafkaDataClient:
         self.__builder = builder
         self.__subscribe_interval = subscribe_interval
         self.__offsets_handler = ConsumerOffsetHandler(kafka_consumer=kafka_consumer) if handle_offsets else None
+        self.__kafka_error_ignore = kafka_msg_err_ignore or list()
         self.__thread = threading.Thread(
             name=f"{self.__class__.__name__}-{uuid.uuid4()}",
             target=self.__handle_subscriptions,
@@ -119,12 +120,13 @@ class KafkaDataClient:
                     except ew_lib.filter.exceptions.FilterMessageError as ex:
                         ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                 else:
-                    raise KafkaMessageError(
-                        msg=msg_obj.error().str(),
-                        code=msg_obj.error().code(),
-                        retry=msg_obj.error().retriable(),
-                        fatal=msg_obj.error().fatal()
-                    )
+                    if msg_obj.error().code() not in self.__kafka_error_ignore:
+                        raise KafkaMessageError(
+                            msg=msg_obj.error().str(),
+                            code=msg_obj.error().code(),
+                            retry=msg_obj.error().retriable(),
+                            fatal=msg_obj.error().fatal()
+                        )
 
     def get_exports_batch(self, timeout: float, limit: int) -> typing.Optional[typing.Tuple[typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple[str]]], typing.List[KafkaMessageError]]]:
         """
@@ -157,14 +159,15 @@ class KafkaDataClient:
                         except ew_lib.filter.exceptions.FilterMessageError as ex:
                             ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                     else:
-                        ex = KafkaMessageError(
-                                msg=msg_obj.error().str(),
-                                code=msg_obj.error().code(),
-                                retry=msg_obj.error().retriable(),
-                                fatal=msg_obj.error().fatal()
-                            )
-                        msg_exceptions.append(ex)
-                        ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
+                        if msg_obj.error().code() not in self.__kafka_error_ignore:
+                            ex = KafkaMessageError(
+                                    msg=msg_obj.error().str(),
+                                    code=msg_obj.error().code(),
+                                    retry=msg_obj.error().retriable(),
+                                    fatal=msg_obj.error().fatal()
+                                )
+                            msg_exceptions.append(ex)
+                            ew_lib._util.logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
                 return exports_batch, msg_exceptions
 
     def store_offsets(self):
