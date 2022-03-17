@@ -27,7 +27,8 @@ class TestKafkaDataClient(unittest.TestCase):
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler,
             subscribe_interval=1,
-            handle_offsets=handle_offsets
+            handle_offsets=handle_offsets,
+            kafka_msg_err_ignore=[3]
         )
         kafka_data_client.start()
         return kafka_data_client, test_kafka_consumer
@@ -94,7 +95,7 @@ class TestKafkaDataClient(unittest.TestCase):
             except Exception as ex:
                 self.assertIsInstance(ex, ew_lib.clients.kafka.exceptions.KafkaMessageError)
                 count += 1
-        self.assertEqual(count, 6)
+        self.assertEqual(count, 4)
         kafka_data_client.stop()
 
     def test_get_exports_batch_message_error(self):
@@ -105,7 +106,7 @@ class TestKafkaDataClient(unittest.TestCase):
             for msg_ex in msg_exceptions:
                 self.assertIsInstance(msg_ex, ew_lib.clients.kafka.exceptions.KafkaMessageError)
                 count += 1
-        self.assertEqual(count, 6)
+        self.assertEqual(count, 4)
         kafka_data_client.stop()
 
     def test_get_exports_offsets(self):
