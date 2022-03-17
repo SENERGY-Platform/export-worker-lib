@@ -46,7 +46,7 @@ class KafkaFilterClient:
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True, kafka_msg_err_ignore: typing.Optional[typing.List] = None):
         """
         Creates a KafkaFilterClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
@@ -75,6 +75,7 @@ class KafkaFilterClient:
         self.__poll_timeout = poll_timeout
         self.__time_format = time_format
         self.__utc = utc
+        self.__kafka_error_ignore = kafka_msg_err_ignore or list()
         self.__on_sync_callable = None
         self.__sync_delay = None
         self.__reset = True
@@ -132,12 +133,13 @@ class KafkaFilterClient:
                         except Exception as ex:
                             ew_lib._util.logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
                     else:
-                        raise KafkaMessageError(
-                            msg=msg_obj.error().str(),
-                            code=msg_obj.error().code(),
-                            retry=msg_obj.error().retriable(),
-                            fatal=msg_obj.error().fatal()
-                        )
+                        if msg_obj.error().code() not in self.__kafka_error_ignore:
+                            raise KafkaMessageError(
+                                msg=msg_obj.error().str(),
+                                code=msg_obj.error().code(),
+                                retry=msg_obj.error().retriable(),
+                                fatal=msg_obj.error().fatal()
+                            )
                 else:
                     if self.__on_sync_callable and not self.__sync:
                         if start_time:
