@@ -29,7 +29,8 @@ class TestKafkaFilterClient(unittest.TestCase, TestFilterHandlerBase):
         kafka_filter_client = ew_lib.clients.kafka.KafkaFilterClient(
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler,
-            filter_topic="filters"
+            filter_topic="filters",
+            logger=test_logger
         )
         kafka_filter_client.start()
         while not test_kafka_consumer.empty():
@@ -46,7 +47,8 @@ class TestKafkaFilterClientSyncCallback(unittest.TestCase, TestFilterHandlerBase
         kafka_filter_client = ew_lib.clients.kafka.KafkaFilterClient(
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler,
-            filter_topic="filters"
+            filter_topic="filters",
+            logger=test_logger
         )
         kafka_filter_client.set_on_sync(callable=self._event.set, sync_delay=5)
         self.assertFalse(self._event.is_set())

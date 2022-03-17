@@ -28,7 +28,8 @@ class TestKafkaDataClient(unittest.TestCase):
             filter_handler=filter_handler,
             subscribe_interval=1,
             handle_offsets=handle_offsets,
-            kafka_msg_err_ignore=[3]
+            kafka_msg_err_ignore=[3],
+            logger=test_logger
         )
         kafka_data_client.start()
         return kafka_data_client, test_kafka_consumer
