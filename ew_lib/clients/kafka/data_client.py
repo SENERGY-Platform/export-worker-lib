@@ -85,6 +85,26 @@ class KafkaDataClient:
                 self.__logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
                 self.__stop = True
 
+    def __handle_msg_obj(self, msg_obj: confluent_kafka.Message) -> typing.List[ew_lib.filter.FilterResult]:
+        exports = list()
+        if self.__offsets_handler:
+            self.__offsets_handler.add_offset(
+                topic=msg_obj.topic(),
+                partition=msg_obj.partition(),
+                offset=msg_obj.offset()
+            )
+        try:
+            for result in self.__filter_handler.get_results(message=json.loads(msg_obj.value()), source=msg_obj.topic(), builder=self.__builder):
+                if not result.ex:
+                    exports.append(result)
+                else:
+                    self.__log_message_error(ex=result.ex, message=msg_obj.value())
+        except ew_lib.filter.exceptions.NoFilterError:
+            pass
+        except ew_lib.filter.exceptions.MessageIdentificationError as ex:
+            self.__log_message_error(ex=ex, message=msg_obj.value())
+        return exports
+
     def __on_assign(self, _, p):
         log_kafka_sub_action("assign", p, KafkaDataClient.__log_msg_prefix, self.__logger)
 
