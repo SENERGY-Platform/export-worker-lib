@@ -187,12 +187,11 @@ class KafkaDataClient:
 
     def stop(self):
         """
-        Stops and joins the background thread.
+        Stops the background thread.
         :return: None
         """
         self.__stop = True
         self.__sleeper.set()
-        self.__thread.join()
 
     def is_alive(self) -> bool:
         """
