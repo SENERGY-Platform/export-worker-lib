@@ -18,88 +18,84 @@ import traceback
 
 
 class FilterHandlerError(Exception):
-    def __init__(self, msg, tb=True):
-        if tb:
-            tb_txt = traceback.format_exc().strip().replace("\n", " ")
-            msg += f" traceback={tb_txt}"
-        super().__init__(msg)
+    pass
 
 
 class MessageIdentificationError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"message identification failed: reason={ex}")
+        super().__init__(f"message identification failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class NoFilterError(FilterHandlerError):
     def __init__(self, msg):
-        super().__init__(f"no filter for: message={msg}", tb=False)
+        super().__init__(f"no filter for: message={msg}")
 
 
 class FilterMessageError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"filtering message failed: reason={ex}")
+        super().__init__(f"filtering message failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class MappingError(FilterHandlerError):
     def __init__(self, ex, mapping):
-        super().__init__(f"mapping error: reason={ex} mapping={mapping}")
+        super().__init__(f"mapping error: reason={traceback.format_exception_only(type(ex), ex)} mapping={mapping}")
 
 
 class HashMappingError(FilterHandlerError):
     def __init__(self, ex, mappings):
-        super().__init__(f"hashing mapping failed: reason={ex} mappings={mappings}")
+        super().__init__(f"hashing mapping failed: reason={traceback.format_exception_only(type(ex), ex)} mappings={mappings}")
 
 
 class ParseMappingError(FilterHandlerError):
     def __init__(self, ex, mappings):
-        super().__init__(f"parsing mapping failed: reason={ex} mappings={mappings}")
+        super().__init__(f"parsing mapping failed: reason={traceback.format_exception_only(type(ex), ex)} mappings={mappings}")
 
 
 class AddFilterError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"adding filter failed: reason={ex}")
+        super().__init__(f"adding filter failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class DeleteFilterError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"deleting filter failed: reason={ex}")
+        super().__init__(f"deleting filter failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class AddMappingError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"adding mapping failed: reason={ex}")
+        super().__init__(f"adding mapping failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class DeleteMappingError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"deleting mapping failed: reason={ex}")
+        super().__init__(f"deleting mapping failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class AddSourceError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"adding source failed: reason={ex}")
+        super().__init__(f"adding source failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class DeleteSourceError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"deleting source failed: reason={ex}")
+        super().__init__(f"deleting source failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class AddMessageIdentifierError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"adding message identifier failed: reason={ex}")
+        super().__init__(f"adding message identifier failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class DeleteMessageIdentifierError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"deleting message identifier failed: reason={ex}")
+        super().__init__(f"deleting message identifier failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class AddExportError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"adding export failed: reason={ex}")
+        super().__init__(f"adding export failed: reason={traceback.format_exception_only(type(ex), ex)}")
 
 
 class DeleteExportError(FilterHandlerError):
     def __init__(self, ex):
-        super().__init__(f"deleting export failed: reason={ex}")
+        super().__init__(f"deleting export failed: reason={traceback.format_exception_only(type(ex), ex)}")
