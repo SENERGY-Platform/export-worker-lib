@@ -136,12 +136,20 @@ class KafkaFilterClient:
                             self.__logger.debug(
                                 f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_val[Message.payload]}"
                             )
+                        except ew_lib.filter.exceptions.FilterHandlerError as ex:
+                            log_message_error(
+                                prefix=KafkaFilterClient.__log_err_msg_prefix,
+                                ex=ex,
+                                message=msg_val,
+                                logger=self.__logger
+                            )
                         except Exception as ex:
-                            tb_txt = traceback.format_exc().strip().replace("\n", " ")
-                            err_msg = f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: reason={ex} traceback={tb_txt}"
-                            if self.__logger.level == logging.DEBUG:
-                                err_msg += f" message={msg_obj.value()}"
-                            self.__logger.error(err_msg)
+                            log_message_error(
+                                prefix=f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed",
+                                ex=f"reason={traceback.format_exception_only(type(ex), ex)}",
+                                message=msg_obj.value(),
+                                logger=self.__logger
+                            )
                     else:
                         if msg_obj.error().code() not in self.__kafka_error_ignore:
                             raise KafkaMessageError(
