@@ -102,7 +102,7 @@ def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
             src_path = mapping[Mapping.src_path].split(".")
             yield mapping[Mapping.dst_path], type_map[mapping[Mapping.value_type]](get_value(src_path, msg, len(src_path) - 1))
         except Exception as ex:
-            raise MappingError(ex)
+            raise MappingError(ex, mapping)
 
 
 def validate_identifier(key: str, value: typing.Optional[typing.Union[str, int, float]] = None):

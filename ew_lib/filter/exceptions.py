@@ -41,8 +41,8 @@ class FilterMessageError(FilterHandlerError):
 
 
 class MappingError(FilterHandlerError):
-    def __init__(self, ex):
-        super().__init__(f"mapping error: reason={ex}")
+    def __init__(self, ex, mapping):
+        super().__init__(f"mapping error: reason={ex} mapping={mapping}")
 
 
 class HashMappingError(FilterHandlerError):
