@@ -295,24 +295,18 @@ class FilterHandler:
         """
         with self.__lock:
             i_str = self.__identify_msg(msg=message) or source
-            data_sets = list()
             if i_str in self.__msg_filters:
-                try:
-                    for m_hash in self.__msg_filters[i_str]:
-                        data_sets.append(
-                            (
-                                builder(mapper(self.__mappings[m_hash][MappingType.data], message)),
-                                builder(mapper(self.__mappings[m_hash][MappingType.extra], message)),
-                                tuple(self.__msg_filters[i_str][m_hash])
-                            )
+                for m_hash in self.__msg_filters[i_str]:
+                    try:
+                        yield FilterResult(
+                            data=builder(mapper(self.__mappings[m_hash][MappingType.data], message)),
+                            extra=builder(mapper(self.__mappings[m_hash][MappingType.extra], message)),
+                            exports=tuple(self.__msg_filters[i_str][m_hash])
                         )
-                except (MessageIdentificationError, MappingError):
-                    raise
-                except Exception as ex:
-                    raise FilterMessageError(ex)
+                    except Exception as ex:
+                        yield FilterResult(ex=ex)
             else:
                 raise NoFilterError(message)
-            return data_sets
 
     def add_filter(self, filter: typing.Dict):
         """
