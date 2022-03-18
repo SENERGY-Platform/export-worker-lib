@@ -112,20 +112,20 @@ class KafkaFilterClient:
                 if msg_obj:
                     if not msg_obj.error():
                         try:
-                            msg_obj = json.loads(msg_obj.value())
-                            method = msg_obj[Message.method]
+                            msg_val = json.loads(msg_obj.value())
+                            method = msg_val[Message.method]
                             if self.__time_format:
                                 timestamp = datetime.datetime.strptime(
-                                    msg_obj[Message.timestamp],
+                                    msg_val[Message.timestamp],
                                     self.__time_format
                                 ).timestamp()
                             else:
-                                timestamp = msg_obj[Message.timestamp]
+                                timestamp = msg_val[Message.timestamp]
                                 ew_lib._util.validate(timestamp, (float, int), "timestamp")
                             if method == Methods.put:
-                                self.__filter_handler.add_filter(msg_obj[Message.payload])
+                                self.__filter_handler.add_filter(msg_val[Message.payload])
                             elif method == Methods.delete:
-                                self.__filter_handler.delete_filter(**msg_obj[Message.payload])
+                                self.__filter_handler.delete_filter(**msg_val[Message.payload])
                             else:
                                 raise MethodError(method)
                             if self.__on_sync_callable and not self.__sync:
@@ -134,7 +134,7 @@ class KafkaFilterClient:
                                 last_item_time = self.__get_time()
                                 self.__handle_sync(timestamp, start_time)
                             self.__logger.debug(
-                                f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_obj[Message.payload]}"
+                                f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_val[Message.payload]}"
                             )
                         except Exception as ex:
                             tb_txt = traceback.format_exc().strip().replace("\n", " ")
