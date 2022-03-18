@@ -200,3 +200,10 @@ class KafkaFilterClient:
         :return:
         """
         return self.__thread.is_alive()
+
+    def join(self):
+        """
+        Wait till the background thread is done.
+        :return: None
+        """
+        self.__thread.join()
