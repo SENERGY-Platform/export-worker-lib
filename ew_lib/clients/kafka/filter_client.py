@@ -27,6 +27,7 @@ import threading
 import json
 import datetime
 import logging
+import traceback
 
 
 class Methods:
@@ -93,7 +94,8 @@ class KafkaFilterClient:
         try:
             self.__on_sync_callable(err)
         except Exception as ex:
-            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: {ex}")
+            tb_txt = traceback.format_exc().strip().replace("\n", " ")
+            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: reason={ex} traceback={tb_txt}")
 
     def __handle_sync(self, time_a, time_b):
         if time_a >= time_b:
@@ -135,7 +137,8 @@ class KafkaFilterClient:
                                 f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_obj[Message.payload]}"
                             )
                         except Exception as ex:
-                            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: {ex}")
+                            tb_txt = traceback.format_exc().strip().replace("\n", " ")
+                            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: reason={ex} traceback={tb_txt}")
                     else:
                         if msg_obj.error().code() not in self.__kafka_error_ignore:
                             raise KafkaMessageError(
