@@ -285,13 +285,13 @@ class FilterHandler:
         except Exception as ex:
             raise MessageIdentificationError(ex)
 
-    def process_message(self, message: typing.Dict, source: typing.Optional[str] = None, builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = builders.dict_builder) -> typing.List[typing.Tuple[typing.Any, typing.Any, typing.Tuple[str]]]:
+    def get_results(self, message: typing.Dict, source: typing.Optional[str] = None, builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = builders.dict_builder) -> typing.Generator[FilterResult, None, None]:
         """
-        Applies filters to a message and extracts data.
+        Generator that applies filters to a message and yields extracted data for exports.
         :param message: Dictionary containing message data.
         :param source: Message source.
         :param builder: Builder function for custom data structures. Default is ew_lib.builders.dict_builder.
-        :return: List of tuples, which in turn contain the extracted data and the corresponding export IDs: `[(<data object>, <extra object>, ("<export id>", ...)), ...]`.
+        :returns: FilterResult objects.
         """
         with self.__lock:
             i_str = self.__identify_msg(msg=message) or source
