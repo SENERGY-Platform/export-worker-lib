@@ -119,7 +119,10 @@ class KafkaDataClient:
                     except ew_lib.filter.exceptions.NoFilterError:
                         pass
                     except (ew_lib.filter.exceptions.FilterMessageError, ew_lib.filter.exceptions.MappingError, ew_lib.filter.exceptions.MessageIdentificationError) as ex:
-                        self.__logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
+                        err_msg = f"{KafkaDataClient.__log_err_msg_prefix}: {ex}"
+                        if self.__logger.level == logging.DEBUG:
+                            err_msg += f" message={msg_obj.value()}"
+                        self.__logger.error(err_msg)
                 else:
                     if msg_obj.error().code() not in self.__kafka_error_ignore:
                         raise KafkaMessageError(
@@ -158,7 +161,10 @@ class KafkaDataClient:
                         except ew_lib.filter.exceptions.NoFilterError:
                             pass
                         except (ew_lib.filter.exceptions.FilterMessageError, ew_lib.filter.exceptions.MappingError, ew_lib.filter.exceptions.MessageIdentificationError) as ex:
-                            self.__logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
+                            err_msg = f"{KafkaDataClient.__log_err_msg_prefix}: {ex}"
+                            if self.__logger.level == logging.DEBUG:
+                                err_msg += f" message={msg_obj.value()}"
+                            self.__logger.error(err_msg)
                     else:
                         if msg_obj.error().code() not in self.__kafka_error_ignore:
                             ex = KafkaMessageError(
