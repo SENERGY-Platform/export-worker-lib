@@ -151,10 +151,6 @@ class KafkaFilterClient:
             except Exception as ex:
                 self.__logger.critical(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
                 self.__stop = True
-        try:
-            self.__consumer.close()
-        except Exception as ex:
-            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: closing consumer failed: {ex}")
         if self.__on_sync_callable and not self.__sync:
             self.__call_sync_callable(err=True)
 
