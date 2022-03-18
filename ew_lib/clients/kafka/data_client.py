@@ -130,25 +130,7 @@ class KafkaDataClient:
             msg_obj = self.__consumer.poll(timeout=timeout)
             if msg_obj:
                 if not msg_obj.error():
-                    if self.__offsets_handler:
-                        self.__offsets_handler.add_offset(
-                            topic=msg_obj.topic(),
-                            partition=msg_obj.partition(),
-                            offset=msg_obj.offset()
-                        )
-                    try:
-                        return self.__filter_handler.process_message(
-                            message=json.loads(msg_obj.value()),
-                            source=msg_obj.topic(),
-                            builder=self.__builder
-                        )
-                    except ew_lib.filter.exceptions.NoFilterError:
-                        pass
-                    except (ew_lib.filter.exceptions.FilterMessageError, ew_lib.filter.exceptions.MappingError, ew_lib.filter.exceptions.MessageIdentificationError) as ex:
-                        err_msg = f"{KafkaDataClient.__log_err_msg_prefix}: {ex}"
-                        if self.__logger.level == logging.DEBUG:
-                            err_msg += f" message={msg_obj.value()}"
-                        self.__logger.error(err_msg)
+                    return self.__handle_msg_obj(msg_obj=msg_obj)
                 else:
                     if msg_obj.error().code() not in self.__kafka_error_ignore:
                         raise KafkaMessageError(
@@ -172,25 +154,7 @@ class KafkaDataClient:
                 msg_exceptions = list()
                 for msg_obj in msg_obj_list:
                     if not msg_obj.error():
-                        if self.__offsets_handler:
-                            self.__offsets_handler.add_offset(
-                                topic=msg_obj.topic(),
-                                partition=msg_obj.partition(),
-                                offset=msg_obj.offset()
-                            )
-                        try:
-                            exports_batch += self.__filter_handler.process_message(
-                                message=json.loads(msg_obj.value()),
-                                source=msg_obj.topic(),
-                                builder=self.__builder
-                            )
-                        except ew_lib.filter.exceptions.NoFilterError:
-                            pass
-                        except (ew_lib.filter.exceptions.FilterMessageError, ew_lib.filter.exceptions.MappingError, ew_lib.filter.exceptions.MessageIdentificationError) as ex:
-                            err_msg = f"{KafkaDataClient.__log_err_msg_prefix}: {ex}"
-                            if self.__logger.level == logging.DEBUG:
-                                err_msg += f" message={msg_obj.value()}"
-                            self.__logger.error(err_msg)
+                        exports_batch += self.__handle_msg_obj(msg_obj=msg_obj)
                     else:
                         if msg_obj.error().code() not in self.__kafka_error_ignore:
                             ex = KafkaMessageError(
