@@ -42,8 +42,11 @@ with open("tests/resources/filters.json") as file:
 with open("tests/resources/filters_bad.json") as file:
     filters_bad: list = json.load(file)
 
-with open("tests/resources/exports_results.json") as file:
+with open("tests/resources/results.json") as file:
     results: list = json.load(file)
+
+with open("tests/resources/exports_results.json") as file:
+    export_results: list = json.load(file)
 
 with open("tests/resources/exports_batch_results_l2.json") as file:
     batch_results_l2: list = json.load(file)
