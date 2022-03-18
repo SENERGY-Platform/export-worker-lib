@@ -29,7 +29,7 @@ class KafkaFilterClientError(Exception):
 
 class MethodError(KafkaFilterClientError):
     def __init__(self, arg):
-        super().__init__(f"unknown method: {arg}")
+        super().__init__(f"method '{arg}' invalid")
 
 
 class SetCallbackError(KafkaFilterClientError):
