@@ -20,14 +20,6 @@ import ew_lib
 
 
 class TestFilterHandlerBase:
-    def test_ingestion_good_filters(self):
-        filter_handler = self._init_filter_handler(filters=filters)
-        self.assertIsNotNone(filter_handler.get_sources_timestamp())
-
-    def test_ingestion_erroneous_filters(self):
-        filter_handler = self._init_filter_handler(filters=filters_bad, timeout=True)
-        self.assertIsNone(filter_handler.get_sources_timestamp())
-
     def test_filter_message_good_filters(self):
         filter_handler = self._init_filter_handler(filters=filters)
         self.assertIsNotNone(filter_handler.get_sources_timestamp())
@@ -35,22 +27,26 @@ class TestFilterHandlerBase:
         for source in data:
             for message in data[source]:
                 try:
-                    result = filter_handler.process_message(message=message, source=source)
-                    self.assertIn(str(result), results)
-                    count += 1
+                    for result in filter_handler.get_results(message=message, source=source):
+                        self.assertIn(str(result), results)
+                        count += 1
                 except ew_lib.filter.exceptions.NoFilterError:
                     pass
         self.assertEqual(count, len(results) - 1)
 
     def test_filter_message_erroneous_filters(self):
-        filter_handler = self._init_filter_handler(filters=filters_bad, timeout=True)
-        self.assertIsNone(filter_handler.get_sources_timestamp())
+        filter_handler = self._init_filter_handler(filters=filters_bad)
+        self.assertIsNotNone(filter_handler.get_sources_timestamp())
         count = 0
         for source in data:
             for message in data[source]:
                 count += 1
                 try:
-                    filter_handler.process_message(message=message, source=source)
+                    for result in filter_handler.get_results(message=message, source=source):
+                        if result.ex:
+                            count -= 1
+                        else:
+                            count += 1
                 except ew_lib.filter.exceptions.NoFilterError:
                     count -= 1
         self.assertEqual(count, 0)
@@ -62,8 +58,8 @@ class TestFilterHandlerBase:
         for source in data_bad:
             for message in data_bad[source]:
                 try:
-                    filter_handler.process_message(message=message, source=source)
-                    count += 1
+                    for _ in filter_handler.get_results(message=message, source=source):
+                        count += 1
                 except ew_lib.filter.exceptions.MessageIdentificationError:
                     pass
         self.assertEqual(count, 0)
