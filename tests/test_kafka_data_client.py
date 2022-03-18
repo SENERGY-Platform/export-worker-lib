@@ -40,9 +40,12 @@ class TestKafkaDataClient(unittest.TestCase):
         while not test_kafka_consumer.empty():
             exports = kafka_data_client.get_exports(timeout=1.0)
             if exports:
-                self.assertIn(str(exports), results)
+                c = list()
+                for export in exports:
+                    c.append(dict(export))
+                self.assertIn(str(c), export_results)
                 count += 1
-        self.assertEqual(count, len(results) - 1)
+        self.assertEqual(count, len(export_results) - 1)
         kafka_data_client.stop()
 
     def _test_get_exports_batch_good_filters(self, limit, results):
@@ -51,7 +54,10 @@ class TestKafkaDataClient(unittest.TestCase):
         while not test_kafka_consumer.empty():
             exports_batch, _ = kafka_data_client.get_exports_batch(timeout=5.0, limit=limit)
             if exports_batch:
-                self.assertIn(str(exports_batch), results)
+                c = list()
+                for export in exports_batch:
+                    c.append(dict(export))
+                self.assertIn(str(c), results)
                 count += 1
         self.assertEqual(count, len(results) - 1)
         kafka_data_client.stop()
@@ -65,7 +71,7 @@ class TestKafkaDataClient(unittest.TestCase):
     def _test_get_exports(self, filters, data):
         kafka_data_client, test_kafka_consumer = self.__init_client(filters=filters, data=data)
         while not test_kafka_consumer.empty():
-            self.assertIsNone(kafka_data_client.get_exports(timeout=1.0))
+            self.assertEqual(len(kafka_data_client.get_exports(timeout=1.0)), 0)
         kafka_data_client.stop()
 
     def test_get_exports_erroneous_filters(self):
@@ -103,7 +109,7 @@ class TestKafkaDataClient(unittest.TestCase):
         kafka_data_client, test_kafka_consumer = self.__init_client(filters=filters, data=data, msg_error=True)
         count = 0
         while not test_kafka_consumer.empty():
-            exports_batch, msg_exceptions = kafka_data_client.get_exports_batch(timeout=5.0, limit=2)
+            _, msg_exceptions = kafka_data_client.get_exports_batch(timeout=5.0, limit=2)
             for msg_ex in msg_exceptions:
                 self.assertIsInstance(msg_ex, ew_lib.clients.kafka.exceptions.KafkaMessageError)
                 count += 1
