@@ -317,6 +317,8 @@ class FilterHandler:
                                 tuple(self.__msg_filters[i_str][m_hash])
                             )
                         )
+                except (MessageIdentificationError, MappingError):
+                    raise
                 except Exception as ex:
                     raise FilterMessageError(ex)
             else:
