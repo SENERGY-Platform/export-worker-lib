@@ -196,6 +196,6 @@ class KafkaDataClient:
     def is_alive(self) -> bool:
         """
         Check if internal thread is alive.
-        :return:
+        :return: True if alive and False if not.
         """
         return self.__thread.is_alive()
