@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-__all__ = ("FilterHandler", )
+__all__ = ("FilterHandler", "FilterResult")
 
 from .._util import hash_dict, hash_list, get_value, json_to_str, validate
 from .. import builders
