@@ -138,7 +138,10 @@ class KafkaFilterClient:
                             )
                         except Exception as ex:
                             tb_txt = traceback.format_exc().strip().replace("\n", " ")
-                            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: reason={ex} traceback={tb_txt}")
+                            err_msg = f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed: reason={ex} traceback={tb_txt}"
+                            if self.__logger.level == logging.DEBUG:
+                                err_msg += f" message={msg_obj.value()}"
+                            self.__logger.error(err_msg)
                     else:
                         if msg_obj.error().code() not in self.__kafka_error_ignore:
                             raise KafkaMessageError(
