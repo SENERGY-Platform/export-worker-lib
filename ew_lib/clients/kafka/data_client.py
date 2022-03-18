@@ -85,12 +85,6 @@ class KafkaDataClient:
                 self.__logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
                 self.__stop = True
 
-    def __log_message_error(self, ex, message):
-        err_msg = f"{KafkaDataClient.__log_err_msg_prefix}: {ex}"
-        if self.__logger.level == logging.DEBUG:
-            err_msg += f" message={message}"
-        self.__logger.error(err_msg)
-
     def __handle_msg_obj(self, msg_obj: confluent_kafka.Message) -> typing.List[ew_lib.filter.FilterResult]:
         exports = list()
         if self.__offsets_handler:
@@ -104,11 +98,21 @@ class KafkaDataClient:
                 if not result.ex:
                     exports.append(result)
                 else:
-                    self.__log_message_error(ex=result.ex, message=msg_obj.value())
+                    log_message_error(
+                        prefix=KafkaDataClient.__log_err_msg_prefix,
+                        ex=result.ex,
+                        message=msg_obj.value(),
+                        logger=self.__logger
+                    )
         except ew_lib.filter.exceptions.NoFilterError:
             pass
         except ew_lib.filter.exceptions.MessageIdentificationError as ex:
-            self.__log_message_error(ex=ex, message=msg_obj.value())
+            log_message_error(
+                prefix=KafkaDataClient.__log_err_msg_prefix,
+                ex=ex,
+                message=msg_obj.value(),
+                logger=self.__logger
+            )
         return exports
 
     def __on_assign(self, _, p):

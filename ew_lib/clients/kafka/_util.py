@@ -26,6 +26,13 @@ def log_kafka_sub_action(action: str, partitions: typing.List, prefix: str, logg
         )
 
 
+def log_message_error(prefix, ex, message, logger: logging.Logger):
+    err_msg = f"{prefix}: {ex}"
+    if logger.level == logging.DEBUG:
+        err_msg += f" message={message}"
+    logger.error(err_msg)
+
+
 class ConsumerOffsetHandler:
     def __init__(self, kafka_consumer: confluent_kafka.Consumer):
         self.__kafka_consumer = kafka_consumer
