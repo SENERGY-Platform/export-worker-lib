@@ -81,6 +81,26 @@ def validate_identifier(key: str, value: typing.Optional[typing.Union[str, int, 
     return key, value
 
 
+class FilterResult:
+    def __init__(self, data=None, extra=None, exports=None, ex=None):
+        self.data = data
+        self.extra = extra
+        self.exports = exports
+        self.ex = ex
+
+    def __iter__(self):
+        for item in self.__dict__.items():
+            if not item[0].startswith("_"):
+                yield item
+
+    def __str__(self):
+        return str(dict(self))
+
+    def __repr__(self):
+        args = ", ".join(tuple(f"{key}={val}" for key, val in self))
+        return f"{self.__class__.__name__}({args})"
+
+
 class FilterHandler:
     """
     Provides functionality for adding and removing filters as well as applying filters to messages and extracting data.
