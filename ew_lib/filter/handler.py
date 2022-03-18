@@ -68,7 +68,7 @@ def hash_mappings(mappings: typing.Dict):
     try:
         return hash_dict(mappings)
     except Exception as ex:
-        raise HashMappingError(f"{ex} - {mappings}")
+        raise HashMappingError(ex, mappings)
 
 
 def parse_mappings(mappings: typing.Dict) -> typing.Dict:
@@ -93,7 +93,7 @@ def parse_mappings(mappings: typing.Dict) -> typing.Dict:
             )
         return parsed_mappings
     except Exception as ex:
-        raise ParseMappingError(f"{ex} - {mappings}")
+        raise ParseMappingError(ex, mappings)
 
 
 def mapper(mappings: typing.List, msg: typing.Dict) -> typing.Generator:
