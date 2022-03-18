@@ -19,6 +19,7 @@ __all__ = ("FilterHandler", )
 from .._util import hash_dict, hash_list, get_value, json_to_str, validate
 from .. import builders
 from .exceptions import *
+from .model import *
 import typing
 import threading
 import time
@@ -30,38 +31,6 @@ type_map = {
     "bool": bool,
     "string_json": json_to_str
 }
-
-
-class Filter:
-    source = "source"
-    identifiers = "identifiers"
-    mappings = "mappings"
-    export_id = "export_id"
-    export_args = "export_args"
-
-
-class Identifier:
-    key = "key"
-    value = "value"
-
-
-class Mapping:
-    src_path = "src_path"
-    dst_path = "dst_path"
-    value_type = "value_type"
-
-
-class MappingType:
-    data = "data"
-    extra = "extra"
-
-
-class Export:
-    source = "source"
-    m_hash = "m_hash"
-    i_hash = "i_hash"
-    i_str = "i_str"
-    args = "args"
 
 
 def hash_mappings(mappings: typing.Dict):
