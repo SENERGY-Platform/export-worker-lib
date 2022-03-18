@@ -269,5 +269,25 @@
     "payload": {
       "export_id": "export-17"
     }
+  },
+    {
+    "method": "put",
+    "payload": {
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        }
+      ],
+      "mappings": {
+        "val:int:data": "test"
+      },
+      "export_id": "export-18",
+      "export_args": {
+        "arg": "test"
+      }
+    },
+    "timestamp": 1646145514
   }
 ]
