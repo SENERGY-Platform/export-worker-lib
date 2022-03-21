@@ -1,4 +1,3 @@
-import mf_lib
 import ew_lib
 import confluent_kafka
 import signal
@@ -16,8 +15,8 @@ class Worker:
     """
     Basic example worker that outputs exports to the console.
     """
-    def __init__(self, kafka_data_client: ew_lib.clients.kafka.DataClient):
-        self.__kafka_data_client = kafka_data_client
+    def __init__(self, data_client: ew_lib.DataClient):
+        self.__data_client = data_client
         self.__event = threading.Event()
         self.__stop = False
         self.__err = False
@@ -46,16 +45,13 @@ class Worker:
         self.__event.wait()
         if not self.__err:
             while not self.__stop:
-                exports = self.__kafka_data_client.get_exports(timeout=1.0)
+                exports = self.__data_client.get_exports(timeout=1.0)
                 if exports:
                     print(exports)
 
 
-# Initialize a FilterHandler.
-filter_handler = ew_lib.filter.FilterHandler()
-
-# Initialize a KafkaFilterClient to consume filters from a kafka topic.
-kafka_filter_client = ew_lib.clients.kafka.FilterClient(
+# Initialize a FilterClient to consume filters from a kafka topic.
+filter_client = ew_lib.FilterClient(
     kafka_consumer=confluent_kafka.Consumer(
         {
             "metadata.broker.list": METADATA_BROKER_LIST,
@@ -63,12 +59,11 @@ kafka_filter_client = ew_lib.clients.kafka.FilterClient(
             "auto.offset.reset": "earliest",
         }
     ),
-    filter_handler=filter_handler,
     filter_topic=FILTER_TOPIC
 )
 
-# Initialize a KafkaDataClient by providing a kafka consumer and FilterHandler.
-kafka_data_client = ew_lib.clients.kafka.DataClient(
+# Initialize a DataClient by providing a kafka consumer and FilterClient.
+data_client = ew_lib.DataClient(
     kafka_consumer=confluent_kafka.Consumer(
         {
             "metadata.broker.list": METADATA_BROKER_LIST,
@@ -77,14 +72,14 @@ kafka_data_client = ew_lib.clients.kafka.DataClient(
             "partition.assignment.strategy": "cooperative-sticky"
         }
     ),
-    filter_handler=filter_handler
+    filter_client=filter_client
 )
 
-# Initialize the example Worker by providing a KafkaDataClient and event object.
-worker = Worker(kafka_data_client=kafka_data_client)
+# Initialize the example Worker by providing a DataClient and event object.
+worker = Worker(data_client=data_client)
 
 # Set the event.set method as a callback.
-kafka_filter_client.set_on_sync(worker.set_event)
+filter_client.set_on_sync(worker.set_event)
 
 
 def handle_shutdown(signo, stack_frame):
@@ -93,15 +88,15 @@ def handle_shutdown(signo, stack_frame):
     """
     print(f"got '{signal.Signals(signo).name}': exiting ...")
     worker.stop()
-    kafka_data_client.stop()
-    kafka_filter_client.stop()
+    data_client.stop()
+    filter_client.stop()
 
 
 # Register relevant signals to be handled by the above function.
 signal.signal(signal.SIGTERM, handle_shutdown)
 signal.signal(signal.SIGINT, handle_shutdown)
 
-# Start the KafkaFilterClient, KafkaDataClient and example Worker.
-kafka_filter_client.start()
-kafka_data_client.start()
+# Start the FilterClient, DataClient and example Worker.
+filter_client.start()
+data_client.start()
 worker.run()
