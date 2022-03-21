@@ -121,11 +121,11 @@ class DataClient:
 
     def get_exports(self, timeout: float, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder) -> typing.Optional[typing.List[mf_lib.FilterResult]]:
         """
-        Consumes one message and passes it to a FilterHandler object for processing.
+        Consumes one message and extracts exports.
         :param timeout: Maximum time in seconds to block waiting for message.
         :param extra_builder:
         :param data_builder:
-        :return: List containing exports [(<data object>, <extra object>, ("<export id>", ...)), ...] or None.
+        :return: List of FilterResult objects or None.
         """
         msg_obj = self.__consumer.poll(timeout=timeout)
         if msg_obj:
@@ -142,12 +142,12 @@ class DataClient:
 
     def get_exports_batch(self, timeout: float, limit: int, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder) -> typing.Optional[typing.Tuple[typing.List[mf_lib.FilterResult], typing.List[KafkaMessageError]]]:
         """
-        Consumes many messages and passes them to a FilterHandler object for processing.
+        Consumes many messages and extracts exports.
         :param timeout: Maximum time in seconds to block waiting for messages.
         :param limit: Defines the maximum number of messages that can be consumed.
         :param extra_builder:
         :param data_builder:
-        :return: None or a tuple with a list of exports [(<data object>, <extra object>, ("<export id>", ...)), ...] and a list of potential message exceptions.
+        :return: List of FilterResult objects and a List KafkaMessageError objects or None.
         """
         msg_obj_list = self.__consumer.consume(num_messages=limit, timeout=timeout)
         if msg_obj_list:
