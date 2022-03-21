@@ -14,11 +14,11 @@
    limitations under the License.
 """
 
-__all__ = ("KafkaDataClient", )
+__all__ = ("DataClient",)
 
 from ..exceptions import *
 from .._util import *
-from ._filter_client import KafkaFilterClient
+from ._filter_client import FilterClient
 import mf_lib
 import uuid
 import typing
@@ -28,7 +28,7 @@ import json
 import logging
 
 
-class KafkaDataClient:
+class DataClient:
     """
     Consumes messages from any number of kafka topics and passes them to a FilterHandler object to get exports, and provides them to the user.
     """
@@ -36,7 +36,7 @@ class KafkaDataClient:
     __log_msg_prefix = "kafka data client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_client: KafkaFilterClient, subscribe_interval: int = 5, handle_offsets: bool = False, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_client: FilterClient, subscribe_interval: int = 5, handle_offsets: bool = False, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
         """
         Creates a KafkaDataClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
@@ -79,7 +79,7 @@ class KafkaDataClient:
                     self.__sources_timestamp = timestamp
                 self.__sleeper.wait(self.__subscribe_interval)
             except Exception as ex:
-                self.__logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: reason={get_exception_str(ex)}")
+                self.__logger.critical(f"{DataClient.__log_err_msg_prefix}: handling subscriptions failed: reason={get_exception_str(ex)}")
                 self.__stop = True
 
     def __handle_msg_obj(self, msg_obj: confluent_kafka.Message, data_builder, extra_builder) -> typing.List[mf_lib.FilterResult]:
@@ -96,7 +96,7 @@ class KafkaDataClient:
                     exports.append(result)
                 else:
                     log_message_error(
-                        prefix=KafkaDataClient.__log_err_msg_prefix,
+                        prefix=DataClient.__log_err_msg_prefix,
                         ex=result.ex,
                         message=msg_obj.value(),
                         logger=self.__logger
@@ -105,7 +105,7 @@ class KafkaDataClient:
             pass
         except mf_lib.exceptions.MessageIdentificationError as ex:
             log_message_error(
-                prefix=KafkaDataClient.__log_err_msg_prefix,
+                prefix=DataClient.__log_err_msg_prefix,
                 ex=ex,
                 message=msg_obj.value(),
                 logger=self.__logger
@@ -113,13 +113,13 @@ class KafkaDataClient:
         return exports
 
     def __on_assign(self, _, p):
-        log_kafka_sub_action("assign", p, KafkaDataClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("assign", p, DataClient.__log_msg_prefix, self.__logger)
 
     def __on_revoke(self, _, p):
-        log_kafka_sub_action("revoke", p, KafkaDataClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("revoke", p, DataClient.__log_msg_prefix, self.__logger)
 
     def __on_lost(self, _, p):
-        log_kafka_sub_action("lost", p, KafkaDataClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("lost", p, DataClient.__log_msg_prefix, self.__logger)
 
     def get_exports(self, timeout: float, data_builder=mf_lib.builders.dict_builder, extra_builder=mf_lib.builders.dict_builder) -> typing.Optional[typing.List[mf_lib.FilterResult]]:
         """
@@ -169,7 +169,7 @@ class KafkaDataClient:
                                     fatal=msg_obj.error().fatal()
                                 )
                             msg_exceptions.append(ex)
-                            self.__logger.error(f"{KafkaDataClient.__log_err_msg_prefix}: {ex}")
+                            self.__logger.error(f"{DataClient.__log_err_msg_prefix}: {ex}")
                 return exports_batch, msg_exceptions
 
     def store_offsets(self):

@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-__all__ = ("KafkaFilterClient", )
+__all__ = ("FilterClient",)
 
 from .._util import *
 from ..exceptions import *
@@ -39,7 +39,7 @@ class Message:
     timestamp = "timestamp"
 
 
-class KafkaFilterClient:
+class FilterClient:
     """
     Consumes messages which contain instructions to create or delete filters.
     """
@@ -92,12 +92,12 @@ class KafkaFilterClient:
         try:
             self.__on_sync_callable(err)
         except Exception as ex:
-            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: reason={get_exception_str(ex)}")
+            self.__logger.error(f"{FilterClient.__log_err_msg_prefix}: sync callback failed: reason={get_exception_str(ex)}")
 
     def __handle_sync(self, time_a, time_b):
         if time_a >= time_b:
             self.__sync = True
-            self.__logger.debug(f"{KafkaFilterClient.__log_msg_prefix}: filters synchronized")
+            self.__logger.debug(f"{FilterClient.__log_msg_prefix}: filters synchronized")
             self.__call_sync_callable(err=False)
 
     def __consume_filters(self) -> None:
@@ -132,18 +132,18 @@ class KafkaFilterClient:
                                 self.__handle_sync(timestamp, start_time)
                             self.__last_update = datetime.datetime.utcnow().timestamp()
                             self.__logger.debug(
-                                f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_val[Message.payload]}"
+                                f"{FilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_val[Message.payload]}"
                             )
                         except mf_lib.exceptions.FilterHandlerError as ex:
                             log_message_error(
-                                prefix=KafkaFilterClient.__log_err_msg_prefix,
+                                prefix=FilterClient.__log_err_msg_prefix,
                                 ex=ex,
                                 message=msg_val,
                                 logger=self.__logger
                             )
                         except Exception as ex:
                             log_message_error(
-                                prefix=f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed",
+                                prefix=f"{FilterClient.__log_err_msg_prefix}: handling message failed",
                                 ex=f"reason={get_exception_str(ex)}",
                                 message=msg_obj.value(),
                                 logger=self.__logger
@@ -161,7 +161,7 @@ class KafkaFilterClient:
                         if start_time:
                             self.__handle_sync(self.__get_time() - last_item_time, self.__sync_delay)
             except Exception as ex:
-                self.__logger.critical(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: reason={get_exception_str(ex)}")
+                self.__logger.critical(f"{FilterClient.__log_err_msg_prefix}: consuming message failed: reason={get_exception_str(ex)}")
                 self.__stop = True
         if self.__on_sync_callable and not self.__sync:
             self.__call_sync_callable(err=True)
@@ -172,13 +172,13 @@ class KafkaFilterClient:
                 partition.offset = confluent_kafka.OFFSET_BEGINNING
             consumer.assign(partitions)
             self.__reset = False
-        log_kafka_sub_action("assign", partitions, KafkaFilterClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("assign", partitions, FilterClient.__log_msg_prefix, self.__logger)
 
     def __on_revoke(self, _, p):
-        log_kafka_sub_action("revoke", p, KafkaFilterClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("revoke", p, FilterClient.__log_msg_prefix, self.__logger)
 
     def __on_lost(self, _, p):
-        log_kafka_sub_action("lost", p, KafkaFilterClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("lost", p, FilterClient.__log_msg_prefix, self.__logger)
 
     @property
     def filter_handler(self):

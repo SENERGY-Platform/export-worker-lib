@@ -23,7 +23,7 @@ class TestKafkaDataClient(unittest.TestCase):
     def __init_client(self, filters, data, sources=True, msg_error=False, handle_offsets=False):
         test_kafka_consumer = TestKafkaConsumer(data=data, sources=sources, msg_error=msg_error)
         filter_handler = test_filter_ingestion(test_obj=self, filters=filters)
-        kafka_data_client = ew_lib.clients.kafka.KafkaDataClient(
+        kafka_data_client = ew_lib.clients.kafka.DataClient(
             kafka_consumer=test_kafka_consumer,
             filter_handler=filter_handler,
             subscribe_interval=1,
