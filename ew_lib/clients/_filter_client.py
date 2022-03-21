@@ -180,6 +180,10 @@ class KafkaFilterClient:
     def __on_lost(self, _, p):
         log_kafka_sub_action("lost", p, KafkaFilterClient.__log_msg_prefix, self.__logger)
 
+    @property
+    def filter_handler(self):
+        return self.__filter_handler
+
     def set_on_sync(self, callable: typing.Optional[typing.Callable], sync_delay: int = 30):
         """
         Set a callback for when filters have been synchronised.
@@ -194,12 +198,6 @@ class KafkaFilterClient:
 
     def get_last_update(self):
         return self.__last_update
-
-    def get_sources(self):
-        return self.__filter_handler.get_sources()
-
-    def get_filter_args(self, filter_id: str):
-        return self.__filter_handler.get_filter_args(filter_id=filter_id)
 
     def start(self):
         """
