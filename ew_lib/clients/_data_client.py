@@ -121,7 +121,7 @@ class DataClient:
     def __on_lost(self, _, p):
         log_kafka_sub_action("lost", p, DataClient.__log_msg_prefix, self.__logger)
 
-    def get_exports(self, timeout: float, data_builder=mf_lib.builders.dict_builder, extra_builder=mf_lib.builders.dict_builder) -> typing.Optional[typing.List[mf_lib.FilterResult]]:
+    def get_exports(self, timeout: float, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder) -> typing.Optional[typing.List[mf_lib.FilterResult]]:
         """
         Consumes one message and passes it to a FilterHandler object for processing.
         :param timeout: Maximum time in seconds to block waiting for message.
@@ -143,7 +143,7 @@ class DataClient:
                             fatal=msg_obj.error().fatal()
                         )
 
-    def get_exports_batch(self, timeout: float, limit: int, data_builder=mf_lib.builders.dict_builder, extra_builder=mf_lib.builders.dict_builder) -> typing.Optional[typing.Tuple[typing.List[mf_lib.FilterResult], typing.List[KafkaMessageError]]]:
+    def get_exports_batch(self, timeout: float, limit: int, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder) -> typing.Optional[typing.Tuple[typing.List[mf_lib.FilterResult], typing.List[KafkaMessageError]]]:
         """
         Consumes many messages and passes them to a FilterHandler object for processing.
         :param timeout: Maximum time in seconds to block waiting for messages.
