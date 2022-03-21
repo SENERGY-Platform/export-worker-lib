@@ -82,6 +82,15 @@ class DataClient:
                 self.__logger.critical(f"{DataClient.__log_err_msg_prefix}: handling subscriptions failed: reason={get_exception_str(ex)}")
                 self.__stop = True
 
+    def __on_assign(self, _, p):
+        log_kafka_sub_action("assign", p, DataClient.__log_msg_prefix, self.__logger)
+
+    def __on_revoke(self, _, p):
+        log_kafka_sub_action("revoke", p, DataClient.__log_msg_prefix, self.__logger)
+
+    def __on_lost(self, _, p):
+        log_kafka_sub_action("lost", p, DataClient.__log_msg_prefix, self.__logger)
+
     def __handle_msg_obj(self, msg_obj: confluent_kafka.Message, data_builder, extra_builder) -> typing.List[mf_lib.FilterResult]:
         exports = list()
         if self.__offsets_handler:
@@ -111,15 +120,6 @@ class DataClient:
                 logger=self.__logger
             )
         return exports
-
-    def __on_assign(self, _, p):
-        log_kafka_sub_action("assign", p, DataClient.__log_msg_prefix, self.__logger)
-
-    def __on_revoke(self, _, p):
-        log_kafka_sub_action("revoke", p, DataClient.__log_msg_prefix, self.__logger)
-
-    def __on_lost(self, _, p):
-        log_kafka_sub_action("lost", p, DataClient.__log_msg_prefix, self.__logger)
 
     def get_exports(self, timeout: float, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder) -> typing.Optional[typing.List[mf_lib.FilterResult]]:
         """
