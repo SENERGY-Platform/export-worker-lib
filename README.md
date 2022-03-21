@@ -22,44 +22,40 @@ The current version only offers integration with Kafka but users can create thei
 import ew_lib
 import confluent_kafka
 
-# Initialize a FilterHandler.
-filter_handler = ew_lib.filter.FilterHandler()
-
-# Initialize a KafkaFilterClient to consume filters.
-kafka_filter_client = ew_lib.clients.KafkaFilterClient(
-  kafka_consumer=confluent_kafka.Consumer(
-    {
-      "metadata.broker.list": "<your kafka broker>",
-      "group.id": "filter-consumer",
-      "auto.offset.reset": "earliest",
-    }
-  ),
-  filter_handler=filter_handler,
-  filter_topic="filters"
+# Initialize a FilterClient to consume filters from a kafka topic.
+filter_client = ew_lib.FilterClient(
+    kafka_consumer=confluent_kafka.Consumer(
+        {
+            "metadata.broker.list": "<your kafka broker>",
+            "group.id": "filter-consumer",
+            "auto.offset.reset": "earliest",
+        }
+    ),
+    filter_topic="filters"
 )
 
-# Initialize a KafkaDataClient to consume data and get exports.
-kafka_data_client = ew_lib.clients.KafkaDataClient(
-  kafka_consumer=confluent_kafka.Consumer(
-    {
-      "metadata.broker.list": "<your kafka broker>",
-      "group.id": "data-consumer",
-      "auto.offset.reset": "earliest",
-      "partition.assignment.strategy": "cooperative-sticky"
-    }
-  ),
-  filter_handler=filter_handler
+# Initialize a DataClient by providing a kafka consumer and FilterClient.
+data_client = ew_lib.DataClient(
+    kafka_consumer=confluent_kafka.Consumer(
+        {
+            "metadata.broker.list": "<your kafka broker>",
+            "group.id": "data-consumer",
+            "auto.offset.reset": "earliest",
+            "partition.assignment.strategy": "cooperative-sticky"
+        }
+    ),
+    filter_client=filter_client
 )
 
 # Get exports.
 while not stop:
-  exports = kafka_data_client.get_exports(timeout=1.0)
-  if exports:
-    ...
+    exports = data_client.get_exports(timeout=1.0)
+    if exports:
+        ...
 
 # Stop clients when done.
-kafka_data_client.stop()
-kafka_filter_client.stop()
+data_client.stop()
+filter_client.stop()
 ```
 
 For more details please refer to the [example](https://github.com/SENERGY-Platform/export-worker-lib/tree/master/example) contained within this repository.
