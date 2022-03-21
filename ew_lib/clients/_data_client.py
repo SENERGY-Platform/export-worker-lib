@@ -57,7 +57,6 @@ class DataClient:
             target=self.__handle_subscriptions,
             daemon=True
         )
-        self.__lock = threading.Lock()
         self.__sleeper = threading.Event()
         self.__sources_timestamp = None
         self.__stop = False
@@ -68,14 +67,13 @@ class DataClient:
                 timestamp = self.__filter_client.get_last_update()
                 if self.__sources_timestamp != timestamp:
                     sources = self.__filter_client.filter_handler.get_sources()
-                    with self.__lock:
-                        if sources:
-                            self.__consumer.subscribe(
-                                sources,
-                                on_assign=self.__on_assign,
-                                on_revoke=self.__on_revoke,
-                                on_lost=self.__on_lost
-                            )
+                    if sources:
+                        self.__consumer.subscribe(
+                            sources,
+                            on_assign=self.__on_assign,
+                            on_revoke=self.__on_revoke,
+                            on_lost=self.__on_lost
+                        )
                     self.__sources_timestamp = timestamp
                 self.__sleeper.wait(self.__subscribe_interval)
             except Exception as ex:
@@ -129,19 +127,18 @@ class DataClient:
         :param data_builder:
         :return: List containing exports [(<data object>, <extra object>, ("<export id>", ...)), ...] or None.
         """
-        with self.__lock:
-            msg_obj = self.__consumer.poll(timeout=timeout)
-            if msg_obj:
-                if not msg_obj.error():
-                    return self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder)
-                else:
-                    if msg_obj.error().code() not in self.__kafka_error_ignore:
-                        raise KafkaMessageError(
-                            msg=msg_obj.error().str(),
-                            code=msg_obj.error().code(),
-                            retry=msg_obj.error().retriable(),
-                            fatal=msg_obj.error().fatal()
-                        )
+        msg_obj = self.__consumer.poll(timeout=timeout)
+        if msg_obj:
+            if not msg_obj.error():
+                return self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder)
+            else:
+                if msg_obj.error().code() not in self.__kafka_error_ignore:
+                    raise KafkaMessageError(
+                        msg=msg_obj.error().str(),
+                        code=msg_obj.error().code(),
+                        retry=msg_obj.error().retriable(),
+                        fatal=msg_obj.error().fatal()
+                    )
 
     def get_exports_batch(self, timeout: float, limit: int, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder) -> typing.Optional[typing.Tuple[typing.List[mf_lib.FilterResult], typing.List[KafkaMessageError]]]:
         """
@@ -152,25 +149,24 @@ class DataClient:
         :param data_builder:
         :return: None or a tuple with a list of exports [(<data object>, <extra object>, ("<export id>", ...)), ...] and a list of potential message exceptions.
         """
-        with self.__lock:
-            msg_obj_list = self.__consumer.consume(num_messages=limit, timeout=timeout)
-            if msg_obj_list:
-                exports_batch = list()
-                msg_exceptions = list()
-                for msg_obj in msg_obj_list:
-                    if not msg_obj.error():
-                        exports_batch += self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder)
-                    else:
-                        if msg_obj.error().code() not in self.__kafka_error_ignore:
-                            ex = KafkaMessageError(
-                                    msg=msg_obj.error().str(),
-                                    code=msg_obj.error().code(),
-                                    retry=msg_obj.error().retriable(),
-                                    fatal=msg_obj.error().fatal()
-                                )
-                            msg_exceptions.append(ex)
-                            self.__logger.error(f"{DataClient.__log_err_msg_prefix}: {ex}")
-                return exports_batch, msg_exceptions
+        msg_obj_list = self.__consumer.consume(num_messages=limit, timeout=timeout)
+        if msg_obj_list:
+            exports_batch = list()
+            msg_exceptions = list()
+            for msg_obj in msg_obj_list:
+                if not msg_obj.error():
+                    exports_batch += self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder)
+                else:
+                    if msg_obj.error().code() not in self.__kafka_error_ignore:
+                        ex = KafkaMessageError(
+                            msg=msg_obj.error().str(),
+                            code=msg_obj.error().code(),
+                            retry=msg_obj.error().retriable(),
+                            fatal=msg_obj.error().fatal()
+                        )
+                        msg_exceptions.append(ex)
+                        self.__logger.error(f"{DataClient.__log_err_msg_prefix}: {ex}")
+            return exports_batch, msg_exceptions
 
     def store_offsets(self):
         """
