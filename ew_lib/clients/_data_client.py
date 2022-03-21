@@ -18,6 +18,7 @@ __all__ = ("KafkaDataClient", )
 
 from ..exceptions import *
 from .._util import *
+from ._filter_client import KafkaFilterClient
 import mf_lib
 import uuid
 import typing
@@ -35,7 +36,7 @@ class KafkaDataClient:
     __log_msg_prefix = "kafka data client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: mf_lib.FilterHandler, subscribe_interval: int = 5, handle_offsets: bool = False, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_client: KafkaFilterClient, subscribe_interval: int = 5, handle_offsets: bool = False, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
         """
         Creates a KafkaDataClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
@@ -44,9 +45,8 @@ class KafkaDataClient:
         :param handle_offsets: Set to true if enable.auto.offset.store is set to false.
         """
         validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
-        validate(filter_handler, mf_lib.filter.FilterHandler, "filter_handler")
         self.__consumer = kafka_consumer
-        self.__filter_handler = filter_handler
+        self.__filter_client = filter_client
         self.__subscribe_interval = subscribe_interval
         self.__offsets_handler = ConsumerOffsetHandler(kafka_consumer=kafka_consumer) if handle_offsets else None
         self.__kafka_error_ignore = kafka_msg_err_ignore or list()
@@ -65,9 +65,9 @@ class KafkaDataClient:
     def __handle_subscriptions(self):
         while not self.__stop:
             try:
-                timestamp = self.__filter_handler.get_sources_timestamp()
+                timestamp = self.__filter_client.get_last_update()
                 if self.__sources_timestamp != timestamp:
-                    sources = self.__filter_handler.get_sources()
+                    sources = self.__filter_client.filter_handler.get_sources()
                     with self.__lock:
                         if sources:
                             self.__consumer.subscribe(
@@ -91,7 +91,7 @@ class KafkaDataClient:
                 offset=msg_obj.offset()
             )
         try:
-            for result in self.__filter_handler.get_results(message=json.loads(msg_obj.value()), source=msg_obj.topic(), data_builder=data_builder, extra_builder=extra_builder):
+            for result in self.__filter_client.filter_handler.get_results(message=json.loads(msg_obj.value()), source=msg_obj.topic(), data_builder=data_builder, extra_builder=extra_builder):
                 if not result.ex:
                     exports.append(result)
                 else:
