@@ -47,7 +47,7 @@ class KafkaFilterClient:
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: mf_lib.FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
         """
         Creates a KafkaFilterClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
@@ -58,10 +58,9 @@ class KafkaFilterClient:
         :param utc: Set if timestamps are in UTC. Default is true.
         """
         validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
-        validate(filter_handler, mf_lib.FilterHandler, "filter_handler")
         validate(filter_topic, str, "filter_topic")
         self.__consumer = kafka_consumer
-        self.__filter_handler = filter_handler
+        self.__filter_handler = mf_lib.FilterHandler()
         self.__thread = threading.Thread(
             name=f"{self.__class__.__name__}-{uuid.uuid4()}",
             target=self.__consume_filters,
@@ -84,6 +83,7 @@ class KafkaFilterClient:
         self.__reset = True
         self.__stop = False
         self.__sync = False
+        self.__last_update = None
 
     def __get_time(self):
         return datetime.datetime.utcnow().timestamp() if self.__utc else datetime.datetime.now().timestamp()
@@ -130,6 +130,7 @@ class KafkaFilterClient:
                                     start_time = self.__get_time()
                                 last_item_time = self.__get_time()
                                 self.__handle_sync(timestamp, start_time)
+                            self.__last_update = datetime.datetime.utcnow().timestamp()
                             self.__logger.debug(
                                 f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_val[Message.payload]}"
                             )
@@ -190,6 +191,15 @@ class KafkaFilterClient:
             raise SetCallbackError(callable)
         self.__on_sync_callable = callable
         self.__sync_delay = sync_delay
+
+    def get_last_update(self):
+        return self.__last_update
+
+    def get_sources(self):
+        return self.__filter_handler.get_sources()
+
+    def get_filter_args(self, filter_id: str):
+        return self.__filter_handler.get_filter_args(filter_id=filter_id)
 
     def start(self):
         """
