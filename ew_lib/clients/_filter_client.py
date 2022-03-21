@@ -138,7 +138,7 @@ class FilterClient:
                             log_message_error(
                                 prefix=FilterClient.__log_err_msg_prefix,
                                 ex=ex,
-                                message=msg_val,
+                                message=msg_obj.value(),
                                 logger=self.__logger
                             )
                         except Exception as ex:
