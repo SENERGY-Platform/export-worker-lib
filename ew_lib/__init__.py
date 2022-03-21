@@ -23,4 +23,5 @@ __license__ = 'Apache License 2.0'
 __copyright__ = 'Copyright 2022 InfAI (CC SES)'
 
 
-import ew_lib.clients
+from .clients import *
+import ew_lib.exceptions
