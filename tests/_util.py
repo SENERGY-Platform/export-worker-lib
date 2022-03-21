@@ -55,26 +55,24 @@ with open("tests/resources/exports_batch_results_l3.json") as file:
     batch_results_l3: list = json.load(file)
 
 
-def test_filter_ingestion(test_obj, filters):
-    filter_handler = ew_lib.filter.FilterHandler()
-    count = 0
-    for filter in filters:
-        try:
-            if filter[ew_lib.clients.filter_client.Message.method] == ew_lib.clients.filter_client.Methods.put:
-                filter_handler.add_filter(filter=filter[ew_lib.clients.filter_client.Message.payload])
-            if filter[
-                ew_lib.clients.filter_client.Message.method] == ew_lib.clients.filter_client.Methods.delete:
-                filter_handler.delete_filter(
-                    export_id=filter[
-                        ew_lib.clients.filter_client.Message.payload][ew_lib.filter.handler.Filter.export_id]
-                )
-            count += 1
-        except Exception:
-            count += 1
-    test_obj.assertEqual(count, len(filters))
-    for source in filter_handler.get_sources():
-        test_obj.assertIn(source, sources)
-    return filter_handler
+def init_filter_client(filters, msg_errors=False, sync_event=None):
+    mock_kafka_consumer = MockKafkaConsumer(data=filters, sources=False, msg_error=msg_errors)
+    filter_client = ew_lib.FilterClient(
+        kafka_consumer=mock_kafka_consumer,
+        filter_topic="filter",
+        logger=test_logger
+    )
+    if sync_event:
+        filter_client.set_on_sync(sync_event.set, 5)
+    filter_client.start()
+    if sync_event:
+        sync_event.wait(timeout=10)
+    else:
+        while not mock_kafka_consumer.empty():
+            time.sleep(0.1)
+    filter_client.stop()
+    filter_client.join()
+    return filter_client
 
 
 class TestKafkaError:
