@@ -2,7 +2,7 @@
   {
     "method": "delete",
     "payload": {
-      "export_id": "export-0"
+      "id": "export-0"
     },
     "timestamp": 1646145513
   },
@@ -19,8 +19,8 @@
       "mappings": {
         "val:int:data": "val"
       },
-      "export_id": "export-1",
-      "export_args": {
+      "id": "export-1",
+      "args": {
         "arg": "test"
       }
     },
@@ -43,7 +43,7 @@
       "mappings": {
         "val:int:data": "val"
       },
-      "export_id": "export-2"
+      "id": "export-2"
     },
     "timestamp": 1646145516
   },
@@ -64,7 +64,7 @@
       "mappings": {
         "val:int:data": "val"
       },
-      "export_id": "export-3"
+      "id": "export-3"
     },
     "timestamp": 1646145517
   },
@@ -85,14 +85,14 @@
       "mappings": {
         "val:int:data": "val"
       },
-      "export_id": "export-4"
+      "id": "export-4"
     },
     "timestamp": 1646145518
   },
   {
     "method": "delete",
     "payload": {
-      "export_id": "export-4"
+      "id": "export-4"
     },
     "timestamp": 1646145519
   },
@@ -117,7 +117,7 @@
       "mappings": {
         "val:int:data": "val"
       },
-      "export_id": "export-4"
+      "id": "export-4"
     },
     "timestamp": 1646145520
   },
@@ -142,7 +142,7 @@
       "mappings": {
         "value:int:data": "val"
       },
-      "export_id": "export-5"
+      "id": "export-5"
     },
     "timestamp": 1646145521
   },
@@ -159,7 +159,7 @@
       "mappings": {
         "val:int:data": "val"
       },
-      "export_id": "export-6"
+      "id": "export-6"
     },
     "timestamp": 1646145522
   },
@@ -177,7 +177,7 @@
         "val_a:int:data": "data.val",
         "val_b:int:data": "data.sub.val"
       },
-      "export_id": "export-7"
+      "id": "export-7"
     },
     "timestamp": 1646145523
   },
@@ -198,7 +198,7 @@
         "val_bool:bool:data": "val_bool",
         "val_json:string_json:data": "val_json"
       },
-      "export_id": "export-8"
+      "id": "export-8"
     },
     "timestamp": 1646145524
   },
@@ -218,7 +218,7 @@
       "mappings": {
         "val:int:data": "data.val"
       },
-      "export_id": "export-9"
+      "id": "export-9"
     },
     "timestamp": 1646145525
   },
@@ -239,7 +239,7 @@
         "val:int:data": "data.val",
         "val:int:extra": "data.val"
       },
-      "export_id": "export-10"
+      "id": "export-10"
     },
     "timestamp": 1646145527
   },
@@ -251,7 +251,7 @@
       "mappings": {
         "val:int:data": "val"
       },
-      "export_id": "export-11"
+      "id": "export-11"
     },
     "timestamp": 1646145526
   }
