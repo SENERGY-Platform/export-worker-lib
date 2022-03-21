@@ -60,13 +60,13 @@ def test_filter_ingestion(test_obj, filters):
     count = 0
     for filter in filters:
         try:
-            if filter[ew_lib.clients.kafka.filter_client.Message.method] == ew_lib.clients.kafka.filter_client.Methods.put:
-                filter_handler.add_filter(filter=filter[ew_lib.clients.kafka.filter_client.Message.payload])
+            if filter[ew_lib.clients.filter_client.Message.method] == ew_lib.clients.filter_client.Methods.put:
+                filter_handler.add_filter(filter=filter[ew_lib.clients.filter_client.Message.payload])
             if filter[
-                ew_lib.clients.kafka.filter_client.Message.method] == ew_lib.clients.kafka.filter_client.Methods.delete:
+                ew_lib.clients.filter_client.Message.method] == ew_lib.clients.filter_client.Methods.delete:
                 filter_handler.delete_filter(
                     export_id=filter[
-                        ew_lib.clients.kafka.filter_client.Message.payload][ew_lib.filter.handler.Filter.export_id]
+                        ew_lib.clients.filter_client.Message.payload][ew_lib.filter.handler.Filter.export_id]
                 )
             count += 1
         except Exception:

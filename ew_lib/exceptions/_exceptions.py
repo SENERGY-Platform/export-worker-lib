@@ -14,5 +14,24 @@
    limitations under the License.
 """
 
-from ._builders import *
 
+class KafkaMessageError(Exception):
+    def __init__(self, msg, code, retry, fatal):
+        self.code = code
+        self.fatal = fatal
+        self.retry = retry
+        super().__init__(f"kafka message error: code={code} text='{msg}'")
+
+
+class KafkaFilterClientError(Exception):
+    pass
+
+
+class MethodError(KafkaFilterClientError):
+    def __init__(self, arg):
+        super().__init__(f"method '{arg}' invalid")
+
+
+class SetCallbackError(KafkaFilterClientError):
+    def __init__(self, arg):
+        super().__init__(f"can't set callback for running client: {arg}")

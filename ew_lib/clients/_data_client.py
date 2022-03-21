@@ -16,10 +16,9 @@
 
 __all__ = ("KafkaDataClient", )
 
-from .exceptions import *
-from ._util import *
-import ew_lib
-import ew_lib._util
+from ..exceptions import *
+from .._util import *
+import mf_lib
 import uuid
 import typing
 import confluent_kafka
@@ -32,24 +31,22 @@ class KafkaDataClient:
     """
     Consumes messages from any number of kafka topics and passes them to a FilterHandler object to get exports, and provides them to the user.
     """
-    __logger = ew_lib._util.get_logger("ew-lib-kdc")
+    __logger = get_logger("ew-lib-kdc")
     __log_msg_prefix = "kafka data client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, builder=ew_lib.builders.dict_builder, subscribe_interval: int = 5, handle_offsets: bool = False, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: mf_lib.FilterHandler, subscribe_interval: int = 5, handle_offsets: bool = False, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
         """
         Creates a KafkaDataClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
-        :param filter_handler: A ew_lib.filter.FilterHandler object.
-        :param builder: Builder function for custom export data structures. Default is ew_lib.builders.dict_builder.
+        :param filter_handler: A mf_lib.FilterHandler object.
         :param subscribe_interval: Specifies in seconds how often to check if new sources are available and subscriptions have to be made.
         :param handle_offsets: Set to true if enable.auto.offset.store is set to false.
         """
-        ew_lib._util.validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
-        ew_lib._util.validate(filter_handler, ew_lib.filter.FilterHandler, "filter_handler")
+        validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
+        validate(filter_handler, mf_lib.filter.FilterHandler, "filter_handler")
         self.__consumer = kafka_consumer
         self.__filter_handler = filter_handler
-        self.__builder = builder
         self.__subscribe_interval = subscribe_interval
         self.__offsets_handler = ConsumerOffsetHandler(kafka_consumer=kafka_consumer) if handle_offsets else None
         self.__kafka_error_ignore = kafka_msg_err_ignore or list()
@@ -82,10 +79,10 @@ class KafkaDataClient:
                     self.__sources_timestamp = timestamp
                 self.__sleeper.wait(self.__subscribe_interval)
             except Exception as ex:
-                self.__logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: {ex}")
+                self.__logger.critical(f"{KafkaDataClient.__log_err_msg_prefix}: handling subscriptions failed: reason={get_exception_str(ex)}")
                 self.__stop = True
 
-    def __handle_msg_obj(self, msg_obj: confluent_kafka.Message) -> typing.List[ew_lib.filter.FilterResult]:
+    def __handle_msg_obj(self, msg_obj: confluent_kafka.Message, data_builder, extra_builder) -> typing.List[mf_lib.FilterResult]:
         exports = list()
         if self.__offsets_handler:
             self.__offsets_handler.add_offset(
@@ -94,7 +91,7 @@ class KafkaDataClient:
                 offset=msg_obj.offset()
             )
         try:
-            for result in self.__filter_handler.get_results(message=json.loads(msg_obj.value()), source=msg_obj.topic(), builder=self.__builder):
+            for result in self.__filter_handler.get_results(message=json.loads(msg_obj.value()), source=msg_obj.topic(), data_builder=data_builder, extra_builder=extra_builder):
                 if not result.ex:
                     exports.append(result)
                 else:
@@ -104,9 +101,9 @@ class KafkaDataClient:
                         message=msg_obj.value(),
                         logger=self.__logger
                     )
-        except ew_lib.filter.exceptions.NoFilterError:
+        except mf_lib.exceptions.NoFilterError:
             pass
-        except ew_lib.filter.exceptions.MessageIdentificationError as ex:
+        except mf_lib.exceptions.MessageIdentificationError as ex:
             log_message_error(
                 prefix=KafkaDataClient.__log_err_msg_prefix,
                 ex=ex,
@@ -124,17 +121,19 @@ class KafkaDataClient:
     def __on_lost(self, _, p):
         log_kafka_sub_action("lost", p, KafkaDataClient.__log_msg_prefix, self.__logger)
 
-    def get_exports(self, timeout: float) -> typing.Optional[typing.List[ew_lib.filter.FilterResult]]:
+    def get_exports(self, timeout: float, data_builder=mf_lib.builders.dict_builder, extra_builder=mf_lib.builders.dict_builder) -> typing.Optional[typing.List[mf_lib.FilterResult]]:
         """
         Consumes one message and passes it to a FilterHandler object for processing.
         :param timeout: Maximum time in seconds to block waiting for message.
+        :param extra_builder:
+        :param data_builder:
         :return: List containing exports [(<data object>, <extra object>, ("<export id>", ...)), ...] or None.
         """
         with self.__lock:
             msg_obj = self.__consumer.poll(timeout=timeout)
             if msg_obj:
                 if not msg_obj.error():
-                    return self.__handle_msg_obj(msg_obj=msg_obj)
+                    return self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder)
                 else:
                     if msg_obj.error().code() not in self.__kafka_error_ignore:
                         raise KafkaMessageError(
@@ -144,11 +143,13 @@ class KafkaDataClient:
                             fatal=msg_obj.error().fatal()
                         )
 
-    def get_exports_batch(self, timeout: float, limit: int) -> typing.Optional[typing.Tuple[typing.List[ew_lib.filter.FilterResult], typing.List[KafkaMessageError]]]:
+    def get_exports_batch(self, timeout: float, limit: int, data_builder=mf_lib.builders.dict_builder, extra_builder=mf_lib.builders.dict_builder) -> typing.Optional[typing.Tuple[typing.List[mf_lib.FilterResult], typing.List[KafkaMessageError]]]:
         """
         Consumes many messages and passes them to a FilterHandler object for processing.
         :param timeout: Maximum time in seconds to block waiting for messages.
         :param limit: Defines the maximum number of messages that can be consumed.
+        :param extra_builder:
+        :param data_builder:
         :return: None or a tuple with a list of exports [(<data object>, <extra object>, ("<export id>", ...)), ...] and a list of potential message exceptions.
         """
         with self.__lock:
@@ -158,7 +159,7 @@ class KafkaDataClient:
                 msg_exceptions = list()
                 for msg_obj in msg_obj_list:
                     if not msg_obj.error():
-                        exports_batch += self.__handle_msg_obj(msg_obj=msg_obj)
+                        exports_batch += self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder)
                     else:
                         if msg_obj.error().code() not in self.__kafka_error_ignore:
                             ex = KafkaMessageError(

@@ -100,7 +100,7 @@ class TestKafkaDataClient(unittest.TestCase):
             try:
                 kafka_data_client.get_exports(timeout=1.0)
             except Exception as ex:
-                self.assertIsInstance(ex, ew_lib.clients.kafka.exceptions.KafkaMessageError)
+                self.assertIsInstance(ex, ew_lib.exceptions.exceptions.KafkaMessageError)
                 count += 1
         self.assertEqual(count, 4)
         kafka_data_client.stop()
@@ -111,7 +111,7 @@ class TestKafkaDataClient(unittest.TestCase):
         while not test_kafka_consumer.empty():
             _, msg_exceptions = kafka_data_client.get_exports_batch(timeout=5.0, limit=2)
             for msg_ex in msg_exceptions:
-                self.assertIsInstance(msg_ex, ew_lib.clients.kafka.exceptions.KafkaMessageError)
+                self.assertIsInstance(msg_ex, ew_lib.exceptions.exceptions.KafkaMessageError)
                 count += 1
         self.assertEqual(count, 4)
         kafka_data_client.stop()

@@ -16,10 +16,8 @@
 
 __all__ = ("KafkaFilterClient", )
 
-from ._util import *
-from .exceptions import *
-import ew_lib
-import ew_lib._util
+from .._util import *
+from ..exceptions import *
 import typing
 import uuid
 import confluent_kafka
@@ -27,7 +25,6 @@ import threading
 import json
 import datetime
 import logging
-import traceback
 
 
 class Methods:
@@ -45,7 +42,7 @@ class KafkaFilterClient:
     """
     Consumes messages which contain instructions to create or delete filters.
     """
-    __logger = ew_lib._util.get_logger("ew-lib-kfc")
+    __logger = get_logger("ew-lib-kfc")
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
@@ -94,8 +91,7 @@ class KafkaFilterClient:
         try:
             self.__on_sync_callable(err)
         except Exception as ex:
-            tb_txt = traceback.format_exc().strip().replace("\n", " ")
-            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: reason={ex} traceback={tb_txt}")
+            self.__logger.error(f"{KafkaFilterClient.__log_err_msg_prefix}: sync callback failed: reason={get_exception_str(ex)}")
 
     def __handle_sync(self, time_a, time_b):
         if time_a >= time_b:
@@ -146,7 +142,7 @@ class KafkaFilterClient:
                         except Exception as ex:
                             log_message_error(
                                 prefix=f"{KafkaFilterClient.__log_err_msg_prefix}: handling message failed",
-                                ex=f"reason={traceback.format_exception_only(type(ex), ex)}",
+                                ex=f"reason={get_exception_str(ex)}",
                                 message=msg_obj.value(),
                                 logger=self.__logger
                             )
@@ -163,7 +159,7 @@ class KafkaFilterClient:
                         if start_time:
                             self.__handle_sync(self.__get_time() - last_item_time, self.__sync_delay)
             except Exception as ex:
-                self.__logger.critical(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: {ex}")
+                self.__logger.critical(f"{KafkaFilterClient.__log_err_msg_prefix}: consuming message failed: reason={get_exception_str(ex)}")
                 self.__stop = True
         if self.__on_sync_callable and not self.__sync:
             self.__call_sync_callable(err=True)

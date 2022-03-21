@@ -1,3 +1,4 @@
+import mf_lib
 import ew_lib
 import confluent_kafka
 import signal

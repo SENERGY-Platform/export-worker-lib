@@ -14,4 +14,5 @@
    limitations under the License.
 """
 
-import ew_lib.clients.kafka
+from ._data_client import *
+from ._filter_client import *

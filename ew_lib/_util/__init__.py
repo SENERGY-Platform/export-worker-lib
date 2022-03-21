@@ -15,9 +15,9 @@
 """
 
 import logging
+import confluent_kafka
 import typing
-import hashlib
-import json
+import traceback
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -26,30 +26,44 @@ def get_logger(name: str) -> logging.Logger:
     return logger
 
 
-def hash_str(obj: str) -> str:
-    return hashlib.sha256(obj.encode()).hexdigest()
-
-
-def hash_list(obj: typing.List) -> str:
-    return hash_str("".join(obj))
-
-
-def hash_dict(obj: typing.Dict) -> str:
-    items = ["{}{}".format(key, value) for key, value in obj.items()]
-    items.sort()
-    return hash_list(items)
-
-
-def get_value(path: typing.List, obj: typing.Dict, size: int, pos: typing.Optional[int] = 0) -> typing.Any:
-    if pos < size:
-        return get_value(path, obj[path[pos]], size, pos + 1)
-    return obj[path[pos]]
-
-
-def json_to_str(obj):
-    return json.dumps(obj, separators=(',', ':'))
-
-
 def validate(obj, cls, name):
     assert obj, f"'{name}' can't be None"
     assert isinstance(obj, cls), f"'{name}' can't be of type '{type(obj).__name__}'"
+
+
+def log_kafka_sub_action(action: str, partitions: typing.List, prefix: str, logger: logging.Logger):
+    for partition in partitions:
+        logger.info(
+            f"{prefix}: subscription event: action={action} topic={partition.topic} partition={partition.partition} offset={partition.offset}"
+        )
+
+
+def log_message_error(prefix, ex, message, logger: logging.Logger):
+    err_msg = f"{prefix}: {ex}"
+    if logger.level == logging.DEBUG:
+        err_msg += f" message={message}"
+    logger.error(err_msg)
+
+
+def get_exception_str(ex):
+    return [item.strip().replace("\n", " ") for item in traceback.format_exception_only(type(ex), ex)]
+
+
+class ConsumerOffsetHandler:
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer):
+        self.__kafka_consumer = kafka_consumer
+        self.__offsets = dict()
+
+    def add_offset(self, topic: str, partition: int, offset: int):
+        key = f"{topic}{partition}"
+        offset += 1
+        if key not in self.__offsets:
+            self.__offsets[key] = confluent_kafka.TopicPartition(topic=topic, partition=partition, offset=offset)
+        else:
+            tp_obj = self.__offsets[key]
+            tp_obj.offset = offset
+
+    def store_offsets(self):
+        if self.__offsets:
+            self.__kafka_consumer.store_offsets(offsets=list(self.__offsets.values()))
+            self.__offsets.clear()
