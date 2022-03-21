@@ -18,6 +18,7 @@ __all__ = ("KafkaFilterClient", )
 
 from .._util import *
 from ..exceptions import *
+import mf_lib
 import typing
 import uuid
 import confluent_kafka
@@ -46,7 +47,7 @@ class KafkaFilterClient:
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: ew_lib.filter.FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_handler: mf_lib.FilterHandler, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
         """
         Creates a KafkaFilterClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
@@ -56,9 +57,9 @@ class KafkaFilterClient:
         :param time_format: Timestamp format (https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes). Only required if timestamps are provided as strings.
         :param utc: Set if timestamps are in UTC. Default is true.
         """
-        ew_lib._util.validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
-        ew_lib._util.validate(filter_handler, ew_lib.filter.FilterHandler, "filter_handler")
-        ew_lib._util.validate(filter_topic, str, "filter_topic")
+        validate(kafka_consumer, confluent_kafka.Consumer, "kafka_consumer")
+        validate(filter_handler, mf_lib.FilterHandler, "filter_handler")
+        validate(filter_topic, str, "filter_topic")
         self.__consumer = kafka_consumer
         self.__filter_handler = filter_handler
         self.__thread = threading.Thread(
@@ -117,7 +118,7 @@ class KafkaFilterClient:
                                 ).timestamp()
                             else:
                                 timestamp = msg_val[Message.timestamp]
-                                ew_lib._util.validate(timestamp, (float, int), "timestamp")
+                                validate(timestamp, (float, int), "timestamp")
                             if method == Methods.put:
                                 self.__filter_handler.add_filter(msg_val[Message.payload])
                             elif method == Methods.delete:
@@ -132,7 +133,7 @@ class KafkaFilterClient:
                             self.__logger.debug(
                                 f"{KafkaFilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_val[Message.payload]}"
                             )
-                        except ew_lib.filter.exceptions.FilterHandlerError as ex:
+                        except mf_lib.exceptions.FilterHandlerError as ex:
                             log_message_error(
                                 prefix=KafkaFilterClient.__log_err_msg_prefix,
                                 ex=ex,
