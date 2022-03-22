@@ -14,6 +14,5 @@
    limitations under the License.
 """
 
-from .test_filter_handler import *
-from .test_kafka_data_client import *
-from .test_kafka_filter_client import *
+from .test_data_client import *
+from .test_filter_client import *
