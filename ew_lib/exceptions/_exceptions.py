@@ -35,3 +35,8 @@ class MethodError(KafkaFilterClientError):
 class SetCallbackError(KafkaFilterClientError):
     def __init__(self, arg):
         super().__init__(f"can't set callback for running client: {arg}")
+
+
+class InvalidFilterError(KafkaFilterClientError):
+    def __init__(self):
+        super().__init__(f"invalid filter")
