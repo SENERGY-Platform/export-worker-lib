@@ -181,7 +181,7 @@ class FilterClient:
         log_kafka_sub_action("lost", p, FilterClient.__log_msg_prefix, self.__logger)
 
     @property
-    def filter_handler(self):
+    def handler(self):
         return self.__filter_handler
 
     def set_on_sync(self, callable: typing.Optional[typing.Callable], sync_delay: int = 30):

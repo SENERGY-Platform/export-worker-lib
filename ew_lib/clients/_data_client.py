@@ -66,7 +66,7 @@ class DataClient:
             try:
                 timestamp = self.__filter_client.get_last_update()
                 if self.__sources_timestamp != timestamp:
-                    sources = self.__filter_client.filter_handler.get_sources()
+                    sources = self.__filter_client.handler.get_sources()
                     if sources:
                         self.__consumer.subscribe(
                             sources,
@@ -98,7 +98,7 @@ class DataClient:
                 offset=msg_obj.offset()
             )
         try:
-            for result in self.__filter_client.filter_handler.get_results(message=json.loads(msg_obj.value()), source=msg_obj.topic(), data_builder=data_builder, extra_builder=extra_builder):
+            for result in self.__filter_client.handler.get_results(message=json.loads(msg_obj.value()), source=msg_obj.topic(), data_builder=data_builder, extra_builder=extra_builder):
                 if not result.ex:
                     exports.append(result)
                 else:
