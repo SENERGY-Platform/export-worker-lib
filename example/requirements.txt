@@ -1,1 +1,1 @@
-git+https://github.com/SENERGY-Platform/export-worker-lib@0.25.0
+git+https://github.com/SENERGY-Platform/export-worker-lib@0.25.1
