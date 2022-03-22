@@ -254,5 +254,26 @@
       "id": "export-11"
     },
     "timestamp": 1646145526
+  },
+  {
+    "method": "put",
+    "payload": {
+      "source": "src_1",
+      "identifiers": [
+        {
+          "key": "id_a",
+          "value": "a-1"
+        },
+        {
+          "key": "id_b",
+          "value": "b-1"
+        }
+      ],
+      "mappings": {
+        "val:int:data": "test"
+      },
+      "id": "export-12"
+    },
+    "timestamp": 1646145530
   }
 ]
