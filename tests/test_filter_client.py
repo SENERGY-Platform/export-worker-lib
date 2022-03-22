@@ -18,6 +18,16 @@ from ._util import *
 import unittest
 
 
+class MockValidator:
+    def __init__(self):
+        self.called = 0
+
+    def func(self, obj):
+        assert obj
+        self.called += 1
+        return False
+
+
 class TestFilterClient(unittest.TestCase):
     def test_get_last_update(self):
         filter_client = init_filter_client(filters=filters)
@@ -34,3 +44,8 @@ class TestFilterClient(unittest.TestCase):
         init_filter_client(filters=filters, sync_event=event, msg_errors=True)
         self.assertTrue(event.is_set())
         self.assertTrue(event.err)
+
+    def test_validator(self):
+        mock_validator = MockValidator()
+        init_filter_client(filters=filters, validator=mock_validator.func)
+        self.assertEqual(mock_validator.called, 13)

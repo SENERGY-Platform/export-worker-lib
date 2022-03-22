@@ -42,11 +42,12 @@ with open("tests/resources/exports_batch_results_l3.json") as file:
     batch_results_l3: list = json.load(file)
 
 
-def init_filter_client(filters, msg_errors=False, sync_event=None):
+def init_filter_client(filters, msg_errors=False, sync_event=None, validator=None):
     mock_kafka_consumer = MockKafkaConsumer(data=filters, sources=False, msg_error=msg_errors)
     filter_client = ew_lib.FilterClient(
         kafka_consumer=mock_kafka_consumer,
         filter_topic="filter",
+        validator=validator,
         logger=test_logger
     )
     if sync_event:
