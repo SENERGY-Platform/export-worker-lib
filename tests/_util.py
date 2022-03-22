@@ -109,10 +109,11 @@ class MockKafkaMessage:
 
 
 class MockKafkaConsumer(confluent_kafka.Consumer):
-    def __init__(self, data: typing.Union[typing.Dict, typing.List], sources: bool = True, msg_error: bool = False):
+    def __init__(self, data: typing.Union[typing.Dict, typing.List], sources: bool = True, msg_error: bool = False, sub_topics=None):
         self.__sources = sources
         self.__queue = queue.Queue()
         self.__offsets = dict()
+        self.__sub_topics = {item: False for item in sub_topics} if sub_topics else sub_topics
         err_objs = (
             MockKafkaError(code=1),
             MockKafkaError(fatal=True, code=2),
@@ -137,9 +138,9 @@ class MockKafkaConsumer(confluent_kafka.Consumer):
                     self.__queue.put(MockKafkaMessage(err_obj=err_obj))
 
     def subscribe(self, topics, on_assign=None, *args, **kwargs):
-        if self.__sources:
+        if self.__sub_topics:
             for topic in topics:
-                assert sources.count(topic)
+                self.__sub_topics[topic] = True
 
     def poll(self, timeout=None):
         try:
@@ -158,6 +159,9 @@ class MockKafkaConsumer(confluent_kafka.Consumer):
 
     def empty(self):
         return self.__queue.empty()
+
+    def subscribed(self):
+        return all(self.__sub_topics.values())
 
     def store_offsets(self, offsets):
         for tp in offsets:
