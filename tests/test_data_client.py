@@ -20,9 +20,9 @@ import ew_lib
 
 
 class TestDataClient(unittest.TestCase):
-    def _init(self, msg_errors=False, handle_offsets=False):
+    def _init(self, msg_errors=False, handle_offsets=False, sub_topics=None):
         filter_client = init_filter_client(filters=filters)
-        mock_kafka_consumer = MockKafkaConsumer(data=data, sources=True, msg_error=msg_errors)
+        mock_kafka_consumer = MockKafkaConsumer(data=data, sources=True, msg_error=msg_errors, sub_topics=sub_topics)
         data_client = ew_lib.DataClient(
             kafka_consumer=mock_kafka_consumer,
             filter_client=filter_client,
@@ -84,6 +84,14 @@ class TestDataClient(unittest.TestCase):
                 self.assertIsInstance(msg_ex, ew_lib.exceptions.KafkaMessageError)
                 count += 1
         self.assertEqual(count, 4)
+
+    def test_subscribe(self):
+        data_client, mock_kafka_consumer = self._init(sub_topics=["src_1", "src_2"])
+        data_client.start()
+        while not mock_kafka_consumer.subscribed():
+            time.sleep(0.1)
+        data_client.stop()
+        data_client.join()
 
     def test_store_offsets(self):
         data_client, mock_kafka_consumer = self._init(handle_offsets=True)
