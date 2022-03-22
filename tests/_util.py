@@ -26,24 +26,11 @@ import threading
 test_logger = logging.getLogger('test')
 test_logger.disabled = True
 
-
-with open("tests/resources/sources.json") as file:
-    sources: list = json.load(file)
-
 with open("tests/resources/data.json") as file:
     data: list = json.load(file)
 
-with open("tests/resources/data_bad.json") as file:
-    data_bad: list = json.load(file)
-
 with open("tests/resources/filters.json") as file:
     filters: list = json.load(file)
-
-with open("tests/resources/filters_bad.json") as file:
-    filters_bad: list = json.load(file)
-
-with open("tests/resources/results.json") as file:
-    results: list = json.load(file)
 
 with open("tests/resources/exports_results.json") as file:
     export_results: list = json.load(file)
