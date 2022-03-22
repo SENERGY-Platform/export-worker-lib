@@ -47,7 +47,7 @@ class FilterClient:
     __log_msg_prefix = "kafka filter client"
     __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
-    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
+    def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True, kafka_msg_err_ignore: typing.Optional[typing.List] = None, validator: typing.Optional[typing.Callable[[typing.Dict], bool]] = None, logger: typing.Optional[logging.Logger] = None):
         """
         Creates a KafkaFilterClient object.
         :param kafka_consumer: A confluent_kafka.Consumer object.
@@ -78,6 +78,7 @@ class FilterClient:
         self.__kafka_error_ignore = kafka_msg_err_ignore or list()
         if logger:
             self.__logger = logger
+        self.__validator = validator
         self.__on_sync_callable = None
         self.__sync_delay = None
         self.__reset = True
@@ -120,6 +121,8 @@ class FilterClient:
                                 timestamp = msg_val[Message.timestamp]
                                 validate(timestamp, (float, int), "timestamp")
                             if method == Methods.put:
+                                if self.__validator and not self.__validator(msg_val[Message.payload]):
+                                    raise InvalidFilterError()
                                 self.__filter_handler.add_filter(msg_val[Message.payload])
                             elif method == Methods.delete:
                                 self.__filter_handler.delete_filter(**msg_val[Message.payload])
