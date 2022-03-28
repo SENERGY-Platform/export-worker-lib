@@ -99,15 +99,7 @@ class DataClient:
             )
         try:
             for result in self.__filter_client.handler.get_results(message=json.loads(msg_obj.value()), source=msg_obj.topic(), data_builder=data_builder, extra_builder=extra_builder):
-                if not result.ex:
-                    exports.append(result)
-                else:
-                    log_message_error(
-                        prefix=DataClient.__log_err_msg_prefix,
-                        ex=result.ex,
-                        message=msg_obj.value(),
-                        logger=self.__logger
-                    )
+                exports.append(result)
         except mf_lib.exceptions.NoFilterError:
             pass
         except mf_lib.exceptions.MessageIdentificationError as ex:
