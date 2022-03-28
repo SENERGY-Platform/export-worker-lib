@@ -46,7 +46,7 @@ def log_message_error(prefix, ex, message, logger: logging.Logger):
 
 
 def get_exception_str(ex):
-    return "[" + ",".join([item.strip().replace("\n", " ") for item in traceback.format_exception_only(type(ex), ex)]) + "]"
+    return "[" + ", ".join([item.strip().replace("\n", " ") for item in traceback.format_exception_only(type(ex), ex)]) + "]"
 
 
 class ConsumerOffsetHandler:
