@@ -89,7 +89,7 @@ class DataClient:
     def __on_lost(self, _, p):
         log_kafka_sub_action("lost", p, DataClient.__log_msg_prefix, self.__logger)
 
-    def __handle_msg_obj(self, msg_obj: confluent_kafka.Message, data_builder, extra_builder) -> typing.List[mf_lib.FilterResult]:
+    def __handle_msg_obj(self, msg_obj: confluent_kafka.Message, data_builder, extra_builder, data_ignore_missing_keys, extra_ignore_missing_keys) -> typing.List[mf_lib.FilterResult]:
         exports = list()
         if self.__offsets_handler:
             self.__offsets_handler.add_offset(
@@ -98,7 +98,7 @@ class DataClient:
                 offset=msg_obj.offset()
             )
         try:
-            for result in self.__filter_client.handler.get_results(message=json.loads(msg_obj.value()), source=msg_obj.topic(), data_builder=data_builder, extra_builder=extra_builder):
+            for result in self.__filter_client.handler.get_results(message=json.loads(msg_obj.value()), source=msg_obj.topic(), data_builder=data_builder, extra_builder=extra_builder, data_ignore_missing_keys=data_ignore_missing_keys, extra_ignore_missing_keys=extra_ignore_missing_keys):
                 exports.append(result)
         except mf_lib.exceptions.NoFilterError:
             pass
@@ -111,7 +111,7 @@ class DataClient:
             )
         return exports
 
-    def get_exports(self, timeout: float, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder) -> typing.Optional[typing.List[mf_lib.FilterResult]]:
+    def get_exports(self, timeout: float, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, data_ignore_missing_keys: bool = False, extra_ignore_missing_keys: bool = False) -> typing.Optional[typing.List[mf_lib.FilterResult]]:
         """
         Consumes one message and extracts exports.
         :param timeout: Maximum time in seconds to block waiting for message.
@@ -122,7 +122,7 @@ class DataClient:
         msg_obj = self.__consumer.poll(timeout=timeout)
         if msg_obj:
             if not msg_obj.error():
-                return self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder)
+                return self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder, data_ignore_missing_keys=data_ignore_missing_keys, extra_ignore_missing_keys=extra_ignore_missing_keys)
             else:
                 if msg_obj.error().code() not in self.__kafka_error_ignore:
                     raise KafkaMessageError(
@@ -132,7 +132,7 @@ class DataClient:
                         fatal=msg_obj.error().fatal()
                     )
 
-    def get_exports_batch(self, timeout: float, limit: int, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder) -> typing.Optional[typing.Tuple[typing.List[mf_lib.FilterResult], typing.List[KafkaMessageError]]]:
+    def get_exports_batch(self, timeout: float, limit: int, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, data_ignore_missing_keys: bool = False, extra_ignore_missing_keys: bool = False) -> typing.Optional[typing.Tuple[typing.List[mf_lib.FilterResult], typing.List[KafkaMessageError]]]:
         """
         Consumes many messages and extracts exports.
         :param timeout: Maximum time in seconds to block waiting for messages.
@@ -147,7 +147,7 @@ class DataClient:
             msg_exceptions = list()
             for msg_obj in msg_obj_list:
                 if not msg_obj.error():
-                    exports_batch += self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder)
+                    exports_batch += self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder, data_ignore_missing_keys=data_ignore_missing_keys, extra_ignore_missing_keys=extra_ignore_missing_keys)
                 else:
                     if msg_obj.error().code() not in self.__kafka_error_ignore:
                         ex = KafkaMessageError(
