@@ -40,7 +40,8 @@ class TestDataClient(unittest.TestCase):
             if exports:
                 c = list()
                 for export in exports:
-                    c.append(dict(export))
+                    if not export.ex:
+                        c.append(dict(export))
                 self.assertIn(str(c), export_results)
                 count += 1
         self.assertEqual(count, len(export_results) - 1)
@@ -53,7 +54,8 @@ class TestDataClient(unittest.TestCase):
             if exports_batch:
                 c = list()
                 for export in exports_batch:
-                    c.append(dict(export))
+                    if not export.ex:
+                        c.append(dict(export))
                 self.assertIn(str(c), results)
                 count += 1
         self.assertEqual(count, len(results) - 1)
