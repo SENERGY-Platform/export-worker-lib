@@ -157,7 +157,6 @@ class DataClient:
                             fatal=msg_obj.error().fatal()
                         )
                         msg_exceptions.append(ex)
-                        self.__logger.error(f"{DataClient.__log_err_msg_prefix}: {ex}")
             return exports_batch, msg_exceptions
 
     def store_offsets(self):
