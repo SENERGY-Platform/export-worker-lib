@@ -40,7 +40,7 @@ setuptools.setup(
     url=metadata.get('__url__'),
     copyright=metadata.get('__copyright__'),
     install_requires=[
-        'message-filter-lib @ git+https://github.com/SENERGY-Platform/message-filter-lib.git@0.7.1',
+        'message-filter-lib @ git+https://github.com/SENERGY-Platform/message-filter-lib.git@0.7.2',
         'confluent_kafka>=1,<2'
     ],
     packages=setuptools.find_packages(exclude=("tests", "example")),
