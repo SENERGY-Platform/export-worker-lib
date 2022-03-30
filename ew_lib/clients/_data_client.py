@@ -145,9 +145,15 @@ class DataClient:
         if msg_obj_list:
             exports_batch = list()
             msg_exceptions = list()
+            msg_count = 0
+            ident_msg_count = 0
             for msg_obj in msg_obj_list:
                 if not msg_obj.error():
-                    exports_batch += self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder, data_ignore_missing_keys=data_ignore_missing_keys, extra_ignore_missing_keys=extra_ignore_missing_keys)
+                    msg_count += 1
+                    exports = self.__handle_msg_obj(msg_obj=msg_obj, data_builder=data_builder, extra_builder=extra_builder, data_ignore_missing_keys=data_ignore_missing_keys, extra_ignore_missing_keys=extra_ignore_missing_keys)
+                    if exports:
+                        ident_msg_count += 1
+                        exports_batch += exports
                 else:
                     if msg_obj.error().code() not in self.__kafka_error_ignore:
                         ex = KafkaMessageError(
@@ -157,6 +163,7 @@ class DataClient:
                             fatal=msg_obj.error().fatal()
                         )
                         msg_exceptions.append(ex)
+            self.__logger.debug(f"{DataClient.__log_msg_prefix}: get exports batch statistics: messages={msg_count} message_errors={len(msg_exceptions)} identified_messages={ident_msg_count}")
             return exports_batch, msg_exceptions
 
     def store_offsets(self):
