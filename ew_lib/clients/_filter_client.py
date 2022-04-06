@@ -138,12 +138,13 @@ class FilterClient:
                                 f"{FilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_val[Message.payload]}"
                             )
                         except mf_lib.exceptions.FilterHandlerError as ex:
-                            log_message_error(
-                                prefix=FilterClient.__log_err_msg_prefix,
-                                ex=ex,
-                                message=msg_obj.value(),
-                                logger=self.__logger
-                            )
+                            if not isinstance(ex.ex, mf_lib.exceptions.UnknownFilterIDError):
+                                log_message_error(
+                                    prefix=FilterClient.__log_err_msg_prefix,
+                                    ex=ex,
+                                    message=msg_obj.value(),
+                                    logger=self.__logger
+                                )
                         except Exception as ex:
                             log_message_error(
                                 prefix=f"{FilterClient.__log_err_msg_prefix}: handling message failed",
