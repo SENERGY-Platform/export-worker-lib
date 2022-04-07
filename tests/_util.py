@@ -42,7 +42,7 @@ with open("tests/resources/exports_batch_results_l3.json") as file:
     batch_results_l3: list = json.load(file)
 
 
-def init_filter_client(filters, msg_errors=False, sync_event=None, validator=None):
+def init_filter_client(filters, msg_errors=False, sync_event=None, validator=None, on_put=None, on_delete=None):
     mock_kafka_consumer = MockKafkaConsumer(data=filters, sources=False, msg_error=msg_errors)
     filter_client = ew_lib.FilterClient(
         kafka_consumer=mock_kafka_consumer,
@@ -52,6 +52,10 @@ def init_filter_client(filters, msg_errors=False, sync_event=None, validator=Non
     )
     if sync_event:
         filter_client.set_on_sync(sync_event.set, 5)
+    if on_put:
+        filter_client.set_on_put(on_put)
+    if on_delete:
+        filter_client.set_on_delete(on_delete)
     filter_client.start()
     if sync_event:
         sync_event.wait(timeout=10)

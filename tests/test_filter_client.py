@@ -18,7 +18,7 @@ from ._util import *
 import unittest
 
 
-class MockValidator:
+class MockCallable:
     def __init__(self):
         self.called = 0
 
@@ -39,6 +39,18 @@ class TestFilterClient(unittest.TestCase):
         self.assertTrue(event.is_set())
         self.assertFalse(event.err)
 
+    def test_set_on_put(self):
+        mock_on_put = MockCallable()
+        event = SyncEvent()
+        init_filter_client(filters=filters, sync_event=event, on_put=mock_on_put.func)
+        self.assertEqual(mock_on_put.called, 13)
+
+    def test_set_on_delete(self):
+        mock_on_delete = MockCallable()
+        event = SyncEvent()
+        init_filter_client(filters=filters, sync_event=event, on_delete=mock_on_delete.func)
+        self.assertEqual(mock_on_delete.called, 1)
+
     def test_kafka_message_error(self):
         event = SyncEvent()
         init_filter_client(filters=filters, sync_event=event, msg_errors=True)
@@ -46,6 +58,6 @@ class TestFilterClient(unittest.TestCase):
         self.assertTrue(event.err)
 
     def test_validator(self):
-        mock_validator = MockValidator()
+        mock_validator = MockCallable()
         init_filter_client(filters=filters, validator=mock_validator.func)
         self.assertEqual(mock_validator.called, 13)
