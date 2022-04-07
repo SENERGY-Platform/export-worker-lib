@@ -194,7 +194,7 @@ class FilterClient:
     def handler(self):
         return self.__filter_handler
 
-    def set_on_sync(self, callable: typing.Optional[typing.Callable], sync_delay: int = 30):
+    def set_on_sync(self, callable: typing.Callable[[bool], None], sync_delay: int = 30):
         """
         Set a callback for when filters have been synchronised.
         :param callable: Function to be executed. Must not block.
