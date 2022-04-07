@@ -92,7 +92,6 @@ class FilterClient:
     def __call_callable(self, callable, name, *args, **kwargs):
         try:
             callable(*args, **kwargs)
-            print(f"{FilterClient.__log_msg_prefix}: executing {name} callback")
         except Exception as ex:
             self.__logger.error(f"{FilterClient.__log_err_msg_prefix}: {name} callback failed: reason={get_exception_str(ex)}")
 
