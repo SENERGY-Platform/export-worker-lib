@@ -80,6 +80,8 @@ class FilterClient:
             self.__logger = logger
         self.__validator = validator
         self.__on_sync_callable = None
+        self.__on_put_callable = None
+        self.__on_delete_callable = None
         self.__sync_delay = None
         self.__reset = True
         self.__stop = False
@@ -124,8 +126,12 @@ class FilterClient:
                                 if self.__validator and not self.__validator(msg_val[Message.payload]):
                                     raise InvalidFilterError()
                                 self.__filter_handler.add_filter(msg_val[Message.payload])
+                                if self.__on_put_callable:
+                                    self.__call_callable(self.__on_put_callable, Methods.put, msg_val[Message.payload]["id"])
                             elif method == Methods.delete:
                                 self.__filter_handler.delete_filter(**msg_val[Message.payload])
+                                if self.__on_delete_callable:
+                                    self.__call_callable(self.__on_delete_callable, Methods.delete, msg_val[Message.payload]["id"])
                             else:
                                 raise MethodError(method)
                             if self.__on_sync_callable and not self.__sync:
@@ -199,6 +205,26 @@ class FilterClient:
             raise SetCallbackError(callable)
         self.__on_sync_callable = callable
         self.__sync_delay = sync_delay
+
+    def set_on_put(self, callable: typing.Callable[[str], None]):
+        """
+        Set a callback for when a filter has been added.
+        :param callable: Function to be executed. Must not block.
+        :return: None
+        """
+        if self.__thread.is_alive():
+            raise SetCallbackError(callable)
+        self.__on_put_callable = callable
+
+    def set_on_delete(self, callable: typing.Callable[[str], None]):
+        """
+        Set a callback for when a filter has been deleted.
+        :param callable: Function to be executed. Must not block.
+        :return: None
+        """
+        if self.__thread.is_alive():
+            raise SetCallbackError(callable)
+        self.__on_delete_callable = callable
 
     def get_last_update(self):
         return self.__last_update
