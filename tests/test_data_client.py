@@ -37,28 +37,16 @@ class TestDataClient(unittest.TestCase):
         count = 0
         while not mock_kafka_consumer.empty():
             exports = data_client.get_exports(timeout=1.0)
-            if exports:
-                c = list()
-                for export in exports:
-                    if not export.ex:
-                        c.append(dict(export))
-                self.assertIn(str(c), export_results)
-                count += 1
-        self.assertEqual(count, len(export_results) - 1)
+            self.assertIn(str(exports), export_results[count])
+            count += 1
 
     def _test_get_exports_batch(self, limit, results):
         data_client, mock_kafka_consumer = self._init()
         count = 0
         while not mock_kafka_consumer.empty():
             exports_batch, _ = data_client.get_exports_batch(timeout=5.0, limit=limit)
-            if exports_batch:
-                c = list()
-                for export in exports_batch:
-                    if not export.ex:
-                        c.append(dict(export))
-                self.assertIn(str(c), results)
-                count += 1
-        self.assertEqual(count, len(results) - 1)
+            self.assertIn(str(exports_batch), results[count])
+            count += 1
 
     def test_get_exports_batch_limit2(self):
         self._test_get_exports_batch(limit=2, results=batch_results_l2)
@@ -71,11 +59,12 @@ class TestDataClient(unittest.TestCase):
         count = 0
         while not mock_kafka_consumer.empty():
             try:
-                data_client.get_exports(timeout=1.0)
+                exports = data_client.get_exports(timeout=1.0)
+                if exports is not None:
+                    self.assertIn(str(exports), export_results[count])
+                    count += 1
             except Exception as ex:
                 self.assertIsInstance(ex, ew_lib.exceptions.KafkaMessageError)
-                count += 1
-        self.assertEqual(count, 4)
 
     def test_get_exports_batch_kafka_message_errors(self):
         data_client, mock_kafka_consumer = self._init(msg_errors=True)
