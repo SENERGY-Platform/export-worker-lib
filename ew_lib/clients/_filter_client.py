@@ -89,17 +89,18 @@ class FilterClient:
     def __get_time(self):
         return datetime.datetime.utcnow().timestamp() if self.__utc else datetime.datetime.now().timestamp()
 
-    def __call_sync_callable(self, err):
+    def __call_callable(self, callable, name, *args, **kwargs):
         try:
-            self.__on_sync_callable(err)
+            callable(*args, **kwargs)
+            print(f"{FilterClient.__log_msg_prefix}: executing {name} callback")
         except Exception as ex:
-            self.__logger.error(f"{FilterClient.__log_err_msg_prefix}: sync callback failed: reason={get_exception_str(ex)}")
+            self.__logger.error(f"{FilterClient.__log_err_msg_prefix}: {name} callback failed: reason={get_exception_str(ex)}")
 
     def __handle_sync(self, time_a, time_b):
         if time_a >= time_b:
             self.__sync = True
             self.__logger.debug(f"{FilterClient.__log_msg_prefix}: filters synchronized")
-            self.__call_sync_callable(err=False)
+            self.__call_callable(self.__on_sync_callable, "sync", False)
 
     def __consume_filters(self) -> None:
         start_time = None
@@ -168,7 +169,7 @@ class FilterClient:
                 self.__logger.critical(f"{FilterClient.__log_err_msg_prefix}: consuming message failed: reason={get_exception_str(ex)}")
                 self.__stop = True
         if self.__on_sync_callable and not self.__sync:
-            self.__call_sync_callable(err=True)
+            self.__call_callable(self.__on_sync_callable, "sync", True)
 
     def __on_assign(self, consumer: confluent_kafka.Consumer, partitions: typing.List[confluent_kafka.TopicPartition]):
         if self.__reset:
