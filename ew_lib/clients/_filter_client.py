@@ -129,9 +129,9 @@ class FilterClient:
                                 if self.__on_put_callable:
                                     self.__call_callable(self.__on_put_callable, Methods.put, msg_val[Message.payload]["id"])
                             elif method == Methods.delete:
-                                self.__filter_handler.delete_filter(**msg_val[Message.payload])
                                 if self.__on_delete_callable:
                                     self.__call_callable(self.__on_delete_callable, Methods.delete, msg_val[Message.payload]["id"])
+                                self.__filter_handler.delete_filter(**msg_val[Message.payload])
                             else:
                                 raise MethodError(method)
                             if self.__on_sync_callable and not self.__sync:
