@@ -41,7 +41,7 @@ setuptools.setup(
     copyright=metadata.get('__copyright__'),
     install_requires=[
         'message-filter-lib @ git+https://github.com/SENERGY-Platform/message-filter-lib.git@0.8.3',
-        'confluent_kafka>=1,<2'
+        'confluent_kafka>=1,=<1.8.2'
     ],
     packages=setuptools.find_packages(exclude=("tests", "example")),
     python_requires='>=3.8,<4',
