@@ -112,7 +112,7 @@ class FilterClient:
                 if msg_obj:
                     if not msg_obj.error():
                         try:
-                            msg_val = json.loads(msg_obj.value())
+                            msg_val = json.loads(msg_obj.value(), object_pairs_hook=unique_object_keys)
                             method = msg_val[Message.method]
                             if self.__time_format:
                                 timestamp = datetime.datetime.strptime(
