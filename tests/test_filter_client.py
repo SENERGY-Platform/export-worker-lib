@@ -49,7 +49,7 @@ class TestFilterClient(unittest.TestCase):
         mock_on_delete = MockCallable()
         event = SyncEvent()
         init_filter_client(filters=filters, sync_event=event, on_delete=mock_on_delete.func)
-        self.assertEqual(mock_on_delete.called, 1)
+        self.assertEqual(mock_on_delete.called, 2)
 
     def test_kafka_message_error(self):
         event = SyncEvent()
