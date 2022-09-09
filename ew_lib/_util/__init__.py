@@ -49,6 +49,15 @@ def get_exception_str(ex):
     return "[" + ", ".join([item.strip().replace("\n", " ") for item in traceback.format_exception_only(type(ex), ex)]) + "]"
 
 
+def unique_object_keys(ordered_pairs):
+    d = dict()
+    for k, v in ordered_pairs:
+        if k in d:
+            raise ValueError(f"json duplicate object key '{k}'")
+        d[k] = v
+    return d
+
+
 class ConsumerOffsetHandler:
     def __init__(self, kafka_consumer: confluent_kafka.Consumer):
         self.__kafka_consumer = kafka_consumer
