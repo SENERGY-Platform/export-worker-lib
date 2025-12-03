@@ -20,10 +20,8 @@ import typing
 import traceback
 
 
-def get_logger(name: str) -> logging.Logger:
-    logger = logging.getLogger(name)
-    logger.propagate = False
-    return logger
+logger = logging.getLogger("ew_lib")
+logger.propagate = False
 
 
 def validate(obj, cls, name):
@@ -31,18 +29,11 @@ def validate(obj, cls, name):
     assert isinstance(obj, cls), f"'{name}' can't be of type '{type(obj).__name__}'"
 
 
-def log_kafka_sub_action(action: str, partitions: typing.List, prefix: str, logger: logging.Logger):
+def log_kafka_sub_action(action: str, partitions: typing.List, logger: logging.Logger):
     for partition in partitions:
         logger.info(
-            f"{prefix}: subscription event: action={action} topic={partition.topic} partition={partition.partition} offset={partition.offset}"
+            "subscription event", {"action": action, "topic": partition.topic, "partition": partition.partition, "offset": partition.offset}
         )
-
-
-def log_message_error(prefix, ex, message, logger: logging.Logger):
-    err_msg = f"{prefix}: {ex}"
-    if logger.level == logging.DEBUG:
-        err_msg += f" message={message}"
-    logger.error(err_msg)
 
 
 def get_exception_str(ex):

@@ -41,6 +41,7 @@ setuptools.setup(
     copyright=metadata.get('__copyright__'),
     install_requires=[
         'message-filter-lib @ git+https://github.com/SENERGY-Platform/message-filter-lib.git@0.8.3',
+        'python-structlog @ git+https://github.com/SENERGY-Platform/python-structlog@0.2.1'
         'confluent_kafka>=1,<1.9'
     ],
     packages=setuptools.find_packages(exclude=("tests", "example")),

@@ -28,6 +28,10 @@ import datetime
 import logging
 
 
+_logger = logger.getChild("filter_client")
+_logger.propagate = False
+
+
 class Methods:
     put = "put"
     delete = "delete"
@@ -43,10 +47,6 @@ class FilterClient:
     """
     Consumes messages which contain instructions to create or delete filters.
     """
-    __logger = get_logger("ew-lib-kfc")
-    __log_msg_prefix = "kafka filter client"
-    __log_err_msg_prefix = f"{__log_msg_prefix} error"
-
     def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_topic: str, poll_timeout: float = 1.0, time_format: typing.Optional[str] = None, utc: bool = True, kafka_msg_err_ignore: typing.Optional[typing.List] = None, validator: typing.Optional[typing.Callable[[typing.Dict], bool]] = None, logger: typing.Optional[logging.Logger] = None):
         """
         Creates a KafkaFilterClient object.
@@ -76,6 +76,7 @@ class FilterClient:
         self.__time_format = time_format
         self.__utc = utc
         self.__kafka_error_ignore = kafka_msg_err_ignore or list()
+        self.__logger = _logger
         if logger:
             self.__logger = logger
         self.__validator = validator
@@ -95,12 +96,12 @@ class FilterClient:
         try:
             callable(*args, **kwargs)
         except Exception as ex:
-            self.__logger.error(f"{FilterClient.__log_err_msg_prefix}: {name} callback failed: reason={get_exception_str(ex)}")
+            self.__logger.error(f"{name} callback", {"error": get_exception_str(ex)})
 
     def __handle_sync(self, time_a, time_b):
         if time_a >= time_b:
             self.__sync = True
-            self.__logger.debug(f"{FilterClient.__log_msg_prefix}: filters synchronized")
+            self.__logger.debug("filters synchronized")
             self.__call_callable(self.__on_sync_callable, "sync", False)
 
     def __consume_filters(self) -> None:
@@ -141,23 +142,19 @@ class FilterClient:
                                 self.__handle_sync(timestamp, start_time)
                             self.__last_update = datetime.datetime.utcnow().timestamp()
                             self.__logger.debug(
-                                f"{FilterClient.__log_msg_prefix}: method={method} timestamp={timestamp} payload={msg_val[Message.payload]}"
+                                "consumed filter message", {"method": method, "timestamp": timestamp, "payload": msg_val[Message.payload]}
                             )
                         except mf_lib.exceptions.FilterHandlerError as ex:
                             if not isinstance(ex.ex, mf_lib.exceptions.UnknownFilterIDError):
-                                log_message_error(
-                                    prefix=FilterClient.__log_err_msg_prefix,
-                                    ex=ex,
-                                    message=msg_obj.value(),
-                                    logger=self.__logger
-                                )
+                                args = {"error": get_exception_str(ex)}
+                                if self.__logger.level == logging.DEBUG:
+                                    args["message"] = msg_obj.value()
+                                self.__logger.error("filtering message", args)
                         except Exception as ex:
-                            log_message_error(
-                                prefix=f"{FilterClient.__log_err_msg_prefix}: handling message failed",
-                                ex=f"reason={get_exception_str(ex)}",
-                                message=msg_obj.value(),
-                                logger=self.__logger
-                            )
+                            args = {"error": get_exception_str(ex)}
+                            if self.__logger.level == logging.DEBUG:
+                                args["message"] = msg_obj.value()
+                            self.__logger.error("handling message", args)
                     else:
                         if msg_obj.error().code() not in self.__kafka_error_ignore:
                             raise KafkaMessageError(
@@ -171,7 +168,7 @@ class FilterClient:
                         if start_time:
                             self.__handle_sync(self.__get_time() - last_item_time, self.__sync_delay)
             except Exception as ex:
-                self.__logger.critical(f"{FilterClient.__log_err_msg_prefix}: consuming message failed: reason={get_exception_str(ex)}")
+                self.__logger.critical("consuming message", {"error": get_exception_str(ex)})
                 self.__stop = True
         if self.__on_sync_callable and not self.__sync:
             self.__call_callable(self.__on_sync_callable, "sync", True)
@@ -182,13 +179,13 @@ class FilterClient:
                 partition.offset = confluent_kafka.OFFSET_BEGINNING
             consumer.assign(partitions)
             self.__reset = False
-        log_kafka_sub_action("assign", partitions, FilterClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("assign", partitions, self.__logger)
 
     def __on_revoke(self, _, p):
-        log_kafka_sub_action("revoke", p, FilterClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("revoke", p, self.__logger)
 
     def __on_lost(self, _, p):
-        log_kafka_sub_action("lost", p, FilterClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("lost", p, self.__logger)
 
     @property
     def handler(self):

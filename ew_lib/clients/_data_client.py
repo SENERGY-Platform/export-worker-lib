@@ -27,14 +27,13 @@ import threading
 import json
 import logging
 
+_logger = logger.getChild("data_client")
+_logger.propagate = False
 
 class DataClient:
     """
     Consumes messages from any number of kafka topics and passes them to a FilterHandler object to get exports, and provides them to the user.
     """
-    __logger = get_logger("ew-lib-kdc")
-    __log_msg_prefix = "kafka data client"
-    __log_err_msg_prefix = f"{__log_msg_prefix} error"
 
     def __init__(self, kafka_consumer: confluent_kafka.Consumer, filter_client: FilterClient, subscribe_interval: int = 5, handle_offsets: bool = False, kafka_msg_err_ignore: typing.Optional[typing.List] = None, logger: typing.Optional[logging.Logger] = None):
         """
@@ -50,6 +49,7 @@ class DataClient:
         self.__subscribe_interval = subscribe_interval
         self.__offsets_handler = ConsumerOffsetHandler(kafka_consumer=kafka_consumer) if handle_offsets else None
         self.__kafka_error_ignore = kafka_msg_err_ignore or list()
+        self.__logger = _logger
         if logger:
             self.__logger = logger
         self.__thread = threading.Thread(
@@ -77,17 +77,17 @@ class DataClient:
                     self.__sources_timestamp = timestamp
                 self.__sleeper.wait(self.__subscribe_interval)
             except Exception as ex:
-                self.__logger.critical(f"{DataClient.__log_err_msg_prefix}: handling subscriptions failed: reason={get_exception_str(ex)}")
+                self.__logger.critical("handling subscriptions", {"error": get_exception_str(ex)})
                 self.__stop = True
 
     def __on_assign(self, _, p):
-        log_kafka_sub_action("assign", p, DataClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("assign", p, self.__logger)
 
     def __on_revoke(self, _, p):
-        log_kafka_sub_action("revoke", p, DataClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("revoke", p, self.__logger)
 
     def __on_lost(self, _, p):
-        log_kafka_sub_action("lost", p, DataClient.__log_msg_prefix, self.__logger)
+        log_kafka_sub_action("lost", p, self.__logger)
 
     def __handle_msg_obj(self, msg_obj: confluent_kafka.Message, data_builder, extra_builder, data_ignore_missing_keys, extra_ignore_missing_keys) -> typing.List[mf_lib.FilterResult]:
         exports = list()
@@ -103,12 +103,10 @@ class DataClient:
         except mf_lib.exceptions.NoFilterError:
             pass
         except mf_lib.exceptions.MessageIdentificationError as ex:
-            log_message_error(
-                prefix=DataClient.__log_err_msg_prefix,
-                ex=ex,
-                message=msg_obj.value(),
-                logger=self.__logger
-            )
+            args = {"error": get_exception_str(ex)}
+            if self.__logger.level == logging.DEBUG:
+                args["message"] = msg_obj.value()
+            self.__logger.error("identifying message", args)
         return exports
 
     def get_exports(self, timeout: float, data_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, extra_builder: typing.Optional[typing.Callable[[typing.Generator], typing.Any]] = mf_lib.builders.dict_builder, data_ignore_missing_keys: bool = False, extra_ignore_missing_keys: bool = False) -> typing.Optional[typing.List[mf_lib.FilterResult]]:
@@ -163,7 +161,7 @@ class DataClient:
                             fatal=msg_obj.error().fatal()
                         )
                         msg_exceptions.append(ex)
-            self.__logger.debug(f"{DataClient.__log_msg_prefix}: get exports batch statistics: messages={msg_count} message_errors={len(msg_exceptions)} identified_messages={ident_msg_count}")
+            self.__logger.debug("get exports batch statistics", {"messages": msg_count, "message_errors": len(msg_exceptions), "identified_messages": ident_msg_count})
             return exports_batch, msg_exceptions
 
     def store_offsets(self):
